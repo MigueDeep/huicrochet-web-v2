@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("/src/styles/colors.css");
+
+html {
+  font-family: "Poppins";
+  background-color: var(--background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+span,
+li,
+input,
+button,
+label,
+select,
+option {
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--primary);
+}
+
+.text-pink {
+  color: var(--primary);
+}
+
+.text-wine {
+  color: var(--secondary);
+}
+
+.text-brown {
+  color: var(--warning);
+}
+
+.text-pink-secondary {
+  color: var(--info);
+}
+
+.text-red {
+  color: var(--error);
+}
+
+.text-green {
+  color: var(--success);
+}
+
+.text-white {
+  color: var(--white);
+}
+.text-semibold {
+  font-weight: 700;
+}
+.click {
+  cursor: pointer;
+}
+
+.title {
+  font-size: 32;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.title-white {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.text-secondary {
+  color: #666666;
+  font-size: 14px;
+}
+
+.card-title {
+  color: var(--card_title);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+ul{
+  padding: 0;
+}
