@@ -7,6 +7,7 @@ import UserPage from "../pages/users/UserPage";
 import CategoriesPage from "../pages/categories/CategoriesPage";
 import OrdersPage from "../pages/orders/OrderPage";
 import { NotFoundPage } from "../pages/NotFound/NotFoundPage";
+import { ProductsPage } from "../pages/products/ProductsPage";
 
 const AppRouter = () => {
   return (
@@ -18,6 +19,7 @@ const AppRouter = () => {
       <Route path="*" element={<NotFoundPage />} />
       <Route path="/categorias" element={<CategoriesPage />} />
       <Route path="/orders" element={<OrdersPage />} />
+      <Route path="/productos" element={<ProductsPage />} />
     </Routes>
   );
 };
