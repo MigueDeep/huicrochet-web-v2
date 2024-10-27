@@ -72,7 +72,7 @@ const products = [
     description: "El perro mas fabuloso naranja",
     category: "Jugetes",
     quantity: 67,
-    status: 1,
+        status: 1,
 
     price: 230.0,
     colors: ["pink", "blue", "green"],
@@ -80,12 +80,14 @@ const products = [
   },
 ];
 
-<div className="container-fluid">
-  <div className="row text-center">
-    {products.map((product) => (
-      <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
-        <ProductCardGrid {...product} />
-      </div>
-    ))}
-  </div>
-</div>;
+export const ProductsGrid = () => {
+  return (
+    <div className="row text-center">
+      {products.map((product) => (
+        <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
+          <ProductCardGrid {...product} />
+        </div>
+      ))}
+    </div>
+  );
+};

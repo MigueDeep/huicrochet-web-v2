@@ -1,4 +1,3 @@
-import React, { useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -10,11 +9,10 @@ import {
   Tooltip,
   Chip,
   Pagination,
-  Button,
 } from "@nextui-org/react";
-import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import Avatar from "@mui/material/Avatar"; // Importación de Avatar
 import ChangeStatus from "./ChangesStatus";
+import { useMemo, useState } from "react";
 
 const rows = [
   {
@@ -80,65 +78,70 @@ export default function App() {
 
   return (
     <>
-   
-    <Table
-      aria-label="Example table with dynamic content"
-      bottomContent={
-        <div className="
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div
+            className="
           flex w-full justify-center mt-4 pb-4 border-b border-gray-200
-          ">
-            <Pagination 
-              loop showControls 
-              color="success" 
-              initialPage={1}  page={page}
+          "
+          >
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
               total={pages}
               onChange={(page) => setPage(page)}
             />
-        </div>
-      }
-    >
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={items}>
-        {(item) => (
-          <TableRow key={item.key}>
-            {columns.map((column) => (
-              <TableCell key={column.key}>
-                {column.key === "pic" ? (
-                  <Avatar alt={item.name} src={item.pic} />
-                ) : column.key === "actions" ? (
-                  <Tooltip
-                    showArrow={true}
-                    content={
-                      item.status === "activo" ? "Desactivar" : "Activar"
-                    }
-                  >
-                    <span className="text-danger cursor-pointer active:opacity-50">
-                      <ChangeStatus
-                        userId={item.key}
-                        initialStatus={item.status === "activo"}
-                      />
-                    </span>
-                  </Tooltip>
-                ) : column.key === "status" ? (
-                  <Chip
-                    className="capitalize"
-                    size="sm"
-                    variant="flat"
-                    color={item.status === "activo" ? "success" : "danger"}
-                  >
-                    {item.status}
-                  </Chip>
-                ) : (
-                  getKeyValue(item, column.key)
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+          </div>
+        }
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={items}>
+          {(item) => (
+            <TableRow key={item.key}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  {column.key === "pic" ? (
+                    <Avatar alt={item.name} src={item.pic} />
+                  ) : column.key === "actions" ? (
+                    <Tooltip
+                      showArrow={true}
+                      content={
+                        item.status === "activo" ? "Desactivar" : "Activar"
+                      }
+                    >
+                      <span className="text-danger cursor-pointer active:opacity-50">
+                        <ChangeStatus
+                          userId={item.key}
+                          initialStatus={item.status === "activo"}
+                        />
+                      </span>
+                    </Tooltip>
+                  ) : column.key === "status" ? (
+                    <Chip
+                      className="capitalize"
+                      size="sm"
+                      variant="flat"
+                      color={item.status === "activo" ? "success" : "danger"}
+                    >
+                      {item.status}
+                    </Chip>
+                  ) : (
+                    getKeyValue(item, column.key)
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </>
   );
 }

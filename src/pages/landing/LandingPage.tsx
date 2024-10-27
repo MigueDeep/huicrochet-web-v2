@@ -15,7 +15,6 @@ const LandingPage = () => {
     }
   };
 
-
   return (
     <>
       <div className="navbar row">
