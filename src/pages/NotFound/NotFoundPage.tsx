@@ -9,6 +9,8 @@ export const NotFoundPage = () => {
   return (
     <>
       <div style={styles.container}>
+        <div style={{ ...styles.circle, ...styles.bottomLeftCircle }}></div>
+        <div style={{ ...styles.circle, ...styles.middleRightCircle }}></div>
         <div className="row">
           <div
             className="col d-flex flex-column align-items-start justify-content-center"
@@ -50,9 +52,28 @@ const styles: { [key: string]: CSSProperties } = {
     justifyContent: "center",
     height: "100vh",
     overflow: "hidden",
+    position: "relative",
+    backgroundColor: "#f0f0f0",
   },
   img: {
     maxWidth: "100%",
     height: "auto",
+  },
+  circle: {
+    position: "absolute",
+    width: "500px",
+    height: "500px",
+    borderRadius: "50%",
+    border: "50px solid #402F2F",
+  },
+  bottomLeftCircle: {
+    bottom: 0,
+    left: 0,
+    transform: "translate(-50%, 50%)",
+  },
+  middleRightCircle: {
+    top: "50%",
+    right: 0,
+    transform: "translate(50%, -50%)",
   },
 };
