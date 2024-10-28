@@ -22,12 +22,11 @@ import {
   Button,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
-import { deepPurple } from "@mui/material/colors";
 import * as Yup from "yup";
 import ColorCircle from "../common/ColorCircle";
 import { PedidosIconBlack } from "../../utils/icons";
+import { OrderDetailTable } from "./OrderDetailTable";
 
 export default function OrderDetail() {
   const validationSchema = Yup.object({
@@ -49,7 +48,7 @@ export default function OrderDetail() {
         </Button>
       </Tooltip>
       <Modal
-        size="4xl"
+        size="5xl"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         isDismissable={false}
@@ -185,7 +184,7 @@ export default function OrderDetail() {
 
                 {/* Productos */}
                 <section>
-                  <h5 className="text-lg font-semibold mb-2">Productos</h5>
+                  {/* <h5 className="text-lg font-semibold mb-2">Productos</h5>
                   <Card className="flex flex-row items-center gap-4 max-w-full p-3 mb-4 border">
                     <Image
                       isZoomed
@@ -211,8 +210,9 @@ export default function OrderDetail() {
                         </div>
                       </p>
                     </CardBody>
-                  </Card>
+                  </Card> */}
                   {/* Puedes añadir más productos duplicando el Card */}
+                  <OrderDetailTable />
                 </section>
               </ModalBody>
 
