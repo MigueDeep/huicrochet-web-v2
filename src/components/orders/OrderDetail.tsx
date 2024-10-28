@@ -27,14 +27,12 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import { deepPurple } from "@mui/material/colors";
 import * as Yup from "yup";
 import ColorCircle from "../common/ColorCircle";
-
+import { PedidosIconBlack } from "../../utils/icons";
 
 export default function OrderDetail() {
-
   const validationSchema = Yup.object({
     date: Yup.date().required("La fecha es requerida"),
   });
-
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const status = [
@@ -65,11 +63,10 @@ export default function OrderDetail() {
                 Detalle de la Orden
               </ModalHeader>
               <ModalBody className="max-h-[60vh] overflow-y-auto">
-
                 <section className="row">
                   <div className="col-6">
-                    <h6>Orden ID: #168012</h6>
-                    <p>Lunes 20 de Ocubre, 2024</p>
+                    <h6 className="text-wine">Orden ID: #168012</h6>
+                    <p className="text-secondary">Lunes 20 de Ocubre, 2024</p>
                     <Chip
                       className="capitalize"
                       size="sm"
@@ -80,7 +77,7 @@ export default function OrderDetail() {
                     </Chip>
                   </div>
 
-                  <form className="col-6 d-flex gap-4" >
+                  <form className="col-6 d-flex gap-4">
                     <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">
@@ -100,60 +97,65 @@ export default function OrderDetail() {
                       </FormControl>
                     </Box>
                     <Box sx={{ minWidth: 120 }}>
-                      <DatePicker
-                        label="Fecha de entrega"
-                      />
+                      <DatePicker label="Fecha de entrega" />
                     </Box>
                   </form>
-                  
                 </section>
 
                 {/* Datos de entrega */}
                 <section>
                   <div className="row">
-                    <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
-                      <Avatar
-                        sx={{ bgcolor: deepPurple[500], width: 56, height: 56 }}
-                      >
-                        MD
-                      </Avatar>
-                      <div>
-                        <h5>Cliente</h5>
-                        <p>
-                          <strong>Nombre: </strong>Miguel Delgado
-                        </p>
-                        <p>
-                          <strong>Correo: </strong>miguel@gmail.com
-                        </p>
-                        <p>
-                          <strong>Télefono: </strong>777 152 7761
-                        </p>
+                    <div className="col-6 d-flex gap-3 align-items-center">
+                      <div className="flex-grow-1">
+                        <div className="d-flex gap-3 align-items-center">
+                          <Avatar
+                            sx={{ width: 36, height: 36 }}
+                            style={{ backgroundColor: deepPurple[500] }}
+                            src="/pajaro.jpg"
+                          ></Avatar>
+                          <h5>Cliente</h5>
+                        </div>
+
+                        <div className="px-5">
+                          <p>
+                            <span className="text-pink">Nombre: </span>Miguel
+                            Delgado
+                          </p>
+                          <p>
+                            <span className="text-pink">Correo: </span>
+                            miguel@gmail.com
+                          </p>
+                          <p>
+                            <span className="text-pink">Télefono: </span>777 152
+                            7761
+                          </p>
+                        </div>
                       </div>
                     </div>
+
                     <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
-                      <Avatar sx={{ width: 56, height: 56 }}>
-                        <LocalShippingIcon fontSize="large" htmlColor="black" />
-                      </Avatar>
+                      <PedidosIconBlack />
 
                       <div>
                         <h5>Dirección de entrega</h5>
                         <p>
-                          <strong>Nombre: </strong>Miguel Delgado
+                          <span className="text-pink">Nombre: </span>Miguel
+                          Delgado
                         </p>
                         <p>
-                          <strong>Correo: </strong>miguel@gmail.com
+                          <span className="text-pink">Correo: </span>
+                          miguel@gmail.com
                         </p>
                         <p>
-                          <strong>Télefono: </strong>777 152 7761
+                          <span className="text-pink">Télefono: </span>777 152
+                          7761
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="row mt-4">
                     <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
-                      <Avatar sx={{ width: 56, height: 56 }}>
-                        <PaymentIcon fontSize="large" htmlColor="black" />
-                      </Avatar>
+                      <PaymentIcon />
 
                       <div>
                         <h5>Método de pago</h5>
@@ -204,7 +206,6 @@ export default function OrderDetail() {
                   </Card>
                   {/* Puedes añadir más productos duplicando el Card */}
                 </section>
-
               </ModalBody>
 
               <ModalFooter>
@@ -213,7 +214,6 @@ export default function OrderDetail() {
                   Guardar
                 </Button>
               </ModalFooter>
-
             </>
           )}
         </ModalContent>

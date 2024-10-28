@@ -69,6 +69,19 @@ export const PedidosIcon = () => (
     </g>
   </svg>
 );
+export const PedidosIconBlack = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="32"
+    height="32"
+    viewBox="0 0 14 14"
+  >
+    <g fill="none" stroke="#000">
+      <path d="M8.5 5.5h3a2 2 0 0 1 2 2v4H12m-10.5 0h-1v-7a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v7m-.5 0H5.5" />
+      <path d="M10.25 13.5a1.75 1.75 0 1 1 0-3.5a1.75 1.75 0 0 1 0 3.5m-6.75 0a1.75 1.75 0 1 1 0-3.5a1.75 1.75 0 0 1 0 3.5" />
+    </g>
+  </svg>
+);
 
 export const CerrarSesionIcon = () => (
   <svg
@@ -125,5 +138,18 @@ export const UserNoOnlineIcon = () => (
       <circle cx="10" cy="8" r="5" />
       <path d="M22 19h-6" />
     </g>
+  </svg>
+);
+export const PaymentIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="32"
+    height="32"
+    viewBox="0 0 16 16"
+  >
+    <path
+      fill="currentColor"
+      d="M10.5 10a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zM1 5.5A2.5 2.5 0 0 1 3.5 3h9A2.5 2.5 0 0 1 15 5.5v5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 10.5zM14 6v-.5A1.5 1.5 0 0 0 12.5 4h-9A1.5 1.5 0 0 0 2 5.5V6zM2 7v3.5A1.5 1.5 0 0 0 3.5 12h9a1.5 1.5 0 0 0 1.5-1.5V7z"
+    />
   </svg>
 );
