@@ -44,7 +44,7 @@ export default function OrderDetail() {
     <>
       <Tooltip content="Detalle de la orden">
         <Button onClick={onOpen} variant="contained">
-          Editar
+          Ver detalles
         </Button>
       </Tooltip>
       <Modal
