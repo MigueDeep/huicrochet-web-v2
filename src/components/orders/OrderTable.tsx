@@ -10,9 +10,7 @@ import {
   Tooltip,
   Chip,
   Pagination,
-  Button,
 } from "@nextui-org/react";
-import ChangeOrderStatus from "./ChangeOrderStatus";
 import OrderDetail from "./OrderDetail";
 
 const rows = [
@@ -51,7 +49,6 @@ export default function OrdersTable() {
   }, [page]);
 
   return (
-    <>
     <Table
       aria-label="Example table with dynamic content"
       bottomContent={
@@ -86,7 +83,6 @@ export default function OrdersTable() {
                   >
                     <span className="text-danger cursor-pointer active:opacity-50">
                       <OrderDetail/>
-                      <ChangeOrderStatus/>
                     </span>
                   </Tooltip>
                 ) 
@@ -108,6 +104,5 @@ export default function OrdersTable() {
         )}
       </TableBody>
     </Table>
-    </>
   );
 }
