@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -24,31 +23,25 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import PaymentIcon from "@mui/icons-material/Payment";
 import { deepPurple } from "@mui/material/colors";
+import * as Yup from "yup";
 import ColorCircle from "../common/ColorCircle";
-import { useFormik } from "formik";
-import { date } from "yup";
-import { form } from "framer-motion/client";
-import dayjs from "dayjs";
+
 
 export default function OrderDetail() {
-  const [status, setStatus] = useState("En proceso");
-  
-  const changeStatus = (newStatus: string) => {
-    setStatus(newStatus);
-  };
+
+  const validationSchema = Yup.object({
+    date: Yup.date().required("La fecha es requerida"),
+  });
+
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  const formik = useFormik({
-    initialValues: {
-      status: status,
-      date: dayjs().format("YYYY-MM-DD"),
-    },
-    onSubmit: (values) => {
-      console.log(values);
-    }
-  });
+  const status = [
+    { value: "1", label: "En proceso" },
+    { value: "2", label: "Enviado" },
+    { value: "3", label: "Entregado" },
+  ];
 
   return (
     <>
@@ -72,44 +65,47 @@ export default function OrderDetail() {
                 Detalle de la Orden
               </ModalHeader>
               <ModalBody className="max-h-[60vh] overflow-y-auto">
+
                 <section className="row">
                   <div className="col-6">
                     <h6>Orden ID: #168012</h6>
-                    <p>Lunes 20 de Octubre, 2024</p>
+                    <p>Lunes 20 de Ocubre, 2024</p>
                     <Chip
                       className="capitalize"
                       size="sm"
                       variant="flat"
                       color="success"
                     >
-                      {status}
+                      En proceso
                     </Chip>
                   </div>
 
-                  <form className="col-6 d-flex gap-4" onSubmit={formik.handleSubmit}>
+                  <form className="col-6 d-flex gap-4" >
                     <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth>
-                        <InputLabel id="status-label">Estado</InputLabel>
+                        <InputLabel id="demo-simple-select-label">
+                          Estado
+                        </InputLabel>
                         <Select
-                          labelId="status-label"
-                          id="status"
-                          value={formik.values.status}
-                          onChange={(e) => changeStatus(e.target.value)}
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          label="Estado"
                         >
-                          <MenuItem value={"En proceso"}>En proceso</MenuItem>
-                          <MenuItem value={"Enviado"}>Enviado</MenuItem>
-                          <MenuItem value={"Entregado"}>Entregado</MenuItem>
+                          {status.map((item) => (
+                            <MenuItem key={item.value} value={item.value}>
+                              {item.label}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Box>
-
                     <Box sx={{ minWidth: 120 }}>
                       <DatePicker
                         label="Fecha de entrega"
-                        disabled={status !== "En proceso"}
                       />
                     </Box>
                   </form>
+                  
                 </section>
 
                 {/* Datos de entrega */}
@@ -134,7 +130,6 @@ export default function OrderDetail() {
                         </p>
                       </div>
                     </div>
-
                     <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
                       <Avatar sx={{ width: 56, height: 56 }}>
                         <LocalShippingIcon fontSize="large" htmlColor="black" />
@@ -142,6 +137,26 @@ export default function OrderDetail() {
 
                       <div>
                         <h5>Dirección de entrega</h5>
+                        <p>
+                          <strong>Nombre: </strong>Miguel Delgado
+                        </p>
+                        <p>
+                          <strong>Correo: </strong>miguel@gmail.com
+                        </p>
+                        <p>
+                          <strong>Télefono: </strong>777 152 7761
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-4">
+                    <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
+                      <Avatar sx={{ width: 56, height: 56 }}>
+                        <PaymentIcon fontSize="large" htmlColor="black" />
+                      </Avatar>
+
+                      <div>
+                        <h5>Método de pago</h5>
                         <p>
                           <strong>Nombre: </strong>Miguel Delgado
                         </p>
@@ -165,10 +180,13 @@ export default function OrderDetail() {
                     <Image
                       isZoomed
                       width={200}
-                      alt="Producto"
+                      alt="NextUI Fruit Image with Zoom"
                       src="pajaro.jpg"
+                      classNames={{
+                        img: "opacity-100", // This should override any existing opacity class
+                      }}
                     />
-                    <CardBody className="flex flex-col">
+                    <CardBody className="flex flex-col ">
                       <p>
                         <strong>Nombre:</strong> Producto 1
                       </p>
@@ -184,19 +202,18 @@ export default function OrderDetail() {
                       </p>
                     </CardBody>
                   </Card>
+                  {/* Puedes añadir más productos duplicando el Card */}
                 </section>
+
               </ModalBody>
 
               <ModalFooter>
                 <Button onClick={onClose}>Cerrar</Button>
-                <Button 
-                  color="primary" 
-                  variant="contained"
-                  type="submit"
-                >
+                <Button color="primary" variant="contained">
                   Guardar
                 </Button>
               </ModalFooter>
+
             </>
           )}
         </ModalContent>
