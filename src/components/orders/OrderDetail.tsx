@@ -110,7 +110,6 @@ export default function OrderDetail() {
                         <div className="d-flex gap-3 align-items-center">
                           <Avatar
                             sx={{ width: 36, height: 36 }}
-                            style={{ backgroundColor: deepPurple[500] }}
                             src="/pajaro.jpg"
                           ></Avatar>
                           <h5>Cliente</h5>
@@ -133,41 +132,50 @@ export default function OrderDetail() {
                       </div>
                     </div>
 
-                    <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
-                      <PedidosIconBlack />
-
-                      <div>
-                        <h5>Dirección de entrega</h5>
-                        <p>
-                          <span className="text-pink">Nombre: </span>Miguel
-                          Delgado
-                        </p>
-                        <p>
-                          <span className="text-pink">Correo: </span>
-                          miguel@gmail.com
-                        </p>
-                        <p>
-                          <span className="text-pink">Télefono: </span>777 152
-                          7761
-                        </p>
+                    <div className="col-6 d-flex gap-3 align-items-center">
+                      <div className="flex-grow-1">
+                        <div className="d-flex gap-3 align-items-center">
+                          <PedidosIconBlack />
+                          <h5>Dirección de entrega</h5>
+                        </div>
+                        <div className="px-5">
+                          <p>
+                            <span className="text-pink">Nombre: </span>Miguel
+                            Delgado
+                          </p>
+                          <p>
+                            <span className="text-pink">Correo: </span>
+                            miguel@gmail.com
+                          </p>
+                          <p>
+                            <span className="text-pink">Télefono: </span>777 152
+                            7761
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div className="row mt-4">
-                    <div className="col-6 d-flex gap-5 justify-content-center align-items-center">
-                      <PaymentIcon />
-
-                      <div>
-                        <h5>Método de pago</h5>
-                        <p>
-                          <strong>Nombre: </strong>Miguel Delgado
-                        </p>
-                        <p>
-                          <strong>Correo: </strong>miguel@gmail.com
-                        </p>
-                        <p>
-                          <strong>Télefono: </strong>777 152 7761
-                        </p>
+                    <div className="col-6 d-flex gap-3 align-items-center">
+                      <div className="flex-grow-1">
+                        <div className="d-flex gap-3 align-items-center">
+                          <PaymentIcon />
+                          <h5>Método de pago</h5>
+                        </div>
+                        <div className="px-5">
+                          <p>
+                            <span className="text-pink">Nombre: </span>Miguel
+                            Delgado
+                          </p>
+                          <p>
+                            <span className="text-pink">Correo: </span>
+                            miguel@gmail.com
+                          </p>
+                          <p>
+                            <span className="text-pink">Télefono: </span>777 152
+                            7761
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
