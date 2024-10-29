@@ -6,9 +6,6 @@ import {
   ModalFooter,
   useDisclosure,
   Tooltip,
-  Card,
-  CardBody,
-  Image,
   Divider,
   Chip,
 } from "@nextui-org/react";
@@ -23,15 +20,10 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import PaymentIcon from "@mui/icons-material/Payment";
-import * as Yup from "yup";
-import ColorCircle from "../common/ColorCircle";
 import { PedidosIconBlack } from "../../utils/icons";
 import { OrderDetailTable } from "./OrderDetailTable";
 
 export default function OrderDetail() {
-  const validationSchema = Yup.object({
-    date: Yup.date().required("La fecha es requerida"),
-  });
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const status = [
@@ -39,6 +31,7 @@ export default function OrderDetail() {
     { value: "2", label: "Enviado" },
     { value: "3", label: "Entregado" },
   ];
+  
 
   return (
     <>
@@ -102,58 +95,60 @@ export default function OrderDetail() {
                 </section>
 
                 {/* Datos de entrega */}
-                <section>
+                <section className="mt-3">
                   <div className="row">
-                    <div className="col-6 d-flex gap-3 align-items-center">
-                      <div className="flex-grow-1">
-                        <div className="d-flex gap-3 align-items-center">
-                          <Avatar
-                            sx={{ width: 36, height: 36 }}
-                            src="/pajaro.jpg"
-                          ></Avatar>
-                          <h5>Cliente</h5>
-                        </div>
+                      <div className="col-6 d-flex gap-3 justify-content-center">
+                        <div className="flex-grow-1">
+                          <div className="d-flex gap-3 align-items-center">
+                            <Avatar
+                              sx={{ width: 36, height: 36 }}
+                              src="/pajaro.jpg"
+                            ></Avatar>
+                            <h5>Cliente</h5>
+                          </div>
 
-                        <div className="px-5">
-                          <p>
-                            <span className="text-pink">Nombre: </span>Miguel
-                            Delgado
-                          </p>
-                          <p>
-                            <span className="text-pink">Correo: </span>
-                            miguel@gmail.com
-                          </p>
-                          <p>
-                            <span className="text-pink">Télefono: </span>777 152
-                            7761
-                          </p>
+                          <div className="px-5">
+                            <p>
+                              <span className="text-pink">Nombre: </span>Miguel
+                              Delgado
+                            </p>
+                            <p>
+                              <span className="text-pink">Correo: </span>
+                              miguel@gmail.com
+                            </p>
+                            <p>
+                              <span className="text-pink">Télefono: </span>777 152
+                              7761
+                            </p>
+                          </div>
+                          
                         </div>
                       </div>
-                    </div>
 
-                    <div className="col-6 d-flex gap-3 align-items-center">
-                      <div className="flex-grow-1">
-                        <div className="d-flex gap-3 align-items-center">
-                          <PedidosIconBlack />
-                          <h5>Dirección de entrega</h5>
-                        </div>
-                        <div className="px-5">
-                          <p>
-                            <span className="text-pink">Nombre: </span>Miguel
-                            Delgado
-                          </p>
-                          <p>
-                            <span className="text-pink">Correo: </span>
-                            miguel@gmail.com
-                          </p>
-                          <p>
-                            <span className="text-pink">Télefono: </span>777 152
-                            7761
-                          </p>
+                      <div className="col-6 d-flex gap-3 align-items-center justify-content-center">
+                        <div className="flex-grow-1">
+                          <div className="d-flex gap-3 align-items-center">
+                            <PedidosIconBlack />
+                            <h5>Dirección de entrega</h5>
+                          </div>
+                          <div className="px-5">
+                            <p>
+                              <span className="text-pink">Nombre: </span>Miguel
+                              Delgado
+                            </p>
+                            <p>
+                              <span className="text-pink">Correo: </span>
+                              miguel@gmail.com
+                            </p>
+                            <p>
+                              <span className="text-pink">Télefono: </span>777 152
+                              7761
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
                   </div>
+
                   <div className="row mt-4">
                     <div className="col-6 d-flex gap-3 align-items-center">
                       <div className="flex-grow-1">
@@ -178,6 +173,7 @@ export default function OrderDetail() {
                       </div>
                     </div>
                   </div>
+
                 </section>
 
                 <Divider />
@@ -227,5 +223,7 @@ export default function OrderDetail() {
         </ModalContent>
       </Modal>
     </>
+    
   );
+
 }
