@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import Avatar from "@mui/material/Avatar"; // Importación de Avatar
-import ChangeStatus from "./ChangesStatus";
+import ChangeStatus from "../common/ChangesStatus";
 
 const rows = [
   {
@@ -116,8 +116,9 @@ export default function App() {
                   >
                     <span className="text-danger cursor-pointer active:opacity-50">
                       <ChangeStatus
-                        userId={item.key}
+                        id={item.key}
                         initialStatus={item.status === "activo"}
+                        type="user"
                       />
                     </span>
                   </Tooltip>

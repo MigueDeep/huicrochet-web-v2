@@ -4,20 +4,23 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 
 interface ChangeStatusProps {
-  userId: string;
-  initialStatus: boolean; 
+  id: string;
+  initialStatus: boolean;
+  type: string; 
 }
 
-export default function ChangeStatus({ userId, initialStatus }: ChangeStatusProps) {
+export default function ChangeStatus({ id, initialStatus, type }: ChangeStatusProps) {
   const [isActive, setIsActive] = useState(initialStatus);
 
   const handleChangeStatus = () => {
+    console.log(`Changing status of ${type} with id ${id}`);
     setIsActive(!isActive); 
-    console.log(`El estado del usuario con ID ${userId} ha sido cambiado a ${!isActive ? 'Activo' : 'Inactivo'}`);
   };
 
   return (
-    <Tooltip content={isActive ? 'Desactivar usuario' : 'Activar usuario'}>
+    <Tooltip 
+      content={isActive ? "Desactivar" : "Activar"}
+    >
       <span onClick={handleChangeStatus} className="cursor-pointer">
         {isActive ? (
           <ToggleOnIcon fontSize="large" color="success" /> 
