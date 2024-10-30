@@ -16,11 +16,12 @@ import {
   ProductosIcon,
   UsuariosIcon,
   ColorIcon,
-  CategoryIcon
+  CategoryIcon,
+  HiloICon,
+  BaseProductIcon,
 } from "../../utils/icons";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-
 
 const drawerWidth = 240;
 
@@ -32,13 +33,24 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { text: "Productos", icon: <ProductosIcon />, path: "/products" },
+    {
+      text: "Productos",
+      icon: <ProductosIcon />,
+      children: [
+        { text: "Productos", path: "/products", icon: <HiloICon /> },
+        {
+          text: "Producto base",
+          path: "/products/base",
+          icon: <BaseProductIcon />,
+        },
+      ],
+    },
     {
       text: "Catálogos",
       icon: <CategoriasIcon />,
       children: [
-        { text: "Categorías", path: "/categories", icon: <CategoryIcon/> },
-        { text: "Colores", path: "/colors", icon: <ColorIcon/> },
+        { text: "Categorías", path: "/categories", icon: <CategoryIcon /> },
+        { text: "Colores", path: "/colors", icon: <ColorIcon /> },
       ],
     },
     { text: "Usuarios", icon: <UsuariosIcon />, path: "/users" },

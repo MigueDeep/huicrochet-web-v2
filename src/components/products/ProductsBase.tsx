@@ -1,4 +1,11 @@
-import { Button, ButtonGroup } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import {
   Table,
   TableHeader,
@@ -8,6 +15,7 @@ import {
   TableCell,
   Tooltip,
   Chip,
+  Textarea,
 } from "@nextui-org/react";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -62,20 +70,14 @@ export const ProductsBase = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between mb-4">
-        <h4 className="text-wine">Productos base</h4>
+      <div className="text-end mb-4">
         <Button onClick={onOpen} variant="contained" color="primary">
           Añadir nuevo
         </Button>
       </div>
 
       <div className="flex flex-col gap-3">
-        <Table
-          color={"secondary"}
-          selectionMode="single"
-          defaultSelectedKeys={["2"]}
-          aria-label="Example static collection table"
-        >
+        <Table color={"secondary"} aria-label="Example static collection table">
           <TableHeader>
             {columns.map((column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -120,27 +122,33 @@ export const ProductsBase = () => {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                <p>Añadir nuevo producto base</p>
               </ModalHeader>
               <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
+                <TextField label="Producto" fullWidth />
+                <TextField
+                  id="outlined-select-currency"
+                  select
+                  label="Selecciona la categoría"
+                  defaultValue={1}
+                  helperText="Please select your currency"
+                >
+                  <MenuItem value={1}>Juegetes</MenuItem>
+                  <MenuItem value={2}>USD</MenuItem>
+                </TextField>
+                <TextField
+                  label="Precio"
+                  fullWidth
+                  placeholder="Precio del producto"
+                  type="number"
+                />
+                <TextField
+                  label="Descripción"
+                  fullWidth
+                  placeholder="Descripción del producto"
+                  multiline
+                  rows={4}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button onClick={onClose}>Cerrar</Button>
