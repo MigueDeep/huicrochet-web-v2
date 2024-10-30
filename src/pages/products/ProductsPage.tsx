@@ -12,7 +12,7 @@ export const ProductsPage = () => {
   const [view, setView] = useState("table");
   const navigate = useNavigate();
   const onCreateProduct = () => {
-    navigate("/productos/create");
+    navigate("/products/create");
   };
   return (
     <Layout title="Productos">
