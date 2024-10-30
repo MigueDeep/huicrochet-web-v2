@@ -6,6 +6,7 @@ import UserPage from "../pages/users/UserPage";
 import CategoriesPage from "../pages/categories/CategoriesPage";
 import OrdersPage from "../pages/orders/OrderPage";
 import { NotFoundPage } from "../pages/NotFound/NotFoundPage";
+import ColorsPage from "../pages/colors/ColorsPage";
 import { ProductsPage } from "../pages/products/ProductsPage";
 import { CreateProductsPage } from "../pages/products/CreateProductsPage";
 
@@ -26,8 +27,9 @@ const AppRouter = () => {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/users" element={<UserPage />} />
       <Route path="*" element={<NotFoundPage />} />
-      <Route path="/categorias" element={<CategoriesPage />} />
+      <Route path="/categories" element={<CategoriesPage />} />
       <Route path="/orders" element={<OrdersPage />} />
+      <Route path="/colors" element={<ColorsPage />} />
       <Route path="/productos/*" element={<ProductsRoutes />} />
     </Routes>
   );

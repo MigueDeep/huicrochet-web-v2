@@ -11,7 +11,7 @@ import {
   Pagination,
 } from "@nextui-org/react";
 import Avatar from "@mui/material/Avatar"; // Importación de Avatar
-import ChangeStatus from "./ChangesStatus";
+import ChangeStatus from "../common/ChangesStatus";
 import { useMemo, useState } from "react";
 
 const rows = [
@@ -95,53 +95,53 @@ export default function App() {
               total={pages}
               onChange={(page) => setPage(page)}
             />
-          </div>
-        }
-      >
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={items}>
-          {(item) => (
-            <TableRow key={item.key}>
-              {columns.map((column) => (
-                <TableCell key={column.key}>
-                  {column.key === "pic" ? (
-                    <Avatar alt={item.name} src={item.pic} />
-                  ) : column.key === "actions" ? (
-                    <Tooltip
-                      showArrow={true}
-                      content={
-                        item.status === "activo" ? "Desactivar" : "Activar"
-                      }
-                    >
-                      <span className="text-danger cursor-pointer active:opacity-50">
-                        <ChangeStatus
-                          userId={item.key}
-                          initialStatus={item.status === "activo"}
-                        />
-                      </span>
-                    </Tooltip>
-                  ) : column.key === "status" ? (
-                    <Chip
-                      className="capitalize"
-                      size="sm"
-                      variant="flat"
-                      color={item.status === "activo" ? "success" : "danger"}
-                    >
-                      {item.status}
-                    </Chip>
-                  ) : (
-                    getKeyValue(item, column.key)
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+        </div>
+      }
+    >
+      <TableHeader columns={columns}>
+        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+      </TableHeader>
+      <TableBody items={items}>
+        {(item) => (
+          <TableRow key={item.key}>
+            {columns.map((column) => (
+              <TableCell key={column.key}>
+                {column.key === "pic" ? (
+                  <Avatar alt={item.name} src={item.pic} />
+                ) : column.key === "actions" ? (
+                  <Tooltip
+                    showArrow={true}
+                    content={
+                      item.status === "activo" ? "Desactivar" : "Activar"
+                    }
+                  >
+                    <span className="text-danger cursor-pointer active:opacity-50">
+                      <ChangeStatus
+                        id={item.key}
+                        initialStatus={item.status === "activo"}
+                        type="user"
+                      />
+                    </span>
+                  </Tooltip>
+                ) : column.key === "status" ? (
+                  <Chip
+                    className="capitalize"
+                    size="sm"
+                    variant="flat"
+                    color={item.status === "activo" ? "success" : "danger"}
+                  >
+                    {item.status}
+                  </Chip>
+                ) : (
+                  getKeyValue(item, column.key)
+                )}
+              </TableCell>
+            ))}
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+          
     </>
   );
 }

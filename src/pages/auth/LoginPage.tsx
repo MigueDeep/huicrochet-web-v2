@@ -8,7 +8,7 @@ const LoginPage = () => {
         <>
             <LoginNavbar></LoginNavbar>
             <div style={styles.container}>
-                <div className="row" style={styles.row}>
+                <div className="row mt-4" style={styles.row}>
                     <div>
                         <Loginform />
                     </div>
