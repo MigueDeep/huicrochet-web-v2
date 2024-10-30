@@ -1,0 +1,10 @@
+.card-base {
+  width: 100%;
+  max-width: 120px;
+  min-width: 80px;
+  height: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #FFE0EB;
+  box-sizing: border-box;
+}
