@@ -95,9 +95,9 @@ export default function OrderDetail() {
                 </section>
 
                 {/* Datos de entrega */}
-                <section className="mt-3">
+                <section className="mt-3" style={{paddingLeft: '6rem'}}>
                   <div className="row">
-                      <div className="col-6 d-flex gap-3 justify-content-center">
+                      <div className="col-6 d-flex justify-content-center">
                         <div className="flex-grow-1">
                           <div className="d-flex gap-3 align-items-center">
                             <Avatar
@@ -125,7 +125,7 @@ export default function OrderDetail() {
                         </div>
                       </div>
 
-                      <div className="col-6 d-flex gap-3 align-items-center justify-content-center">
+                      <div className="col-6 d-flex align-items-center justify-content-center">
                         <div className="flex-grow-1">
                           <div className="d-flex gap-3 align-items-center">
                             <PedidosIconBlack />
