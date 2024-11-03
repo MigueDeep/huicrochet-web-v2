@@ -6,8 +6,9 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import "../../styles/products/products.css";
 import { IconButton } from "@mui/material";
 import { XCircleIcon } from "../../utils/icons";
+import { Button } from "@mui/material";
 
-export const ProductBaseInfo = () => {
+export const CreateItemProduct = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
@@ -29,7 +30,7 @@ export const ProductBaseInfo = () => {
           file.size / 1024 < 1024
             ? (file.size / 1024).toFixed(2) + " KB"
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        isNew: true, // Marcamos la imagen como nueva
+        isNew: true,
       }));
 
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
@@ -47,13 +48,12 @@ export const ProductBaseInfo = () => {
     }, 300);
   };
 
-  // Cambiamos `isNew` a `false` después de la primera renderización para evitar animaciones repetidas
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setImagePreviews((prevPreviews) =>
         prevPreviews.map((preview) => ({ ...preview, isNew: false }))
       );
-    }, 300); // Duración de la animación de entrada
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [imagePreviews]);
@@ -213,6 +213,12 @@ export const ProductBaseInfo = () => {
             ))}
           </div>
         </div>
+      </div>
+      <div className="text-end mt-2">
+        <Button variant="outlined" className="me-2">
+          Cancelar
+        </Button>
+        <Button variant="contained">Guardar</Button>
       </div>
     </>
   );

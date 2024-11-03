@@ -1,17 +1,17 @@
 import React from "react";
 
 interface ColorCircleProps {
-  color: string;
-  onSelect: (color: string) => void;
-  isSelected: boolean;
-  tamaño?: "small" | "medium" | "large";
+  color: string; // Obligatorio
+  onSelect?: (color: string) => void; // Opcional
+  isSelected?: boolean; // Opcional
+  tamaño?: "small" | "medium" | "large"; // Opcional
 }
 
 const ColorCircle: React.FC<ColorCircleProps> = ({
   color,
-  onSelect,
-  isSelected,
-  tamaño = "medium",
+  onSelect = () => {}, // Valor predeterminado vacío si falta
+  isSelected = false, // Valor predeterminado para isSelected
+  tamaño = "medium", // Valor predeterminado
 }) => {
   const baseSize = tamaño === "small" ? 20 : tamaño === "medium" ? 30 : 40;
   const size = isSelected ? baseSize * 1.2 : baseSize;

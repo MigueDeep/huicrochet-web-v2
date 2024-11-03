@@ -1,7 +1,7 @@
 import { Divider } from "@nextui-org/react";
 import Layout from "../../components/common/Layout";
 import { SelectProductBase } from "../../components/products/SelectProductBase";
-import { ProductBaseInfo } from "../../components/products/ProductBaseInfo";
+import { CreateItemProduct } from "../../components/products/CreateItemProduct";
 
 export const CreateProductsPage = () => {
   return (
@@ -9,7 +9,7 @@ export const CreateProductsPage = () => {
       <Layout title="Crear nuevo producto">
         <SelectProductBase />
         <Divider />
-        <ProductBaseInfo />
+        <CreateItemProduct />
       </Layout>
     </>
   );
