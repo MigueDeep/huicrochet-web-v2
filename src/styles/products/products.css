@@ -12,7 +12,7 @@
 
  .file-upload-container {
    position: relative;
-   border: 2px dashed #ccc;
+   border: 2px dashed var(--primary);
    border-radius: 8px;
    padding: 40px;
    text-align: center;
@@ -21,7 +21,7 @@
  }
 
  .file-upload-container:hover {
-   border-color: #aaa;
+   border-color:var(--primary);
  }
 
  .file-input {
@@ -44,3 +44,30 @@
  .image-preview-container img {
    border-radius: 8px;
  }
+
+.image-preview-wrapper {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.image-preview-wrapper.fade-in {
+  opacity: 0;
+  transform: scale(0.9);
+  animation: fadeIn 0.3s forwards;
+}
+
+.image-preview-wrapper.fade-out {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

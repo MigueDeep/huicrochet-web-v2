@@ -10,9 +10,10 @@ export const SelectProductBase = () => {
           <h5 className="text-2xl ">Productos base</h5>
         </div>
         <div className="flex justify-end">
-          <Button variant="contained">Añadir producto</Button>
+          <Button variant="contained">Añadir producto base</Button>
         </div>
       </div>
+      
       <div className="d-flex gap-2  mb-0">
         <Card className="max-w-[400px]">
           <CardBody className="flex gap-1">
