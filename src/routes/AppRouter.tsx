@@ -10,6 +10,7 @@ import ColorsPage from "../pages/colors/ColorsPage";
 import { ProductsPage } from "../pages/products/ProductsPage";
 import { CreateProductsPage } from "../pages/products/CreateProductsPage";
 import { ProductsBasePage } from "../pages/products/ProductsBasePage";
+import { EditProductPage } from "../pages/products/EditProductPage";
 
 const ProductsRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const ProductsRoutes = () => {
       <Route path="/" element={<ProductsPage />} />
       <Route path="create" element={<CreateProductsPage />} />
       <Route path="base" element={<ProductsBasePage />} />
+      <Route path="edit" element={<EditProductPage />} />
     </Routes>
   );
 };
