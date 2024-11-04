@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, IconButton } from "@mui/material";
 import {
   Table,
@@ -13,49 +13,37 @@ import { Chip } from "@nextui-org/react";
 import { Edit, Delete } from "@mui/icons-material";
 import EditModal from "./EditModal";
 import { CreateCategoryModal } from "./CreateCategoryModal";
-
-const rows = [
-  { key: 1, name: "Figuras", status: 1 },
-  { key: 2, name: "Decoraciones", status: 0 },
-  { key: 3, name: "Ropa", status: 1 },
-  { key: 4, name: "Muñecos", status: 0 },
-  { key: 5, name: "Juguetes", status: 1 },
-];
+import { getAllCategories } from "../../service/CategoryService";
+import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 
 const columns = [
-  {
-    key: "name",
-    label: "Categoria",
-  },
-  {
-    key: "status",
-    label: "Estado",
-  },
-  {
-    key: "actions",
-    label: "Acciones",
-  },
+  { key: "name", label: "Categoria" },
+  { key: "state", label: "Estado" },
+  { key: "actions", label: "Acciones" },
 ];
 
 const CategoriesTable = () => {
   const [openCreateModal, setopenCreateModal] = useState(false);
   const [openEditModal, setopenEditModal] = useState(false);
+  const [categories, setCategories] = useState<Datum[]>([]);
 
-  const onOpenEditModal = () => {
-    setopenEditModal(true);
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories();
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error al obtener categorías:", error);
+    }
   };
 
-  const onOpenCreateModal = () => {
-    setopenCreateModal(true);
-  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
-  const onCloseEditModal = () => {
-    setopenEditModal(false);
-  };
-
-  const onCloseCreateModal = () => {
-    setopenCreateModal(false);
-  };
+  const onOpenEditModal = () => setopenEditModal(true);
+  const onOpenCreateModal = () => setopenCreateModal(true);
+  const onCloseEditModal = () => setopenEditModal(false);
+  const onCloseCreateModal = () => setopenCreateModal(false);
 
   return (
     <>
@@ -78,9 +66,9 @@ const CategoriesTable = () => {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={rows}>
+        <TableBody items={categories}>
           {(item) => (
-            <TableRow key={item.key}>
+            <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell style={{ textAlign: "center" }}>
                   {columnKey === "actions" ? (
@@ -92,12 +80,12 @@ const CategoriesTable = () => {
                         <Delete color="error" />
                       </IconButton>
                     </>
-                  ) : columnKey === "status" ? (
+                  ) : columnKey === "state" ? (
                     <Chip
-                      color={item.status === 1 ? "success" : "danger"}
+                      color={item.state ? "success" : "danger"}
                       variant="flat"
                     >
-                      {item.status === 1 ? "Activo" : "Inactivo"}
+                      {item.state ? "Activo" : "Inactivo"}
                     </Chip>
                   ) : (
                     getKeyValue(item, columnKey)
@@ -117,6 +105,7 @@ const CategoriesTable = () => {
         isOpen={openCreateModal}
         onOpenChange={onOpenCreateModal}
         onCloseCreateModal={onCloseCreateModal}
+        fetchCategories={fetchCategories}
       />
     </>
   );
