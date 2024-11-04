@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-hot-toast";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080/api-crochet",
@@ -28,26 +27,26 @@ instance.interceptors.response.use(
   },
   (error) => {
 
-    if (error.response) {
-      const { status } = error.response;
-      if (status === 401) {
-        toast.error("El usuario no está autenticado");
-      } else if (status === 400) {
-        toast.error('Error');
-      } else if (status === 403) {
-        toast.error("No tienes permiso para acceder a esta función");
-      } else if (status === 404) {
-        toast.error("Recurso no encontrado");
-      } else if (status === 500) {
-        toast.error("Error interno del servidor");
-      } else if (status === 503) {
-        toast.error("Servicio no disponible");
-      } else {
-        toast.error("Error desconocido");
-      }
-    } else {
-      toast.error("Error de conexión");
-    }
+    // if (error.response) {
+    //   const { status } = error.response;
+    //   if (status === 401) {
+    //     toast.error("El usuario no está autenticado");
+    //   } else if (status === 400) {
+    //     toast.error('Error');
+    //   } else if (status === 403) {
+    //     toast.error("No tienes permiso para acceder a esta función");
+    //   } else if (status === 404) {
+    //     toast.error("Recurso no encontrado");
+    //   } else if (status === 500) {
+    //     toast.error("Error interno del servidor");
+    //   } else if (status === 503) {
+    //     toast.error("Servicio no disponible");
+    //   } else {
+    //     toast.error("Error desconocido");
+    //   }
+    // } else {
+    //   toast.error("Error de conexión");
+    // }
 
     return Promise.reject(error);
   }
