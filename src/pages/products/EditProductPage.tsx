@@ -6,7 +6,7 @@ import { CreateItemProduct } from "../../components/products/CreateItemProduct";
 export const EditProductPage = () => {
   return (
     <>
-      <Layout title="Crear nuevo producto">
+      <Layout title="Editar producto">
         <SelectProductBase />
         <Divider />
         <CreateItemProduct />
