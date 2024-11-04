@@ -6,7 +6,7 @@ interface LoginData {
   password: string;
 }
 
-interface tokeData {
+interface TokenData {
   token: string;
   email: string;
 }
@@ -20,17 +20,17 @@ const AuthService = {
       throw error; 
     }
   },
-};
 
-const validateToken = {
-  login: async (data: tokeData) => {
+  validateToken: async (data: TokenData) => {
     try {
       const response = await doPost("/auth/validateToken", data);
       return response.data; 
     } catch (error) {
       throw error; 
     }
-  },
+  }
+
 };
+
 
 export default AuthService;

@@ -51,6 +51,12 @@ const Sidebar = () => {
     setOpen(!open);
   };
 
+  const closeSession = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    navigate("/login");
+  };
+
   return (
     <Drawer
       sx={{
@@ -160,7 +166,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <CerrarSesionIcon />
               </ListItemIcon>
-              <ListItemText primary="Cerrar sesión" />
+              <ListItemText primary="Cerrar sesión" onClick={closeSession}/>
             </ListItemButton>
           </ListItem>
         </List>
