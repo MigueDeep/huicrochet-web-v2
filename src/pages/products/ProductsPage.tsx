@@ -23,12 +23,12 @@ export const ProductsPage = () => {
       </div>
       <div className="text-end">
         <ButtonGroup variant="bordered" aria-label="Basic button group">
-          <Tooltip content="Vista de cuadrícula">
+          <Tooltip content="Vista de lista">
             <IconButton onClick={() => setView("table")}>
               <ListIcon color={view === "table" ? "info" : "inherit"} />
             </IconButton>
           </Tooltip>
-          <Tooltip content="Vista de lista">
+          <Tooltip content="Vista de cuadicula">
             <IconButton onClick={() => setView("grid")}>
               <GridViewIcon color={view === "grid" ? "info" : "inherit"} />
             </IconButton>

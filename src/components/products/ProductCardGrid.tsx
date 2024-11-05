@@ -59,7 +59,7 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
         </CardContent>
         <CardActions>
           <Button variant="contained" onClick={onEdit}>
-            Editar
+            Ver detalles
           </Button>
         </CardActions>
       </Card>

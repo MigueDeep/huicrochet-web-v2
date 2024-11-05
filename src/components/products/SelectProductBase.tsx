@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { Card, CardBody, CardFooter, Divider } from "@nextui-org/react";
+import { Card, CardBody, Divider } from "@nextui-org/react";
 import { ProductosIconBlack } from "../../utils/icons";
 
 export const SelectProductBase = () => {
@@ -13,7 +13,7 @@ export const SelectProductBase = () => {
           <Button variant="contained">Añadir producto base</Button>
         </div>
       </div>
-      
+
       <div className="d-flex gap-2  mb-0">
         <Card className="max-w-[400px]">
           <CardBody className="flex gap-1">
