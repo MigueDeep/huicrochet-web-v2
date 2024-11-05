@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Switch } from "@mui/material";
 import {
   Table,
   TableHeader,
@@ -10,11 +10,16 @@ import {
   getKeyValue,
 } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import EditModal from "./EditModal";
 import { CreateCategoryModal } from "./CreateCategoryModal";
-import { getAllCategories } from "../../service/CategoryService";
+import {
+  getAllCategories,
+  updateCategoryStatus,
+} from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
+
+const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
   { key: "name", label: "Categoria" },
@@ -26,6 +31,7 @@ const CategoriesTable = () => {
   const [openCreateModal, setopenCreateModal] = useState(false);
   const [openEditModal, setopenEditModal] = useState(false);
   const [categories, setCategories] = useState<Datum[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -40,10 +46,31 @@ const CategoriesTable = () => {
     fetchCategories();
   }, []);
 
-  const onOpenEditModal = () => setopenEditModal(true);
+  const onOpenEditModal = (category: Datum) => {
+    setSelectedCategory(category);
+    setopenEditModal(true);
+  };
+
+  const onCloseEditModal = () => {
+    setopenEditModal(false);
+    setSelectedCategory(null);
+  };
+
   const onOpenCreateModal = () => setopenCreateModal(true);
-  const onCloseEditModal = () => setopenEditModal(false);
   const onCloseCreateModal = () => setopenCreateModal(false);
+
+  const toggleCategoryStatus = async (category: Datum) => {
+    try {
+      // Cambiar el estado al opuesto y actualizar en la base de datos
+      const newState = !category.state;
+      await updateCategoryStatus(category.id, newState);
+
+      // Refrescar la lista de categorías
+      fetchCategories();
+    } catch (error) {
+      console.error("Error al actualizar el estado de la categoría:", error);
+    }
+  };
 
   return (
     <>
@@ -73,12 +100,17 @@ const CategoriesTable = () => {
                 <TableCell style={{ textAlign: "center" }}>
                   {columnKey === "actions" ? (
                     <>
-                      <IconButton aria-label="edit" onClick={onOpenEditModal}>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => onOpenEditModal(item)}
+                      >
                         <Edit color="info" />
                       </IconButton>
-                      <IconButton aria-label="delete">
-                        <Delete color="error" />
-                      </IconButton>
+                      <Switch
+                        {...label}
+                        checked={item.state} // Estado actual de la categoría
+                        onChange={() => toggleCategoryStatus(item)} // Cambiar el estado al hacer clic
+                      />
                     </>
                   ) : columnKey === "state" ? (
                     <Chip
@@ -98,8 +130,9 @@ const CategoriesTable = () => {
       </Table>
       <EditModal
         isOpen={openEditModal}
-        onOpenChange={onOpenEditModal}
         onCloseEditModal={onCloseEditModal}
+        selectedCategory={selectedCategory}
+        fetchCategories={fetchCategories}
       />
       <CreateCategoryModal
         isOpen={openCreateModal}
