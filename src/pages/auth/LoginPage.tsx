@@ -1,14 +1,33 @@
-
-import Loginform from "../../components/auth/LoginForm"
-import LoginNavbar from "../../components/common/LoginNavbar"
-
+import { useState, useEffect } from 'react';
+import { Progress } from "@nextui-org/react";
+import Loginform from "../../components/auth/LoginForm";
+import LoginNavbar from "../../components/common/LoginNavbar";
 
 const LoginPage = () => {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (isLoading) {
+        <Progress
+        size="sm"
+        isIndeterminate
+        aria-label="Loading..."
+        className="max-w-md"
+      />
+    }
+
     return (
         <>
-            <LoginNavbar></LoginNavbar>
+            <LoginNavbar />
             <div style={styles.container}>
-                <div className="row" style={styles.row}>
+                <div className="row mt-4" style={styles.row}>
                     <div>
                         <Loginform />
                     </div>
@@ -18,11 +37,10 @@ const LoginPage = () => {
                 </div>
             </div>
         </>
-
-    )
+    );
 }
 
-export default LoginPage
+export default LoginPage;
 
 const styles = {
     container: {
@@ -35,4 +53,4 @@ const styles = {
         gridTemplateColumns: '0.6fr 1fr',
         gap: '1rem'
     },
-}
+};

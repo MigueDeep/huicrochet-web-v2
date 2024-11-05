@@ -1,4 +1,3 @@
-import React, { useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -10,11 +9,10 @@ import {
   Tooltip,
   Chip,
   Pagination,
-  Button,
 } from "@nextui-org/react";
-import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import Avatar from "@mui/material/Avatar"; // Importación de Avatar
-import ChangeStatus from "./ChangesStatus";
+import ChangeStatus from "../common/ChangesStatus";
+import { useMemo, useState } from "react";
 
 const rows = [
   {
@@ -80,17 +78,20 @@ export default function App() {
 
   return (
     <>
-   
-    <Table
-      aria-label="Example table with dynamic content"
-      bottomContent={
-        <div className="
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div
+            className="
           flex w-full justify-center mt-4 pb-4 border-b border-gray-200
-          ">
-            <Pagination 
-              loop showControls 
-              color="success" 
-              initialPage={1}  page={page}
+          "
+          >
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
               total={pages}
               onChange={(page) => setPage(page)}
             />
@@ -116,8 +117,9 @@ export default function App() {
                   >
                     <span className="text-danger cursor-pointer active:opacity-50">
                       <ChangeStatus
-                        userId={item.key}
+                        id={item.key}
                         initialStatus={item.status === "activo"}
+                        type="user"
                       />
                     </span>
                   </Tooltip>
@@ -139,6 +141,7 @@ export default function App() {
         )}
       </TableBody>
     </Table>
+          
     </>
   );
 }
