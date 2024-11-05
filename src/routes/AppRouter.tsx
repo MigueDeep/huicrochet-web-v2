@@ -7,6 +7,21 @@ import CategoriesPage from "../pages/categories/CategoriesPage";
 import OrdersPage from "../pages/orders/OrderPage";
 import { NotFoundPage } from "../pages/NotFound/NotFoundPage";
 import ColorsPage from "../pages/colors/ColorsPage";
+import { ProductsPage } from "../pages/products/ProductsPage";
+import { CreateProductsPage } from "../pages/products/CreateProductsPage";
+import { ProductsBasePage } from "../pages/products/ProductsBasePage";
+import { EditProductPage } from "../pages/products/EditProductPage";
+
+const ProductsRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<ProductsPage />} />
+      <Route path="create" element={<CreateProductsPage />} />
+      <Route path="base" element={<ProductsBasePage />} />
+      <Route path="edit" element={<EditProductPage />} />
+    </Routes>
+  );
+};
 
 const AppRouter = () => {
   return (
@@ -19,6 +34,7 @@ const AppRouter = () => {
       <Route path="/categories" element={<CategoriesPage />} />
       <Route path="/orders" element={<OrdersPage />} />
       <Route path="/colors" element={<ColorsPage />} />
+      <Route path="/products/*" element={<ProductsRoutes />} />
     </Routes>
   );
 };
