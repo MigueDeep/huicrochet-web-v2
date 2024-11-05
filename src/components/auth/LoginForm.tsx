@@ -13,6 +13,7 @@ import * as Yup from "yup";
 import React, { useState } from "react";
 import AuthService from "../../service/AuthService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -29,6 +30,8 @@ const Loginform = () => {
     event.preventDefault();
   };
 
+  const navigate = useNavigate();
+  
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -38,8 +41,10 @@ const Loginform = () => {
     onSubmit: async (values) => {
       try {
         const response = await AuthService.login(values);
-        localStorage.setItem("token", response.token); 
+        localStorage.setItem("token", response.data.token); 
+        localStorage.setItem("email", response.data.user.email); 
         toast.success("Inicio de sesión exitoso!"); 
+        navigate("/dashboard");
       } catch (error) {
         console.log('Error desde form',error);
         toast.error("Error al iniciar sesión. Intenta nuevamente."); 
@@ -100,9 +105,7 @@ const Loginform = () => {
           </FormControl>
 
           <FormControl sx={{ width: "100%" }} variant="outlined" className="mt-4">
-            <Button sx={{ p: 1.5 }} variant="contained" type="submit" onClick={
-                () => formik.handleSubmit()
-            }>
+            <Button sx={{ p: 1.5 }} variant="contained" type="submit">
               Iniciar sesión
             </Button>
           </FormControl>
