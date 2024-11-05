@@ -1,0 +1,73 @@
+.card-base {
+  width: 100%;
+  max-width: 120px;
+  min-width: 80px;
+  height: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #FFE0EB;
+  box-sizing: border-box;
+}
+
+
+ .file-upload-container {
+   position: relative;
+   border: 2px dashed var(--primary);
+   border-radius: 8px;
+   padding: 40px;
+   text-align: center;
+   cursor: pointer;
+   transition: border-color 0.3s ease;
+ }
+
+ .file-upload-container:hover {
+   border-color:var(--primary);
+ }
+
+ .file-input {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   opacity: 0;
+   cursor: pointer;
+ }
+
+ .file-upload-content {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .image-preview-container img {
+   border-radius: 8px;
+ }
+
+.image-preview-wrapper {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.image-preview-wrapper.fade-in {
+  opacity: 0;
+  transform: scale(0.9);
+  animation: fadeIn 0.3s forwards;
+}
+
+.image-preview-wrapper.fade-out {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
