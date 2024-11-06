@@ -18,6 +18,7 @@ import {
   updateCategoryStatus,
 } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
+import toast from "react-hot-toast";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -64,9 +65,8 @@ const CategoriesTable = () => {
       // Cambiar el estado al opuesto y actualizar en la base de datos
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
-
-      // Refrescar la lista de categorías
       fetchCategories();
+      toast.success('Estado de la categoría actualizado correctamente');
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
     }

@@ -29,7 +29,8 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
+  const [openProductos, setOpenProductos] = useState(false);
+  const [openCatalogos, setOpenCatalogos] = useState(false);
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
@@ -59,8 +60,12 @@ const Sidebar = () => {
 
   const navigateTo = (path: string) => navigate(path);
 
-  const handleClick = () => {
-    setOpen(!open);
+  const handleProductosClick = () => {
+    setOpenProductos(!openProductos);
+  };
+
+  const handleCatalogosClick = () => {
+    setOpenCatalogos(!openCatalogos);
   };
 
   const closeSession = () => {
@@ -106,13 +111,35 @@ const Sidebar = () => {
                 {item.children ? (
                   <>
                     <ListItem disablePadding>
-                      <ListItemButton onClick={handleClick}>
+                      <ListItemButton
+                        onClick={
+                          item.text === "Productos"
+                            ? handleProductosClick
+                            : handleCatalogosClick
+                        }
+                      >
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {(
+                          item.text === "Productos"
+                            ? openProductos
+                            : openCatalogos
+                        ) ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
                       </ListItemButton>
                     </ListItem>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={
+                        item.text === "Productos"
+                          ? openProductos
+                          : openCatalogos
+                      }
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <List component="div" disablePadding>
                         {item.children.map((child) => (
                           <ListItem
@@ -178,7 +205,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <CerrarSesionIcon />
               </ListItemIcon>
-              <ListItemText primary="Cerrar sesión" onClick={closeSession}/>
+              <ListItemText primary="Cerrar sesión" onClick={closeSession} />
             </ListItemButton>
           </ListItem>
         </List>
