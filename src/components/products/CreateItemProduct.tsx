@@ -1,19 +1,45 @@
 import TextField from "@mui/material/TextField";
-import { Divider } from "@nextui-org/react";
+import { Divider, Progress } from "@nextui-org/react";
 import ColorCircle from "../common/ColorCircle";
 import { useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import "../../styles/products/products.css";
-import { IconButton } from "@mui/material";
-import { XCircleIcon } from "../../utils/icons";
-import { Button } from "@mui/material";
+import { IconButton, Button, InputAdornment } from "@mui/material";
+import {
+  CategoriasIconBlack,
+  HiloIConGary,
+  StockIcon,
+  XCircleIcon,
+} from "../../utils/icons";
+import { Product } from "./ProductBaseGrid";
+interface CreateItemProductProps {
+  selectedProduct: Product | null;
+}
 
-export const CreateItemProduct = () => {
+export const CreateItemProduct = ({
+  selectedProduct,
+}: CreateItemProductProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
   >([]);
   const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+  const [productDetails, setProductDetails] = useState({
+    name: "",
+    category: "",
+    description: "",
+    price: "",
+  });
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setValue((v) => (v >= 100 ? 100 : v + 10));
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
@@ -62,43 +88,63 @@ export const CreateItemProduct = () => {
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
   };
-
+  useEffect(() => {
+    if (selectedProduct) {
+      setProductDetails({
+        name: selectedProduct.title,
+        category: selectedProduct.category,
+        description: selectedProduct.description,
+        price: selectedProduct.price.toString(),
+      });
+    }
+  }, [selectedProduct]);
   return (
     <>
       <h5 className="text-2xl">Detalles de producto base</h5>
       <div className="row">
         <div className="col-12 col-md-8">
-          {/* Campos de entrada de información del producto */}
           <div className="mb-3">
             <TextField
               label="Nombre del producto"
               variant="outlined"
-              InputProps={{
-                readOnly: true,
-              }}
-              defaultValue={"Producto de prueba"}
+              InputProps={{ readOnly: true }}
+              value={productDetails.name}
               fullWidth
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <HiloIConGary />
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </div>
           <div className="mb-3">
             <TextField
               label="Categoria"
               variant="outlined"
-              InputProps={{
-                readOnly: true,
-              }}
-              defaultValue={"Categoria de prueba"}
+              InputProps={{ readOnly: true }}
+              value={productDetails.category}
               fullWidth
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CategoriasIconBlack />
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </div>
           <div className="mb-3">
             <TextField
               label="Descripcion"
               variant="outlined"
-              InputProps={{
-                readOnly: true,
-              }}
-              defaultValue={"Producto de prueba"}
+              InputProps={{ readOnly: true }}
+              value={productDetails.description}
               rows={8}
               multiline
               fullWidth
@@ -108,11 +154,18 @@ export const CreateItemProduct = () => {
             <TextField
               label="Precio"
               variant="outlined"
-              InputProps={{
-                readOnly: true,
-              }}
-              defaultValue={"$100"}
+              InputProps={{ readOnly: true }}
+              value={productDetails.price}
               fullWidth
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AttachMoneyOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </div>
           <Divider />
@@ -123,6 +176,15 @@ export const CreateItemProduct = () => {
               variant="outlined"
               type="number"
               fullWidth
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <StockIcon />
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </div>
           <p>Selecciona el color</p>
@@ -156,6 +218,7 @@ export const CreateItemProduct = () => {
         </div>
 
         <div className="col-12 col-md-4">
+          <p>Imagen del item</p>
           <div className="file-upload-container">
             <label htmlFor="file-upload" className="file-upload-label">
               Subir imagen
@@ -208,6 +271,14 @@ export const CreateItemProduct = () => {
                     border: "1px solid #ddd",
                     padding: "2px",
                   }}
+                />
+                <Progress
+                  aria-label="Downloading..."
+                  size="sm"
+                  value={value}
+                  color="primary"
+                  showValueLabel={true}
+                  className="max-w-md"
                 />
               </div>
             ))}

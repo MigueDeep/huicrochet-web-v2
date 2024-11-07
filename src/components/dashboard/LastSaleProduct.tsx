@@ -1,5 +1,4 @@
 import React from "react";
-import { UsersIcon } from "../../utils/icons";
 import { Chip } from "@nextui-org/react";
 import ColorCircle from "../common/ColorCircle";
 
