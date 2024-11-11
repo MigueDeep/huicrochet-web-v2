@@ -17,6 +17,7 @@ import {
 } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";
 import { Edit } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 import EditModal from "./EditModal";
 import { CreateCategoryModal } from "./CreateCategoryModal";
 import {
@@ -73,7 +74,7 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async (category: Datum) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
@@ -82,7 +83,7 @@ const CategoriesTable = () => {
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -95,7 +96,11 @@ const CategoriesTable = () => {
           padding: "1rem 0",
         }}
       >
-        <Button variant="contained" onClick={onOpenCreateModal}>
+        <Button
+          variant="contained"
+          onClick={onOpenCreateModal}
+          startIcon={<AddIcon />}
+        >
           Agregar Categoría
         </Button>
       </div>

@@ -19,6 +19,7 @@ import CreateProductBaseModal from "./CreateProductBaseModal";
 import EditProductBaseModal from "./EditProductBaseModal";
 import { useState } from "react";
 import { ProductCommentsModal } from "./ProductCommentsModal";
+import AddIcon from "@mui/icons-material/Add";
 
 const columns = [
   { key: "name", label: "Producto" },
@@ -73,7 +74,12 @@ export const ProductsBase = () => {
   return (
     <>
       <div className="text-end mb-4">
-        <Button onClick={onOpenCreateModal} variant="contained" color="primary">
+        <Button
+          startIcon={<AddIcon />}
+          onClick={onOpenCreateModal}
+          variant="contained"
+          color="primary"
+        >
           Añadir nuevo
         </Button>
       </div>

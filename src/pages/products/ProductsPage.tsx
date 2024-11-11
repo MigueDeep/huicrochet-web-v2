@@ -7,6 +7,7 @@ import ListIcon from "@mui/icons-material/List";
 import { ProductsGrid } from "../../components/products/ProductsGrid";
 import { ProductsTable } from "../../components/products/ProductsTable";
 import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 export const ProductsPage = () => {
   const [view, setView] = useState("table");
@@ -17,7 +18,12 @@ export const ProductsPage = () => {
   return (
     <Layout title="Productos">
       <div className="flex justify-end">
-        <Button onClick={onCreateProduct} variant="contained" color="primary">
+        <Button
+          startIcon={<AddIcon />}
+          onClick={onCreateProduct}
+          variant="contained"
+          color="primary"
+        >
           Crear producto
         </Button>
       </div>
