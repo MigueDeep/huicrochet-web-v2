@@ -1,10 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  InputAdornment,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Button, ButtonGroup, InputAdornment, TextField } from "@mui/material";
 import {
   Table,
   TableHeader,
@@ -19,16 +13,13 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import "../../styles/products/products.css";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@nextui-org/react";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import CreateProductBaseModal from "./CreateProductBaseModal";
+import EditProductBaseModal from "./EditProductBaseModal";
+import { useState } from "react";
+import { ProductCommentsModal } from "./ProductCommentsModal";
+
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripcción" },
@@ -64,19 +55,31 @@ const rows = [
     status: 0,
   },
 ];
+
 export const ProductsBase = () => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openCommentsModal, setOpenCommentsModal] = useState(false);
+
+  const onOpenCreateModal = () => setOpenCreateModal(true);
+  const onCloseCreateModal = () => setOpenCreateModal(false);
+
+  const onOpenEditModal = () => setOpenEditModal(true);
+  const onCloseEditModal = () => setOpenEditModal(false);
+
+  const onOpenCommentsModal = () => setOpenCommentsModal(true);
+  const onCloseCommentsModal = () => setOpenCommentsModal(false);
 
   return (
     <>
       <div className="text-end mb-4">
-        <Button onClick={onOpen} variant="contained" color="primary">
+        <Button onClick={onOpenCreateModal} variant="contained" color="primary">
           Añadir nuevo
         </Button>
       </div>
       <div className="col-6 mb-2">
         <TextField
-          label="Busqueda"
+          label="Búsqueda"
           placeholder="Ingresa el nombre del producto base"
           variant="outlined"
           fullWidth
@@ -117,12 +120,12 @@ export const ProductsBase = () => {
                 <TableCell>
                   <ButtonGroup>
                     <Tooltip content="Ver comentarios">
-                      <IconButton>
+                      <IconButton onClick={onOpenCommentsModal}>
                         <ModeCommentOutlinedIcon />
                       </IconButton>
                     </Tooltip>
                     <Tooltip content="Editar">
-                      <IconButton>
+                      <IconButton onClick={onOpenEditModal}>
                         <EditIcon />
                       </IconButton>
                     </Tooltip>
@@ -138,49 +141,20 @@ export const ProductsBase = () => {
           </TableBody>
         </Table>
       </div>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                <p>Añadir nuevo producto base</p>
-              </ModalHeader>
-              <ModalBody>
-                <TextField label="Producto" fullWidth />
-                <TextField
-                  id="outlined-select-currency"
-                  select
-                  label="Selecciona la categoría"
-                  defaultValue={1}
-                  helperText="Please select your currency"
-                >
-                  <MenuItem value={1}>Juegetes</MenuItem>
-                  <MenuItem value={2}>USD</MenuItem>
-                </TextField>
-                <TextField
-                  label="Precio"
-                  fullWidth
-                  placeholder="Precio del producto"
-                  type="number"
-                />
-                <TextField
-                  label="Descripción"
-                  fullWidth
-                  placeholder="Descripción del producto"
-                  multiline
-                  rows={4}
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button onClick={onClose}>Cerrar</Button>
-                <Button variant="contained" onClick={onClose}>
-                  Guardar
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+
+      <CreateProductBaseModal
+        isOpen={openCreateModal}
+        onOpenChange={onCloseCreateModal}
+      />
+      <EditProductBaseModal
+        isOpen={openEditModal}
+        onOpenChange={onCloseEditModal}
+      />
+
+      <ProductCommentsModal
+        isOpen={openCommentsModal}
+        onOpenChange={onCloseCommentsModal}
+      />
     </>
   );
 };
