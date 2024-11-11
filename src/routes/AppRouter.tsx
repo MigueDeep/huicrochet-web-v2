@@ -13,7 +13,6 @@ import { CreateProductsPage } from "../pages/products/CreateProductsPage";
 import { ProductsBasePage } from "../pages/products/ProductsBasePage";
 import { EditProductPage } from "../pages/products/EditProductPage";
 
-
 const AppRouter = () => {
   return (
     <Routes>
@@ -21,7 +20,7 @@ const AppRouter = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="*" element={<NotFoundPage />} />
 
-      <Route element={<ProtectedRoute allowedRole="ROLE_Admin"/>}>
+      <Route element={<ProtectedRoute allowedRole="ROLE_Admin" />}>
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/users" element={<UserPage />} />
@@ -31,9 +30,8 @@ const AppRouter = () => {
         <Route path="/products/create" element={<CreateProductsPage />} />
         <Route path="/products/base" element={<ProductsBasePage />} />
         <Route path="/products/edit" element={<EditProductPage />} />
+
       </Route>
-
-
     </Routes>
   );
 };

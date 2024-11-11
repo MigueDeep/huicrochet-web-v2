@@ -14,11 +14,12 @@ import {
 import Avatar from "@mui/material/Avatar"; // Importación de Avatar
 import { useMemo, useState } from "react";
 import ColorCircle from "../common/ColorCircle";
-import { IconButton } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import SearchIcon from '@mui/icons-material/Search';
 const columns = [
   { key: "image", label: "Imagen" },
   { key: "name", label: "Nombre" },
@@ -122,6 +123,24 @@ export const ProductsTable = () => {
   }, [page]);
 
   return (
+    <>
+    <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre del producto"
+          variant="outlined"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
     <Table
       aria-label="Example table with dynamic content"
       bottomContent={
@@ -134,10 +153,10 @@ export const ProductsTable = () => {
             page={page}
             total={pages}
             onChange={(page) => setPage(page)}
-          />
+            />
         </div>
       }
-    >
+      >
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
@@ -153,8 +172,8 @@ export const ProductsTable = () => {
               } else if (column.key === "status") {
                 cellContent = (
                   <Chip
-                    color={item.status === 1 ? "success" : "danger"}
-                    variant="flat"
+                  color={item.status === 1 ? "success" : "danger"}
+                  variant="flat"
                   >
                     {item.status === 1 ? "Disponible" : "No disponible"}
                   </Chip>
@@ -188,5 +207,6 @@ export const ProductsTable = () => {
         )}
       </TableBody>
     </Table>
+        </>
   );
 };

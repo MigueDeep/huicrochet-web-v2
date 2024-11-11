@@ -1,4 +1,6 @@
 import { ProductCardGrid } from "./ProductCardGrid";
+import { InputAdornment, TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 const products = [
   {
@@ -72,7 +74,7 @@ const products = [
     description: "El perro mas fabuloso naranja",
     category: "Jugetes",
     quantity: 67,
-        status: 1,
+    status: 1,
 
     price: 230.0,
     colors: ["pink", "blue", "green"],
@@ -82,12 +84,31 @@ const products = [
 
 export const ProductsGrid = () => {
   return (
-    <div className="row text-center">
-      {products.map((product) => (
-        <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
-          <ProductCardGrid {...product} />
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre del producto"
+          variant="outlined"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
+      <div className="row text-center">
+        {products.map((product) => (
+          <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
+            <ProductCardGrid {...product} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };

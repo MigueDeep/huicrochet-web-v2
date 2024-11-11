@@ -38,12 +38,12 @@ const Sidebar = () => {
       text: "Productos",
       icon: <ProductosIcon />,
       children: [
-        { text: "Productos", path: "/products", icon: <HiloICon /> },
         {
           text: "Producto base",
           path: "/products/base",
           icon: <BaseProductIcon />,
         },
+        { text: "Productos", path: "/products", icon: <HiloICon /> },
       ],
     },
     {

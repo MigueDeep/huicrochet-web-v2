@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import {
   Modal,
@@ -11,6 +12,8 @@ import * as Yup from "yup";
 import { updateCategory } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import toast from "react-hot-toast";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 
 interface EditModalProps {
   isOpen: boolean;
@@ -35,6 +38,8 @@ const EditModal = ({
   selectedCategory,
   fetchCategories,
 }: EditModalProps) => {
+  const [loading, setLoading] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       name: selectedCategory ? selectedCategory.name : "",
@@ -43,6 +48,7 @@ const EditModal = ({
     validationSchema,
     onSubmit: async (values) => {
       if (selectedCategory) {
+        setLoading(true); // Activar el loader al iniciar la actualización
         try {
           await updateCategory(
             { name: values.name.trim(), state: selectedCategory.state },
@@ -53,6 +59,8 @@ const EditModal = ({
           await fetchCategories();
         } catch (error) {
           console.error("Error al actualizar la categoría", error);
+        } finally {
+          setLoading(false); // Desactivar el loader después de la actualización
         }
       }
     },
@@ -62,33 +70,50 @@ const EditModal = ({
     <Modal isOpen={isOpen} onOpenChange={onCloseEditModal} hideCloseButton>
       <ModalContent>
         <ModalHeader>Editar Categoría</ModalHeader>
-        <form onSubmit={formik.handleSubmit}>
-          <ModalBody>
-            <TextField
-              label="Categoria"
-              fullWidth
-              placeholder="Ingrese el nombre de la categoría"
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "2rem 0",
+            }}
+          >
+            <Lottie
+              animationData={animationData}
+              style={{ width: 150, height: 150 }}
+              loop={true}
             />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={onCloseEditModal}
-            >
-              Cancelar
-            </Button>
-            <Button variant="contained" type="submit">
-              Confirmar
-            </Button>
-          </ModalFooter>
-        </form>
+          </div>
+        ) : (
+          <form onSubmit={formik.handleSubmit}>
+            <ModalBody>
+              <TextField
+                label="Categoria"
+                fullWidth
+                placeholder="Ingrese el nombre de la categoría"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={onCloseEditModal}
+              >
+                Cancelar
+              </Button>
+              <Button variant="contained" type="submit">
+                Confirmar
+              </Button>
+            </ModalFooter>
+          </form>
+        )}
       </ModalContent>
     </Modal>
   );

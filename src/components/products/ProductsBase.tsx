@@ -1,9 +1,8 @@
 import {
   Button,
   ButtonGroup,
-  InputLabel,
+  InputAdornment,
   MenuItem,
-  Select,
   TextField,
 } from "@mui/material";
 import {
@@ -15,7 +14,6 @@ import {
   TableCell,
   Tooltip,
   Chip,
-  Textarea,
 } from "@nextui-org/react";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,7 +27,8 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-
+import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
+import SearchIcon from "@mui/icons-material/Search";
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripcción" },
@@ -75,6 +74,23 @@ export const ProductsBase = () => {
           Añadir nuevo
         </Button>
       </div>
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre del producto base"
+          variant="outlined"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
 
       <div className="flex flex-col gap-3">
         <Table color={"secondary"} aria-label="Example static collection table">
@@ -100,6 +116,11 @@ export const ProductsBase = () => {
                 </TableCell>
                 <TableCell>
                   <ButtonGroup>
+                    <Tooltip content="Ver comentarios">
+                      <IconButton>
+                        <ModeCommentOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip content="Editar">
                       <IconButton>
                         <EditIcon />

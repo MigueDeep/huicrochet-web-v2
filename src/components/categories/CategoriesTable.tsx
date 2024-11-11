@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button, IconButton, Switch } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Switch,
+  TextField,
+} from "@mui/material";
 import {
   Table,
   TableHeader,
@@ -19,7 +25,9 @@ import {
 } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import toast from "react-hot-toast";
-
+import SearchIcon from "@mui/icons-material/Search";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
@@ -33,13 +41,17 @@ const CategoriesTable = () => {
   const [openEditModal, setopenEditModal] = useState(false);
   const [categories, setCategories] = useState<Datum[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchCategories = async () => {
     try {
       const response = await getAllCategories();
       setCategories(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,14 +73,16 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async (category: Datum) => {
+    setLoading(true); 
     try {
-      // Cambiar el estado al opuesto y actualizar en la base de datos
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
       fetchCategories();
-      toast.success('Estado de la categoría actualizado correctamente');
+      toast.success("Estado de la categoría actualizado correctamente");
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -85,49 +99,84 @@ const CategoriesTable = () => {
           Agregar Categoría
         </Button>
       </div>
-      <Table aria-label="Example table with dynamic content">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key} style={{ textAlign: "center" }}>
-              {column.label}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={categories}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell style={{ textAlign: "center" }}>
-                  {columnKey === "actions" ? (
-                    <>
-                      <IconButton
-                        aria-label="edit"
-                        onClick={() => onOpenEditModal(item)}
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre de la categoría"
+          variant="outlined"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
+
+      {loading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Lottie
+            animationData={animationData}
+            style={{ width: 200, height: 200 }}
+            loop={true}
+          />
+        </div>
+      ) : (
+        <Table aria-label="Example table with dynamic content">
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.key} style={{ textAlign: "center" }}>
+                {column.label}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={categories}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell style={{ textAlign: "center" }}>
+                    {columnKey === "actions" ? (
+                      <>
+                        <IconButton
+                          aria-label="edit"
+                          onClick={() => onOpenEditModal(item)}
+                        >
+                          <Edit color="info" />
+                        </IconButton>
+                        <Switch
+                          {...label}
+                          checked={item.state}
+                          onChange={() => toggleCategoryStatus(item)}
+                        />
+                      </>
+                    ) : columnKey === "state" ? (
+                      <Chip
+                        color={item.state ? "success" : "danger"}
+                        variant="flat"
                       >
-                        <Edit color="info" />
-                      </IconButton>
-                      <Switch
-                        {...label}
-                        checked={item.state} // Estado actual de la categoría
-                        onChange={() => toggleCategoryStatus(item)} // Cambiar el estado al hacer clic
-                      />
-                    </>
-                  ) : columnKey === "state" ? (
-                    <Chip
-                      color={item.state ? "success" : "danger"}
-                      variant="flat"
-                    >
-                      {item.state ? "Activo" : "Inactivo"}
-                    </Chip>
-                  ) : (
-                    getKeyValue(item, columnKey)
-                  )}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                        {item.state ? "Activo" : "Inactivo"}
+                      </Chip>
+                    ) : (
+                      getKeyValue(item, columnKey)
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+
       <EditModal
         isOpen={openEditModal}
         onCloseEditModal={onCloseEditModal}
