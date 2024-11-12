@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Button,
   ButtonGroup,
@@ -14,6 +14,7 @@ import {
   TableRow,
   TableCell,
   Tooltip,
+  Pagination,
   Chip,
 } from "@nextui-org/react";
 import AddIcon from "@mui/icons-material/Add";
@@ -39,6 +40,7 @@ const columns = [
   { key: "status", label: "Estado" },
   { key: "actions", label: "Acciones" },
 ];
+const rowsPerPage = 10; // Filas por página
 
 export const ProductsBase = () => {
   const [products, setProducts] = useState<Datum[]>([]);
@@ -46,6 +48,14 @@ export const ProductsBase = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+
+  const pages = Math.ceil(products.length / rowsPerPage);
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return products.slice(start, end);
+  }, [page, products]);
 
   const fetchProducts = async () => {
     try {
@@ -125,14 +135,31 @@ export const ProductsBase = () => {
           <Table
             color={"secondary"}
             aria-label="Example static collection table"
+            bottomContent={
+              <div
+                className="
+          flex w-full justify-center mt-4 pb-4 border-b border-gray-200
+          "
+              >
+                <Pagination
+                  loop
+                  showControls
+                  color="success"
+                  initialPage={1}
+                  page={page}
+                  total={pages}
+                  onChange={(page) => setPage(page)}
+                />
+              </div>
+            }
           >
             <TableHeader>
               {columns.map((column) => (
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               ))}
             </TableHeader>
-            <TableBody>
-              {products.map((product) => (
+            <TableBody items={items}>
+              {items.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.productName}</TableCell>
                   <TableCell>{product.description}</TableCell>
