@@ -96,6 +96,13 @@ export const CreateItemProduct = ({
         description: selectedProduct.description,
         price: selectedProduct.price.toString(),
       });
+    } else {
+      setProductDetails({
+        name: "",
+        category: "",
+        description: "",
+        price: "",
+      });
     }
   }, [selectedProduct]);
   return (

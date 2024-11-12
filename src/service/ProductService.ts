@@ -20,6 +20,15 @@ export const ProductServices = {
     } catch (error) {
       throw error;
     }
+  },
+
+  getAllActive: async (): Promise<IProduct> => {
+    try {
+      const response = await doGet("/product/getActiveProducts");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
 }

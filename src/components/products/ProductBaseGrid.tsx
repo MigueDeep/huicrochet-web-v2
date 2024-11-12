@@ -1,8 +1,12 @@
 import { ProductCardBase } from "./ProductCardBase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import "../../styles/products/products.css";
+import { Datum } from "../../interfaces/products/ProductsIterface";
+import { ProductServices } from "../../service/ProductService";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 
 export interface Product {
   title: string;
@@ -18,20 +22,23 @@ interface ProductBaseGridProps {
 export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const products: Product[] = [
-    {
-      title: "Producto base 1",
-      category: "Categoría 1",
-      price: 100,
-      description: "Descripción del producto base 1",
-    },
-    {
-      title: "Producto base 2",
-      category: "Categoría 2",
-      price: 200,
-      description: "Descripción del producto base 2",
-    },
-  ];
+  const [products, setProducts] = useState<Datum[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await ProductServices.getAllActive();
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleSelectProduct = (product: Product) => {
     const newSelection =
@@ -59,16 +66,39 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
           }}
         />
       </div>
-      <div className="product-base-grid">
-        {products.map((product) => (
-          <ProductCardBase
-            key={product.title}
-            title={product.title}
-            onSelect={() => handleSelectProduct(product)}
-            isSelected={selectedProduct?.title === product.title}
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Lottie
+            animationData={animationData}
+            style={{ width: 150, height: 150 }}
+            loop={true}
           />
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="product-base-grid">
+          {products.map((product) => (
+            <ProductCardBase
+              key={product.id}
+              title={product.productName}
+              onSelect={() =>
+                handleSelectProduct({
+                  title: product.productName,
+                  category: product.categories[0].name,
+                  price: product.price,
+                  description: product.description,
+                })
+              }
+              isSelected={selectedProduct?.title === product.productName}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
