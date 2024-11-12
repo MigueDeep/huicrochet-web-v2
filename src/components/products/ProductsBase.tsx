@@ -22,14 +22,15 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json"; 
+import animationData from "../../utils/animation.json";
 import "../../styles/products/products.css";
 import EditProductBaseModal from "./EditProductBaseModal";
 import { ProductCommentsModal } from "./ProductCommentsModal";
 import { Category, Datum } from "../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../service/ProductService";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
+import DoneIcon from "@mui/icons-material/Done";
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripción" },
@@ -41,7 +42,7 @@ const columns = [
 
 export const ProductsBase = () => {
   const [products, setProducts] = useState<Datum[]>([]);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const navigate = useNavigate();
@@ -57,6 +58,18 @@ export const ProductsBase = () => {
     }
   };
 
+  const toggleProductStatus = async (product: Datum) => {
+    try {
+      const newState = !product.state;
+      await ProductServices.changeStatus(product.id, newState);
+      setIsLoading(true);
+      fetchProducts();
+      toast.success("Estado del producto actualizado correctamente");
+    } catch (error) {
+      console.error("Error al actualizar el estado de la categoría:", error);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -64,7 +77,6 @@ export const ProductsBase = () => {
   const onAddProduct = () => {
     navigate("/products/base/create");
   };
-
 
   const onOpenEditModal = () => setOpenEditModal(true);
   const onCloseEditModal = () => setOpenEditModal(false);
@@ -151,8 +163,10 @@ export const ProductsBase = () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip content="Eliminar">
-                        <IconButton>
-                          <DeleteOutlineIcon />
+                        <IconButton
+                          onClick={() => toggleProductStatus(product)}
+                        >
+                          {product.state ? <DeleteOutlineIcon /> : <DoneIcon />}
                         </IconButton>
                       </Tooltip>
                     </ButtonGroup>
@@ -164,7 +178,6 @@ export const ProductsBase = () => {
         </div>
       )}
 
-     
       <EditProductBaseModal
         isOpen={openEditModal}
         onOpenChange={onCloseEditModal}

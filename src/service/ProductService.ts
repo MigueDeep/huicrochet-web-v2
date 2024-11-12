@@ -1,4 +1,4 @@
-import { doGet, doPost } from "../config/Axios";
+import { doGet, doPost, doPut } from "../config/Axios";
 
 import { ICreateProduct, IProduct } from "../interfaces/products/ProductsIterface";
 
@@ -25,6 +25,15 @@ export const ProductServices = {
   getAllActive: async (): Promise<IProduct> => {
     try {
       const response = await doGet("/product/getActiveProducts");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  changeStatus: async (id: string, newState: boolean) => {
+    try {
+      const response = await doPut(`/product/deactivateProduct/${id}`, { state: newState });
       return response.data;
     } catch (error) {
       throw error;
