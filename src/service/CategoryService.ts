@@ -36,3 +36,13 @@ export const updateCategoryStatus = async (id: string, newState: boolean) => {
     throw error;
   }
 };
+
+
+export const  getAllActiveCategories = async (): Promise<Icategory> => {
+  try {
+    const response = await doGet("/category/getAllTrue");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
