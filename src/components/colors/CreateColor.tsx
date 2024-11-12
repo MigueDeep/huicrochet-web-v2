@@ -2,23 +2,29 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 import { Button, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import ColorService from "../../service/ColorService";
+import { IColor } from "../../interfaces/IColor";
 
 export default function CreateColorModal() {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const validationSchema = yup.object({
-        name: yup.string().required("El nombre es requerido"),
+        name: yup.string().required("El nombre del color es requerido"),
         color: yup.string().required("El color es requerido"),
     });
 
     const formik = useFormik({
-        initialValues: {
-            name: "",
-            color: "#000000",
+        initialValues:{
+            id: '',
+            colorName: '',
+            colorCod: '',
+            status: true
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values: IColor) => {
             console.log(values);
+            const response = await ColorService.createColor(values);
+            console.log(response);
             formik.resetForm();
             onClose(); 
         }
@@ -36,22 +42,22 @@ export default function CreateColorModal() {
                             fullWidth
                             placeholder="Nombre del color"
                             name="name" // Agregar el nombre para que formik pueda identificar el campo
-                            value={formik.values.name}
+                            value={formik.values.colorName}
                             onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
+                            error={formik.touched.colorName && Boolean(formik.errors.colorName)}
+                            helperText={formik.touched.colorName && formik.errors.colorName}
                         />
                         <TextField
                             label="Selecciona un color"
                             type="color"
                             fullWidth
                             name="color" // Agregar el nombre para que formik pueda identificar el campo
-                            value={formik.values.color}
+                            value={formik.values.colorCod}
                             onChange={formik.handleChange}
                             InputLabelProps={{ shrink: true }}
                             sx={{ mt: 2 }}
-                            error={formik.touched.color && Boolean(formik.errors.color)}
-                            helperText={formik.touched.color && formik.errors.color}
+                            error={formik.touched.colorCod && Boolean(formik.errors.colorCod)}
+                            helperText={formik.touched.colorCod && formik.errors.colorCod}
                         />
                     </ModalBody>
                     <ModalFooter>
