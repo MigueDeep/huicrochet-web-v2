@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, MenuItem, TextField } from "@mui/material";
+import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
 import { getAllActiveCategories } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import { ProductServices } from "../../service/ProductService";
@@ -11,6 +11,8 @@ import * as Yup from "yup";
 import { ArrowLeft } from "@mui/icons-material";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
+import { CategoriasIconBlack, HiloIConGary } from "../../utils/icons";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 const validationSchema = Yup.object({
   productName: Yup.string().required("El nombre del producto es obligatorio"),
   price: Yup.number()
@@ -112,6 +114,15 @@ export const CreateProductBase = () => {
                         className="form-control"
                         error={touched.productName && !!errors.productName}
                         helperText={<ErrorMessage name="productName" />}
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <HiloIConGary />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
                       />
                     </div>
                   </div>
@@ -131,6 +142,15 @@ export const CreateProductBase = () => {
                         className="form-control"
                         error={touched.categories && !!errors.categories}
                         helperText={<ErrorMessage name="categories" />}
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <CategoriasIconBlack />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
                       >
                         {categories.map((category) => (
                           <MenuItem key={category.id} value={category.id}>
@@ -155,6 +175,15 @@ export const CreateProductBase = () => {
                         className="form-control"
                         error={touched.price && !!errors.price}
                         helperText={<ErrorMessage name="price" />}
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <AttachMoneyOutlinedIcon />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
                       />
                     </div>
                   </div>
