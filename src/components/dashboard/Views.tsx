@@ -1,4 +1,3 @@
-import { card } from "@nextui-org/react";
 import CardStats from "./CardStats";
 
 const Views = () => {
@@ -14,7 +13,7 @@ const Views = () => {
       <CardStats
         title="Visitas diarias"
         visits={33}
-        data={[2, 5.5, 2, 8.5, 1.5, 5]}
+        data={[3.9, 3.9, 3.9, 3.9]}
       />
       <CardStats
         title="Visitas semanales"

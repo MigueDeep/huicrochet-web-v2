@@ -1,7 +1,7 @@
 import TextField from "@mui/material/TextField";
 import { Divider, Progress } from "@nextui-org/react";
 import ColorCircle from "../common/ColorCircle";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import "../../styles/products/products.css";
@@ -13,8 +13,11 @@ import {
   XCircleIcon,
 } from "../../utils/icons";
 import { Product } from "./ProductBaseGrid";
-import { ItemsService } from "../../service/ItemsService";
+import { createItem, ItemsService } from "../../service/ItemsService";
 import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
+import { IColor } from "../../interfaces/IColor";
+import ColorService from "../../service/ColorService";
+import toast from "react-hot-toast";
 
 interface CreateItemProductProps {
   selectedProduct: Product | null;
@@ -24,6 +27,8 @@ export const CreateItemProduct = ({
   selectedProduct,
 }: CreateItemProductProps) => {
   const [files, setFiles] = useState<File[]>([]);
+  const [colorsData, setColorsData] = useState<IColor[]>([]);
+
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
   >([]);
@@ -34,6 +39,18 @@ export const CreateItemProduct = ({
     description: "",
     price: "",
   });
+  const fetchColors = useCallback(async () => {
+    try {
+      const response = await ColorService.getColors();
+      setColorsData(response.data);
+    } catch (error) {
+      console.error("Error fetching colors: ", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchColors();
+  }, [fetchColors]);
   const [value, setValue] = useState(0);
   const [stock, setStock] = useState<number>(0);
   const [selectedColor, setSelectedColor] = useState("");
@@ -89,8 +106,8 @@ export const CreateItemProduct = ({
     return () => clearTimeout(timeoutId);
   }, [imagePreviews]);
 
-  const handleColorSelect = (color: string) => {
-    setSelectedColor("cb759a9d-1215-4ba0-ad6e-2d33ae09417a");
+  const handleColorSelect = (color: IColor) => {
+    setSelectedColor(color.id);
   };
 
   useEffect(() => {
@@ -110,10 +127,9 @@ export const CreateItemProduct = ({
       });
     }
   }, [selectedProduct]);
-
   const handleSave = async () => {
-    if (!selectedProduct || !selectedColor || stock <= 0) {
-      alert("Por favor, completa todos los campos.");
+    if (!selectedProduct) {
+      alert("No product selected");
       return;
     }
 
@@ -125,22 +141,24 @@ export const CreateItemProduct = ({
     };
 
     const formData = new FormData();
-    formData.append("data", JSON.stringify(data));
-    files.forEach((file, index) => {
-      formData.append(`images[${index}]`, file);
+    formData.append("itemDto", JSON.stringify(data));
+
+    files.forEach((file) => {
+      formData.append("images", file);
     });
 
-    // Mostrar los datos en la consola
-    console.log("Datos a enviar:", {
-      data,
-      images: files.map((file) => file),
-    });
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
 
     try {
-      const response = await ItemsService.create(formData);
-      alert("Producto creado exitosamente");
+      const response = await createItem(formData);
+      
+      toast.success(response.message);
+
     } catch (error) {
-      alert("Error al crear el producto");
+      console.error("Error al crear el producto:", error);
+      toast.error("Error al crear el producto");
     }
   };
 
@@ -167,6 +185,7 @@ export const CreateItemProduct = ({
               }}
             />
           </div>
+
           <div className="mb-3">
             <TextField
               label="Categoria"
@@ -214,6 +233,7 @@ export const CreateItemProduct = ({
               }}
             />
           </div>
+
           <Divider />
           <div className="mb-3">
             <h5 className="text-2xl">Detalles de Item</h5>
@@ -237,13 +257,14 @@ export const CreateItemProduct = ({
           </div>
           <p>Selecciona el color</p>
           <div className="d-flex gap-2">
-            <ColorCircle
-              color="red"
-              onSelect={handleColorSelect}
-              isSelected={
-                selectedColor === "cb759a9d-1215-4ba0-ad6e-2d33ae09417a"
-              }
-            />
+            {colorsData.map((color) => (
+              <ColorCircle
+                key={color.id}
+                color={color.colorCod}
+                isSelected={selectedColor === color.id}
+                onSelect={() => handleColorSelect(color)}
+              />
+            ))}
           </div>
         </div>
 

@@ -9,6 +9,7 @@ const instance = axios.create({
   },    
 });
 
+
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -29,28 +30,6 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
-
-    // if (error.response) {
-    //   const { status } = error.response;
-    //   if (status === 401) {
-    //     toast.error("El usuario no está autenticado");
-    //   } else if (status === 400) {
-    //     toast.error('Error');
-    //   } else if (status === 403) {
-    //     toast.error("No tienes permiso para acceder a esta función");
-    //   } else if (status === 404) {
-    //     toast.error("Recurso no encontrado");
-    //   } else if (status === 500) {
-    //     toast.error("Error interno del servidor");
-    //   } else if (status === 503) {
-    //     toast.error("Servicio no disponible");
-    //   } else {
-    //     toast.error("Error desconocido");
-    //   }
-    // } else {
-    //   toast.error("Error de conexión");
-    // }
-
     return Promise.reject(error);
   }
 );
@@ -66,6 +45,7 @@ export const doGetId = (url: string, id: string) => {
 export const doPost = (url: string, data: any) => {
   return instance.post(url, data);
 };
+
 
 export const doPut = (url: string, data: any) => {
   return instance.put(url, data);

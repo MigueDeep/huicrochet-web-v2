@@ -1,5 +1,6 @@
+import axios from "axios";
 import { doGet, doPost } from "../config/Axios";
-import { ICreateItem, IItemProduct } from "../interfaces/Items/ItemsInterface";
+import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
 
 export const ItemsService = {
   getAll: async (): Promise<IItemProduct> => {
@@ -10,13 +11,25 @@ export const ItemsService = {
       throw error;
     }
   },
-  create: async (data: FormData): Promise<FormData> => {
-    try {
-      console.log(data)
-      const response = await doPost("/item/create", data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+
+};
+
+export const createItem = async (formData: FormData): Promise<IItemProduct> => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      "http://localhost:8080/api-crochet/item/create",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
   }
-}
+};
+
