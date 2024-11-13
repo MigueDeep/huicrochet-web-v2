@@ -9,7 +9,7 @@ interface ChangeStatusProps {
   type: string; 
 }
 
-export default function ChangeStatus({ id, initialStatus, type }: ChangeStatusProps) {
+export default function ChangeStatus({ id, initialStatus, type }: Readonly<ChangeStatusProps>) {
   const [isActive, setIsActive] = useState(initialStatus);
 
   const handleChangeStatus = () => {

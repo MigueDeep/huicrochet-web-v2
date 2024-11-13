@@ -1,11 +1,11 @@
 // EditColorModal.jsx
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Tooltip } from "@nextui-org/react";
 import { Button, TextField, IconButton } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import EditIcon from '@mui/icons-material/Edit';
 
-export default function EditColorModal({ id }: { id: string }) { // Ajustado para recibir id como propiedad
+export default function EditColorModal({ id }: Readonly<{ id: string }>) { 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const validationSchema = yup.object({
@@ -29,13 +29,15 @@ export default function EditColorModal({ id }: { id: string }) { // Ajustado par
 
     return (
         <>
-            <IconButton
-                color="primary"
-                size="small"
-                onClick={onOpen}
-            >
-                <EditIcon />
-            </IconButton>
+            <Tooltip content="Editar color" placement="top">
+                <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={onOpen}
+                >
+                    <EditIcon />
+                </IconButton>
+            </Tooltip>
             <Modal isOpen={isOpen} onOpenChange={(open) => open ? onOpen() : onClose()}>
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Crear color</ModalHeader>

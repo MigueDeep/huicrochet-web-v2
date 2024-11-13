@@ -1,26 +1,31 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Button, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import ColorService from "../../service/ColorService";
+import { IColor } from "../../interfaces/IColor";
 
-export default function CreateColorModal() {
+export default function CreateColorModal({ onColorCreated: onColorCreated }: { onColorCreated: () => void }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const validationSchema = yup.object({
-        name: yup.string().required("El nombre es requerido"),
-        color: yup.string().required("El color es requerido"),
+        colorName: yup.string().required("El nombre del color es requerido"),
+        colorCod: yup.string().required("El código de color es requerido"),
     });
 
     const formik = useFormik({
         initialValues: {
-            name: "",
-            color: "#000000",
+            id: '',
+            colorName: '',
+            colorCod: '#FFFFFF',
+            status: true
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            console.log(values);
+        onSubmit: async (values: IColor) => {
+            await ColorService.createColor(values);
             formik.resetForm();
-            onClose(); 
+            onClose();
+            onColorCreated(); 
         }
     });
 
@@ -35,33 +40,35 @@ export default function CreateColorModal() {
                             label="Nombre"
                             fullWidth
                             placeholder="Nombre del color"
-                            name="name" // Agregar el nombre para que formik pueda identificar el campo
-                            value={formik.values.name}
+                            name="colorName"
+                            value={formik.values.colorName}
                             onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
+                            error={formik.touched.colorName && Boolean(formik.errors.colorName)}
+                            helperText={formik.touched.colorName && formik.errors.colorName}
                         />
                         <TextField
                             label="Selecciona un color"
                             type="color"
                             fullWidth
-                            name="color" // Agregar el nombre para que formik pueda identificar el campo
-                            value={formik.values.color}
-                            onChange={formik.handleChange}
-                            InputLabelProps={{ shrink: true }}
+                            name="colorCod"
+                            value={formik.values.colorCod}
+                            onChange={formik.handleChange} // Añadir el onChange para actualizar formik
                             sx={{ mt: 2 }}
-                            error={formik.touched.color && Boolean(formik.errors.color)}
-                            helperText={formik.touched.color && formik.errors.color}
+                            error={formik.touched.colorCod && Boolean(formik.errors.colorCod)}
+                            helperText={formik.touched.colorCod && formik.errors.colorCod}
                         />
                     </ModalBody>
                     <ModalFooter>
                         <Button color="error" onClick={onClose}>
                             Cerrar
                         </Button>
-                        <Button color="primary" variant="contained" onClick={
-                            () => formik.handleSubmit()
-                        }>
-                            Guardar
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => formik.handleSubmit()}
+                            disabled={formik.isSubmitting}
+                        >
+                            {formik.isSubmitting ? <CircularProgress size={24} /> : "Guardar"}
                         </Button>
                     </ModalFooter>
                 </ModalContent>
