@@ -41,12 +41,10 @@ const Loginform = () => {
     onSubmit: async (values) => {
       try {
         const response = await AuthService.login(values);
-        localStorage.setItem("token", response.data.token); 
-        localStorage.setItem("email", response.data.user.email); 
+        localStorage.setItem("token", response.data.token);
         toast.success("Inicio de sesión exitoso!"); 
         navigate("/dashboard");
       } catch (error) {
-        console.log('Error desde form',error);
         toast.error("Error al iniciar sesión. Intenta nuevamente."); 
       }
     },

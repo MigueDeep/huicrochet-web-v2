@@ -17,8 +17,6 @@ import EditColorModal from "./EditColor";
 import { IColor } from "../../interfaces/IColor";
 import ColorService from "../../service/ColorService";
 
-const colors: IColor[] = [];
-
 const columns = [
   { key: "color", label: "COLOR" },
   { key: "name", label: "NOMBRE" },
@@ -29,12 +27,19 @@ const columns = [
 const rowsPerPage = 5;
 
 export default function OrdersTable() {
+  const [colorsData, setColorsData] = useState<IColor[]>([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchColors = async () => {
       try {
         const response = await ColorService.getColors();
-        console.log(response);
+
+        if (response.error) {
+          toast.error("Error al cargar los colores");
+        } else {
+          setColorsData(response.data); 
+        }
       } catch (error) {
         toast.error("Error al cargar los colores");
       }
@@ -42,18 +47,16 @@ export default function OrdersTable() {
     fetchColors();
   }, []);
 
-  const [page, setPage] = useState(1);
-  const pages = Math.ceil(colors.length / rowsPerPage);
+  const pages = Math.ceil(colorsData.length / rowsPerPage);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return colors.slice(start, end);
-  }, [page]);
+    return colorsData.slice(start, end);
+  }, [page, colorsData]);
 
   return (
     <>
-      {/* Filter here -- */}
       <div className="row d-flex justify-content-end mb-4">
         <CreateColorModal />
       </div>

@@ -9,15 +9,15 @@ export default function CreateColorModal() {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const validationSchema = yup.object({
-        name: yup.string().required("El nombre del color es requerido"),
-        color: yup.string().required("El color es requerido"),
+        colorName: yup.string().required("El nombre del color es requerido"),
+        colorCod: yup.string().required("El código de color es requerido"),
     });
 
     const formik = useFormik({
         initialValues:{
             id: '',
             colorName: '',
-            colorCod: '',
+            colorCod: '#FFFFFF', // Valor inicial en blanco
             status: true
         },
         validationSchema: validationSchema,
@@ -41,7 +41,7 @@ export default function CreateColorModal() {
                             label="Nombre"
                             fullWidth
                             placeholder="Nombre del color"
-                            name="name" // Agregar el nombre para que formik pueda identificar el campo
+                            name="colorName"
                             value={formik.values.colorName}
                             onChange={formik.handleChange}
                             error={formik.touched.colorName && Boolean(formik.errors.colorName)}
@@ -51,10 +51,9 @@ export default function CreateColorModal() {
                             label="Selecciona un color"
                             type="color"
                             fullWidth
-                            name="color" // Agregar el nombre para que formik pueda identificar el campo
+                            name="colorCod"
                             value={formik.values.colorCod}
-                            onChange={formik.handleChange}
-                            InputLabelProps={{ shrink: true }}
+                            onChange={formik.handleChange} // Añadir el onChange para actualizar formik
                             sx={{ mt: 2 }}
                             error={formik.touched.colorCod && Boolean(formik.errors.colorCod)}
                             helperText={formik.touched.colorCod && formik.errors.colorCod}
@@ -64,9 +63,7 @@ export default function CreateColorModal() {
                         <Button color="error" onClick={onClose}>
                             Cerrar
                         </Button>
-                        <Button color="primary" variant="contained" onClick={
-                            () => formik.handleSubmit()
-                        }>
+                        <Button color="primary" variant="contained" onClick={() => formik.handleSubmit()}>
                             Guardar
                         </Button>
                     </ModalFooter>
