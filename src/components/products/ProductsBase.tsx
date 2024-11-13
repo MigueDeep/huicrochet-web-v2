@@ -25,13 +25,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
 import "../../styles/products/products.css";
-import EditProductBaseModal from "./EditProductBaseModal";
 import { ProductCommentsModal } from "./ProductCommentsModal";
 import { Category, Datum } from "../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../service/ProductService";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import DoneIcon from "@mui/icons-material/Done";
+import { a } from "framer-motion/client";
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripción" },
@@ -40,12 +40,11 @@ const columns = [
   { key: "status", label: "Estado" },
   { key: "actions", label: "Acciones" },
 ];
-const rowsPerPage = 10; // Filas por página
+const rowsPerPage = 10;
 
 export const ProductsBase = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [openEditModal, setOpenEditModal] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -64,10 +63,13 @@ export const ProductsBase = () => {
     } catch (error) {
       console.error("Error al obtener productos:", error);
     } finally {
-      setIsLoading(false); // Desactiva la carga una vez que los datos se obtienen
+      setIsLoading(false);
     }
   };
 
+  const editProduct = async (id: string) => {
+    navigate(`/products/base/edit/${id}`);
+  };
   const toggleProductStatus = async (product: Datum) => {
     try {
       const newState = !product.state;
@@ -87,9 +89,6 @@ export const ProductsBase = () => {
   const onAddProduct = () => {
     navigate("/products/base/create");
   };
-
-  const onOpenEditModal = () => setOpenEditModal(true);
-  const onCloseEditModal = () => setOpenEditModal(false);
 
   const onOpenCommentsModal = () => setOpenCommentsModal(true);
   const onCloseCommentsModal = () => setOpenCommentsModal(false);
@@ -185,7 +184,7 @@ export const ProductsBase = () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip content="Editar">
-                        <IconButton onClick={onOpenEditModal}>
+                        <IconButton onClick={() => editProduct(product.id)}>
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
@@ -205,10 +204,6 @@ export const ProductsBase = () => {
         </div>
       )}
 
-      <EditProductBaseModal
-        isOpen={openEditModal}
-        onOpenChange={onCloseEditModal}
-      />
       <ProductCommentsModal
         isOpen={openCommentsModal}
         onOpenChange={onCloseCommentsModal}

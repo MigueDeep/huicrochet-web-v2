@@ -44,3 +44,12 @@ export interface ICreateProduct {
     createdAt:   Date;
     categories:  string[];
 }
+
+export interface IUpdateProduct {
+    productName: string;
+    description: string;
+    price:       number;
+    state:       boolean;
+    createdAt:   Date;
+    categories:  string[];
+}

@@ -13,6 +13,7 @@ import { CreateProductsPage } from "../pages/products/CreateProductsPage";
 import { ProductsBasePage } from "../pages/products/ProductsBasePage";
 import { EditProductPage } from "../pages/products/EditProductPage";
 import { CreateProductBasePage } from "../pages/products/CreateProductBasePage";
+import { EditProductBasePage } from "../pages/products/EditProductBasePage";
 
 const AppRouter = () => {
   return (
@@ -30,6 +31,11 @@ const AppRouter = () => {
         <Route path="/colors" element={<ColorsPage />} />
         <Route path="/products/create" element={<CreateProductsPage />} />
         <Route path="/products/base" element={<ProductsBasePage />} />
+        <Route
+          path="/products/base/edit/:id"
+          element={<EditProductBasePage />}
+        />
+
         <Route
           path="/products/base/create"
           element={<CreateProductBasePage />}

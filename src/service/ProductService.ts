@@ -1,6 +1,7 @@
+import { u } from "framer-motion/client";
 import { doGet, doPost, doPut } from "../config/Axios";
 
-import { ICreateProduct, IProduct } from "../interfaces/products/ProductsIterface";
+import { ICreateProduct, IProduct, IUpdateProduct } from "../interfaces/products/ProductsIterface";
 
 
 export const ProductServices = {
@@ -15,6 +16,7 @@ export const ProductServices = {
 
   create: async (data: ICreateProduct): Promise<ICreateProduct> => {
     try {
+      console.log(data)
       const response = await doPost("/product/create", data);
       return response.data;
     } catch (error) {
@@ -38,6 +40,27 @@ export const ProductServices = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+ update: async (id: string, data: IUpdateProduct) => {
+    try {
+      console.log(data)
+      const response = await doPut(`/product/update/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getById: async (id: string) => {
+    try {
+      const response = await doGet(`/product/getById/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+
 
 }
