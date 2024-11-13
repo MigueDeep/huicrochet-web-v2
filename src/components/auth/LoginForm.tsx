@@ -1,6 +1,7 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
   FormControl,
   IconButton,
   InputAdornment,
@@ -24,6 +25,7 @@ const validationSchema = Yup.object({
 
 const Loginform = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -39,6 +41,7 @@ const Loginform = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
       try {
         const response = await AuthService.login(values);
         localStorage.setItem("token", response.data.token);
@@ -46,6 +49,8 @@ const Loginform = () => {
         navigate("/dashboard");
       } catch (error) {
         toast.error("Error al iniciar sesión. Intenta nuevamente."); 
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -103,8 +108,14 @@ const Loginform = () => {
           </FormControl>
 
           <FormControl sx={{ width: "100%" }} variant="outlined" className="mt-4">
-            <Button sx={{ p: 1.5 }} variant="contained" type="submit">
-              Iniciar sesión
+            <Button 
+              sx={{ p: 1.5 }} 
+              variant="contained" 
+              type="submit" 
+              disabled={isLoading}
+              startIcon={isLoading && <CircularProgress size={24} color="inherit" />}
+            >
+              {isLoading ? "Cargando..." : "Iniciar sesión"}
             </Button>
           </FormControl>
         </form>

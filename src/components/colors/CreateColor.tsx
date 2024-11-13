@@ -1,11 +1,11 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Button, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import ColorService from "../../service/ColorService";
 import { IColor } from "../../interfaces/IColor";
 
-export default function CreateColorModal() {
+export default function CreateColorModal({ onColorCreated: onColorCreated }: { onColorCreated: () => void }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const validationSchema = yup.object({
@@ -14,19 +14,18 @@ export default function CreateColorModal() {
     });
 
     const formik = useFormik({
-        initialValues:{
+        initialValues: {
             id: '',
             colorName: '',
-            colorCod: '#FFFFFF', // Valor inicial en blanco
+            colorCod: '#FFFFFF',
             status: true
         },
         validationSchema: validationSchema,
         onSubmit: async (values: IColor) => {
-            console.log(values);
-            const response = await ColorService.createColor(values);
-            console.log(response);
+            await ColorService.createColor(values);
             formik.resetForm();
-            onClose(); 
+            onClose();
+            onColorCreated(); 
         }
     });
 
@@ -63,8 +62,13 @@ export default function CreateColorModal() {
                         <Button color="error" onClick={onClose}>
                             Cerrar
                         </Button>
-                        <Button color="primary" variant="contained" onClick={() => formik.handleSubmit()}>
-                            Guardar
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => formik.handleSubmit()}
+                            disabled={formik.isSubmitting}
+                        >
+                            {formik.isSubmitting ? <CircularProgress size={24} /> : "Guardar"}
                         </Button>
                     </ModalFooter>
                 </ModalContent>

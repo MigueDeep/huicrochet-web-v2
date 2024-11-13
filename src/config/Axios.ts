@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080/api-crochet",
@@ -23,6 +24,8 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
+    console.log(response.data.message);
+    toast.success(response.data.message);
     return response;
   },
   (error) => {

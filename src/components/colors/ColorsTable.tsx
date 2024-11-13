@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Table,
   TableHeader,
@@ -10,7 +10,6 @@ import {
   Pagination,
   ButtonGroup,
 } from "@nextui-org/react";
-import toast from "react-hot-toast";
 import ChangeStatus from "../common/ChangesStatus";
 import CreateColorModal from "../../components/colors/CreateColor";
 import EditColorModal from "./EditColor";
@@ -26,26 +25,22 @@ const columns = [
 
 const rowsPerPage = 5;
 
-export default function OrdersTable() {
+export default function ColorsTable() {
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const fetchColors = async () => {
-      try {
-        const response = await ColorService.getColors();
-
-        if (response.error) {
-          toast.error("Error al cargar los colores");
-        } else {
-          setColorsData(response.data); 
-        }
-      } catch (error) {
-        toast.error("Error al cargar los colores");
-      }
-    };
-    fetchColors();
+  const fetchColors = useCallback(async () => {
+    try {
+      const response = await ColorService.getColors();
+      setColorsData(response.data); 
+    } catch (error) {
+      console.error("Error fetching colors: ", error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchColors();
+  }, [fetchColors]);
 
   const pages = Math.ceil(colorsData.length / rowsPerPage);
 
@@ -58,7 +53,7 @@ export default function OrdersTable() {
   return (
     <>
       <div className="row d-flex justify-content-end mb-4">
-        <CreateColorModal />
+        <CreateColorModal onColorCreated={fetchColors} />
       </div>
       <div className="row">
         <Table
