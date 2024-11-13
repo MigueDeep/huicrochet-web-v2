@@ -13,6 +13,9 @@ import {
   XCircleIcon,
 } from "../../utils/icons";
 import { Product } from "./ProductBaseGrid";
+import { ItemsService } from "../../service/ItemsService";
+import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
+
 interface CreateItemProductProps {
   selectedProduct: Product | null;
 }
@@ -32,6 +35,8 @@ export const CreateItemProduct = ({
     price: "",
   });
   const [value, setValue] = useState(0);
+  const [stock, setStock] = useState<number>(0);
+  const [selectedColor, setSelectedColor] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,10 +89,10 @@ export const CreateItemProduct = ({
     return () => clearTimeout(timeoutId);
   }, [imagePreviews]);
 
-  const [selectedColor, setSelectedColor] = useState("");
   const handleColorSelect = (color: string) => {
-    setSelectedColor(color);
+    setSelectedColor("cb759a9d-1215-4ba0-ad6e-2d33ae09417a");
   };
+
   useEffect(() => {
     if (selectedProduct) {
       setProductDetails({
@@ -105,6 +110,40 @@ export const CreateItemProduct = ({
       });
     }
   }, [selectedProduct]);
+
+  const handleSave = async () => {
+    if (!selectedProduct || !selectedColor || stock <= 0) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    const data: ICreateItem = {
+      productId: selectedProduct.id,
+      colorId: selectedColor,
+      stock: stock,
+      state: true,
+    };
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+    files.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
+
+    // Mostrar los datos en la consola
+    console.log("Datos a enviar:", {
+      data,
+      images: files.map((file) => file),
+    });
+
+    try {
+      const response = await ItemsService.create(formData);
+      alert("Producto creado exitosamente");
+    } catch (error) {
+      alert("Error al crear el producto");
+    }
+  };
+
   return (
     <>
       <h5 className="text-2xl">Detalles de producto base</h5>
@@ -183,6 +222,8 @@ export const CreateItemProduct = ({
               variant="outlined"
               type="number"
               fullWidth
+              value={stock}
+              onChange={(e) => setStock(Number(e.target.value))}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -199,27 +240,9 @@ export const CreateItemProduct = ({
             <ColorCircle
               color="red"
               onSelect={handleColorSelect}
-              isSelected={selectedColor === "red"}
-            />
-            <ColorCircle
-              color="blue"
-              onSelect={handleColorSelect}
-              isSelected={selectedColor === "blue"}
-            />
-            <ColorCircle
-              color="green"
-              onSelect={handleColorSelect}
-              isSelected={selectedColor === "green"}
-            />
-            <ColorCircle
-              color="yellow"
-              onSelect={handleColorSelect}
-              isSelected={selectedColor === "yellow"}
-            />
-            <ColorCircle
-              color="black"
-              onSelect={handleColorSelect}
-              isSelected={selectedColor === "black"}
+              isSelected={
+                selectedColor === "cb759a9d-1215-4ba0-ad6e-2d33ae09417a"
+              }
             />
           </div>
         </div>
@@ -296,7 +319,9 @@ export const CreateItemProduct = ({
         <Button variant="outlined" className="me-2">
           Cancelar
         </Button>
-        <Button variant="contained">Guardar</Button>
+        <Button variant="contained" onClick={handleSave}>
+          Guardar
+        </Button>
       </div>
     </>
   );

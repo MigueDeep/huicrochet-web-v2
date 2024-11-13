@@ -9,6 +9,7 @@ import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
 
 export interface Product {
+  id: string;
   title: string;
   category: string;
   price: number;
@@ -88,6 +89,7 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
               title={product.productName}
               onSelect={() =>
                 handleSelectProduct({
+                  id: product.id, 
                   title: product.productName,
                   category: product.categories[0].name,
                   price: product.price,

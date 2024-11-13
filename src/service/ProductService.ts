@@ -1,4 +1,3 @@
-import { u } from "framer-motion/client";
 import { doGet, doPost, doPut } from "../config/Axios";
 
 import { ICreateProduct, IProduct, IUpdateProduct } from "../interfaces/products/ProductsIterface";

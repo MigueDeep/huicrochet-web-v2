@@ -11,15 +11,17 @@ import {
   Pagination,
   ButtonGroup,
 } from "@nextui-org/react";
-import Avatar from "@mui/material/Avatar"; // Importación de Avatar
-import { useMemo, useState } from "react";
+import Avatar from "@mui/material/Avatar";
+import { useEffect, useMemo, useState } from "react";
 import ColorCircle from "../common/ColorCircle";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
+import { Datum } from "../../interfaces/Items/ItemsInterface";
+import { ItemsService } from "../../service/ItemsService";
 const columns = [
   { key: "image", label: "Imagen" },
   { key: "name", label: "Nombre" },
@@ -32,81 +34,14 @@ const columns = [
   { key: "actions", label: "Acciones" },
 ];
 
-const rows = [
-  {
-    id: 1,
-    image: "/pajaro.jpg",
-    name: "Snoopy",
-    category: "Jugetes",
-    description: "El mejor pajaro de la historia",
-    price: 230.0,
-    stock: 67,
-    colors: "#AD1457",
-    status: 1,
-  },
-  {
-    id: 2,
-    image: "/perro.jpeg",
-    name: "Snoopy",
-    category: "Jugetes",
-    price: 230.0,
-    description: "El mejor pajaro de la historia",
-    stock: 67,
-    colors: "pink",
-    status: 1,
-  },
-  {
-    id: 3,
-    image: "/sueterazul.jpg",
-    name: "Snoopy",
-    category: "Jugetes",
-    description: "El mejor pajaro de la historia",
-    price: 230.0,
-    stock: 67,
-    colors: "blue",
-    status: 1,
-  },
-  {
-    id: 4,
-    image: "/sueterazul.jpg",
-    name: "Snoopy",
-    category: "Jugetes",
-    description: "El mejor pajaro de la historia",
-    price: 230.0,
-    stock: 67,
-    colors: "green",
-    status: 1,
-  },
-  {
-    id: 5,
-    image: "/perro.jpeg",
-    name: "Snoopy",
-    category: "Jugetes",
-    description: "El mejor pajaro de la historia",
-    price: 230.0,
-    stock: 67,
-    colors: "yellow",
-    status: 90,
-  },
-  {
-    id: 6,
-    image: "/pajaro.jpg",
-    name: "Snoopy",
-    category: "Jugetes",
-    description: "El mejor pajaro de la historia",
-    price: 230.0,
-    stock: 67,
-    colors: "red",
-    status: 0,
-  },
-];
-
 const rowsPerPage = 5;
 
 export const ProductsTable = () => {
   const [page, setPage] = useState(1);
+  const [products, setProducts] = useState<Datum[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const pages = Math.ceil(rows.length / rowsPerPage);
+  const pages = Math.ceil(products.length / rowsPerPage);
   const navigate = useNavigate();
   const onEdit = () => {
     navigate(`/products/edit`);
@@ -119,12 +54,25 @@ export const ProductsTable = () => {
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return rows.slice(start, end);
-  }, [page]);
+    return products.slice(start, end);
+  }, [page, products]);
+  const fetchProducts = async () => {
+    try {
+      const response = await ItemsService.getAll();
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <>
-    <div className="col-6 mb-2">
+      <div className="col-6 mb-2">
         <TextField
           label="Busqueda"
           placeholder="Ingresa el nombre del producto"
@@ -141,72 +89,111 @@ export const ProductsTable = () => {
           }}
         />
       </div>
-    <Table
-      aria-label="Example table with dynamic content"
-      bottomContent={
-        <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
-          <Pagination
-            loop
-            showControls
-            color="success"
-            initialPage={1}
-            page={page}
-            total={pages}
-            onChange={(page) => setPage(page)}
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
             />
-        </div>
-      }
+          </div>
+        }
       >
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={items}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {columns.map((column) => {
-              let cellContent;
-              if (column.key === "image") {
-                cellContent = <Avatar alt={item.name} src={item.image} />;
-              } else if (column.key === "colors") {
-                cellContent = <ColorCircle color={item.colors} />;
-              } else if (column.key === "status") {
-                cellContent = (
-                  <Chip
-                  color={item.status === 1 ? "success" : "danger"}
-                  variant="flat"
-                  >
-                    {item.status === 1 ? "Disponible" : "No disponible"}
-                  </Chip>
-                );
-              } else if (column.key === "actions") {
-                cellContent = (
-                  <ButtonGroup>
-                    <Tooltip content="Editar">
-                      <IconButton onClick={onEdit}>
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip content="Ver">
-                      <IconButton>
-                        <RemoveRedEyeOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip content="Desactivar ">
-                      <IconButton onClick={onDelete}>
-                        <DeleteOutlineIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </ButtonGroup>
-                );
-              } else {
-                cellContent = getKeyValue(item, column.key);
-              }
-              return <TableCell key={column.key}>{cellContent}</TableCell>;
-            })}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-        </>
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {columns.map((column) => {
+                let cellContent;
+
+                switch (column.key) {
+                  case "image":
+                    cellContent = (
+                      <Avatar
+                        alt={item.product?.productName || "Producto sin nombre"}
+                        src="ruta_estatica_de_imagen.png"
+                      />
+                    );
+                    break;
+                  case "name":
+                    cellContent = item.product
+                      ? item.product.productName
+                      : "Producto sin nombre";
+                    break;
+                  case "category":
+                    const activeCategory = item.product?.categories.find(
+                      (category) => category.state
+                    );
+                    cellContent = activeCategory
+                      ? activeCategory.name
+                      : "Sin categoría activa";
+                    break;
+                  case "description":
+                    cellContent =
+                      item.product?.description ?? "Descripción no disponible";
+                    break;
+                  case "price":
+                    cellContent = `$${
+                      item.product?.price.toFixed(2) ?? "0.00"
+                    }`;
+                    break;
+                  case "stock":
+                    cellContent = item.stock;
+                    break;
+                  case "colors":
+                    cellContent = <ColorCircle color={item.color.colorCod} />;
+                    break;
+                  case "status":
+                    cellContent = (
+                      <Chip
+                        color={item.product?.state ? "success" : "danger"}
+                        variant="flat"
+                      >
+                        {item.product?.state ? "Disponible" : "No disponible"}
+                      </Chip>
+                    );
+                    break;
+                  case "actions":
+                    cellContent = (
+                      <ButtonGroup>
+                        <Tooltip content="Editar">
+                          <IconButton onClick={onEdit}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip content="Ver">
+                          <IconButton>
+                            <RemoveRedEyeOutlinedIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip content="Desactivar">
+                          <IconButton onClick={onDelete}>
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </ButtonGroup>
+                    );
+                    break;
+                  default:
+                    cellContent = null;
+                }
+
+                return <TableCell key={column.key}>{cellContent}</TableCell>;
+              })}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </>
   );
 };
