@@ -31,7 +31,6 @@ import { ProductServices } from "../../service/ProductService";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import DoneIcon from "@mui/icons-material/Done";
-import { a } from "framer-motion/client";
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripción" },
@@ -188,7 +187,7 @@ export const ProductsBase = () => {
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip content="Eliminar">
+                      <Tooltip content="Desactivar">
                         <IconButton
                           onClick={() => toggleProductStatus(product)}
                         >
