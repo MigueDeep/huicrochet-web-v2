@@ -1,5 +1,5 @@
 import axios from "axios";
-import { doGet } from "../config/Axios";
+import { doGet, doPut } from "../config/Axios";
 import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
 
 export const ItemsService = {
@@ -18,7 +18,16 @@ export const ItemsService = {
     } catch (error) {
       throw error;
     }
+  },
+  chngeStatus: async (id: string, newState: boolean) => {
+    try {
+      const response = await doPut(`/item/deactivateItem/${id}`, { state: newState });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
+
 
 };
 

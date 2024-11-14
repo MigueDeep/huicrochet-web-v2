@@ -5,6 +5,7 @@ import {
   InputAdornment,
   TextField,
   IconButton,
+  Switch,
 } from "@mui/material";
 import {
   Table,
@@ -19,7 +20,6 @@ import {
 } from "@nextui-org/react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
@@ -29,7 +29,8 @@ import { ProductCommentsModal } from "./ProductCommentsModal";
 import { Category, Datum } from "../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../service/ProductService";
 import { useNavigate } from "react-router-dom";
-import DoneIcon from "@mui/icons-material/Done";
+const label = { inputProps: { "aria-label": "Switch demo" } };
+
 const columns = [
   { key: "name", label: "Producto" },
   { key: "description", label: "Descripción" },
@@ -185,12 +186,14 @@ export const ProductsBase = () => {
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip content="Desactivar">
-                        <IconButton
-                          onClick={() => toggleProductStatus(product)}
-                        >
-                          {product.state ? <DeleteOutlineIcon /> : <DoneIcon />}
-                        </IconButton>
+                      <Tooltip
+                        content={product.state ? "Desactivar" : "Activar"}
+                      >
+                        <Switch
+                          {...label}
+                          checked={product.state}
+                          onChange={() => toggleProductStatus(product)}
+                        />
                       </Tooltip>
                     </ButtonGroup>
                   </TableCell>

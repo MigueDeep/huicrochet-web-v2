@@ -21,6 +21,7 @@ export interface Datum {
     product?: Product;
     color:    Color;
     stock:    number;
+    state:    boolean; 
     images:   any[];
 }
 

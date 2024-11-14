@@ -153,7 +153,7 @@ const CategoriesTable = () => {
                           aria-label="edit"
                           onClick={() => onOpenEditModal(item)}
                         >
-                          <Edit color="info" />
+                          <Edit />
                         </IconButton>
                         <Switch
                           {...label}

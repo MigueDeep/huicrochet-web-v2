@@ -14,7 +14,7 @@ import {
 import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
 import ColorCircle from "../common/ColorCircle";
-import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,8 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { Datum } from "../../interfaces/Items/ItemsInterface";
 import { ItemsService } from "../../service/ItemsService";
+import { Check } from "@mui/icons-material";
+const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
   { key: "image", label: "Imagen" },
@@ -47,8 +49,17 @@ export const ProductsTable = () => {
   const onEdit = async (id: string) => {
     navigate(`/products/edit/${id}`);
   };
-  const onDelete = () => {
-    console.log("Eliminar");
+  const onDelete = async (item: Datum) => {
+    setIsLoading(true);
+    try {
+      const newState = !item.state;
+      await ItemsService.chngeStatus(item.id, newState); // Cambia el estado del ítem individual
+      fetchProducts(); // Recarga la lista de productos
+    } catch (error) {
+      console.error("Error al cambiar el estado del ítem");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const items = useMemo(() => {
@@ -166,10 +177,10 @@ export const ProductsTable = () => {
                   case "status":
                     cellContent = (
                       <Chip
-                        color={item.product?.state ? "success" : "danger"}
+                        color={item.state ? "success" : "danger"}
                         variant="flat"
                       >
-                        {item.product?.state ? "Disponible" : "No disponible"}
+                        {item.state ? "Disponible" : "No disponible"}
                       </Chip>
                     );
                     break;
@@ -186,10 +197,14 @@ export const ProductsTable = () => {
                             <RemoveRedEyeOutlinedIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip content="Desactivar">
-                          <IconButton onClick={onDelete}>
-                            <DeleteOutlineIcon />
-                          </IconButton>
+                        <Tooltip
+                          content={item.state ? "Desactivar" : "Activar"}
+                        >
+                          <Switch
+                            {...label}
+                            checked={item.state}
+                            onChange={() => onDelete(item)}
+                          />
                         </Tooltip>
                       </ButtonGroup>
                     );
