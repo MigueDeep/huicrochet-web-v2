@@ -35,7 +35,7 @@ const columns = [
   { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 2; 
+const rowsPerPage = 10; 
 
 export default function OrdersTable() {
   const [page, setPage] = useState(1);

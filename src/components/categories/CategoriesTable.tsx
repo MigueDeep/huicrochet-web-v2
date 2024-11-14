@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Button,
   IconButton,
@@ -14,6 +14,8 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
+  Spinner,
+  Pagination,
 } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";
 import { Edit } from "@mui/icons-material";
@@ -29,6 +31,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
 const label = { inputProps: { "aria-label": "Switch demo" } };
+const rowsPerPage = 10;
 
 const columns = [
   { key: "name", label: "Categoria" },
@@ -42,6 +45,7 @@ const CategoriesTable = () => {
   const [categories, setCategories] = useState<Datum[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   const fetchCategories = async () => {
     try {
@@ -84,6 +88,14 @@ const CategoriesTable = () => {
     }
   };
 
+  const pages = Math.ceil(categories.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return categories.slice(start, end);
+  }, [page, categories]);
+
   return (
     <>
       <div
@@ -119,65 +131,68 @@ const CategoriesTable = () => {
         />
       </div>
 
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key} style={{ textAlign: "center" }}>
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          isLoading={loading}
+          loadingContent={<Spinner label="Cargando categorias..." />}
+          items={items}
         >
-          <Lottie
-            animationData={animationData}
-            style={{ width: 200, height: 200 }}
-            loop={true}
-          />
-        </div>
-      ) : (
-        <Table aria-label="Example table with dynamic content">
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key} style={{ textAlign: "center" }}>
-                {column.label}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={categories}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell style={{ textAlign: "center" }}>
-                    {columnKey === "actions" ? (
-                      <>
-                        <IconButton
-                          aria-label="edit"
-                          onClick={() => onOpenEditModal(item)}
-                        >
-                          <Edit />
-                        </IconButton>
-                        <Switch
-                          {...label}
-                          checked={item.state}
-                          onChange={() => toggleCategoryStatus(item)}
-                        />
-                      </>
-                    ) : columnKey === "state" ? (
-                      <Chip
-                        color={item.state ? "success" : "danger"}
-                        variant="flat"
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell style={{ textAlign: "center" }}>
+                  {columnKey === "actions" ? (
+                    <>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => onOpenEditModal(item)}
                       >
-                        {item.state ? "Activo" : "Inactivo"}
-                      </Chip>
-                    ) : (
-                      getKeyValue(item, columnKey)
-                    )}
-                  </TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      )}
+                        <Edit />
+                      </IconButton>
+                      <Switch
+                        {...label}
+                        checked={item.state}
+                        onChange={() => toggleCategoryStatus(item)}
+                      />
+                    </>
+                  ) : columnKey === "state" ? (
+                    <Chip
+                      color={item.state ? "success" : "danger"}
+                      variant="flat"
+                    >
+                      {item.state ? "Activo" : "Inactivo"}
+                    </Chip>
+                  ) : (
+                    getKeyValue(item, columnKey)
+                  )}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
       <EditModal
         isOpen={openEditModal}

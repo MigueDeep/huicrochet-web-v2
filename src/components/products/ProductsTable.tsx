@@ -16,13 +16,11 @@ import { useEffect, useMemo, useState } from "react";
 import ColorCircle from "../common/ColorCircle";
 import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { Datum } from "../../interfaces/Items/ItemsInterface";
 import { ItemsService } from "../../service/ItemsService";
-import { Check } from "@mui/icons-material";
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
@@ -37,7 +35,7 @@ const columns = [
   { key: "actions", label: "Acciones" },
 ];
 
-const rowsPerPage = 5;
+const rowsPerPage = 10;
 
 export const ProductsTable = () => {
   const [page, setPage] = useState(1);
@@ -53,8 +51,8 @@ export const ProductsTable = () => {
     setIsLoading(true);
     try {
       const newState = !item.state;
-      await ItemsService.chngeStatus(item.id, newState); // Cambia el estado del ítem individual
-      fetchProducts(); // Recarga la lista de productos
+      await ItemsService.chngeStatus(item.id, newState);
+      fetchProducts();
     } catch (error) {
       console.error("Error al cambiar el estado del ítem");
     } finally {
@@ -124,7 +122,7 @@ export const ProductsTable = () => {
         <TableBody
           items={items}
           isLoading={isLoading}
-          loadingContent={<Spinner label="Loading..." />}
+          loadingContent={<Spinner label="cargando productos..." />}
         >
           {(item) => (
             <TableRow key={item.id}>

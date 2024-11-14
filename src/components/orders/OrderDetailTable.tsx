@@ -54,7 +54,7 @@ const columns = [
   { key: "price", label: "Precio" },
 ];
 
-const rowsPerPage = 5;
+const rowsPerPage = 10;
 
 export const OrderDetailTable = () => {
   const [page, setPage] = useState(1);
