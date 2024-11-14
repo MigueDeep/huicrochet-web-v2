@@ -15,6 +15,8 @@ import ChangeStatus from "../common/ChangesStatus";
 import { useEffect, useMemo, useState } from "react";
 import { IUser } from "../../interfaces/IUser";
 import UserService from "../../service/UserService";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 
 const columns = [
   { key: "pic", label: "FOTO" },
@@ -85,7 +87,11 @@ export default function App() {
         </TableHeader>
         <TableBody
         isLoading={isLoading}
-        loadingContent={<Spinner label="Cargando usuarios..." />}
+        loadingContent={
+          <div style={{ height: "100px", width: "100px" }}>
+            <Lottie animationData={animationData} width={50} height={50} />
+          </div>
+        }
          items={items}>
           {(user) => (
             <TableRow key={user.id}>

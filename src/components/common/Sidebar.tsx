@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Drawer from "@mui/material/Drawer";
@@ -32,17 +33,19 @@ const Sidebar = () => {
   const [openProductos, setOpenProductos] = useState(false);
   const [openCatalogos, setOpenCatalogos] = useState(false);
 
+  useEffect(() => {
+    // Abrir el collapse correspondiente si la ruta coincide con una de sus subrutas
+    setOpenProductos(location.pathname.startsWith("/products"));
+    setOpenCatalogos(location.pathname.startsWith("/categories") || location.pathname.startsWith("/colors"));
+  }, [location.pathname]);
+
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     {
       text: "Productos",
       icon: <ProductosIcon />,
       children: [
-        {
-          text: "Producto base",
-          path: "/products/base",
-          icon: <BaseProductIcon />,
-        },
+        { text: "Producto base", path: "/products/base", icon: <BaseProductIcon /> },
         { text: "Productos", path: "/products", icon: <HiloICon /> },
       ],
     },
@@ -104,7 +107,7 @@ const Sidebar = () => {
         </div>
         <Divider />
         <div className="container">
-          <p className="text-semibold ">Menú</p>
+          <p className="text-semibold">Menú</p>
           <List>
             {menuItems.map((item) => (
               <div key={item.text}>

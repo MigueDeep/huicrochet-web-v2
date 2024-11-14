@@ -14,7 +14,6 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
-  Spinner,
   Pagination,
 } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";

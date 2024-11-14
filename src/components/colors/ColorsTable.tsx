@@ -15,6 +15,8 @@ import CreateColorModal from "../../components/colors/CreateColor";
 import EditColorModal from "./EditColor";
 import { IColor } from "../../interfaces/IColor";
 import ColorService from "../../service/ColorService";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 
 const columns = [
   { key: "color", label: "COLOR" },
@@ -28,13 +30,17 @@ const rowsPerPage = 10;
 export default function ColorsTable() {
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchColors = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await ColorService.getColors();
       setColorsData(response.data); 
     } catch (error) {
       throw new Error("An error occurred while fetching colors. Please try again.");
+    }finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -77,7 +83,14 @@ export default function ColorsTable() {
               <TableColumn key={column.key}>{column.label}</TableColumn>
             )}
           </TableHeader>
-          <TableBody items={items}>
+          <TableBody 
+            isLoading={isLoading}
+            loadingContent={
+              <div style={{ height: "100px", width: "100px" }}>
+                <Lottie animationData={animationData} width={50} height={50} />
+              </div>
+            }
+            items={items}>
             {(item) => (
               <TableRow key={item.id}>
                 {columns.map((column) => (
