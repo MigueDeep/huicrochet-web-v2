@@ -21,6 +21,9 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { Datum } from "../../interfaces/Items/ItemsInterface";
 import { ItemsService } from "../../service/ItemsService";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
+
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
@@ -122,7 +125,11 @@ export const ProductsTable = () => {
         <TableBody
           items={items}
           isLoading={isLoading}
-          loadingContent={<Spinner label="cargando productos..." />}
+          loadingContent={
+            <div style={{ height: "100px", width: "100px" }}>
+              <Lottie animationData={animationData} width={50} height={50} />
+            </div>
+          }
         >
           {(item) => (
             <TableRow key={item.id}>

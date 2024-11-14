@@ -119,90 +119,86 @@ export const ProductsBase = () => {
         />
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <Lottie
-            animationData={animationData}
-            style={{ width: 200, height: 200 }}
-            loop={true}
-          />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <Table
-            color={"secondary"}
-            aria-label="Example static collection table"
-            bottomContent={
-              <div
-                className="
+      <div className="flex flex-col gap-3">
+        <Table
+          color={"secondary"}
+          aria-label="Example static collection table"
+          bottomContent={
+            <div
+              className="
           flex w-full justify-center mt-4 pb-4 border-b border-gray-200
           "
-              >
-                <Pagination
-                  loop
-                  showControls
-                  color="success"
-                  initialPage={1}
-                  page={page}
-                  total={pages}
-                  onChange={(page) => setPage(page)}
-                />
+            >
+              <Pagination
+                loop
+                showControls
+                color="success"
+                initialPage={1}
+                page={page}
+                total={pages}
+                onChange={(page) => setPage(page)}
+              />
+            </div>
+          }
+        >
+          <TableHeader>
+            {columns.map((column) => (
+              <TableColumn key={column.key}>{column.label}</TableColumn>
+            ))}
+          </TableHeader>
+          <TableBody
+            items={items}
+            isLoading={isLoading}
+            loadingContent={
+              <div style={{ height: "100px", width: "100px" }}>
+                <Lottie animationData={animationData} width={50} height={50} />
               </div>
             }
           >
-            <TableHeader>
-              {columns.map((column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody items={items}>
-              {items.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{product.productName}</TableCell>
-                  <TableCell>{product.description}</TableCell>
-                  <TableCell>{product.price}</TableCell>
-                  <TableCell>
-                    {product.categories
-                      .map((category: Category) => category.name)
-                      .join(", ")}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      variant="flat"
-                      color={product.state ? "success" : "danger"}
-                    >
-                      {product.state ? "Activo" : "Inactivo"}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>
-                    <ButtonGroup>
-                      <Tooltip content="Ver comentarios">
-                        <IconButton onClick={onOpenCommentsModal}>
-                          <ModeCommentOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Editar">
-                        <IconButton onClick={() => editProduct(product.id)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip
-                        content={product.state ? "Desactivar" : "Activar"}
-                      >
-                        <Switch
-                          {...label}
-                          checked={product.state}
-                          onChange={() => toggleProductStatus(product)}
-                        />
-                      </Tooltip>
-                    </ButtonGroup>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+            {items.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>{product.productName}</TableCell>
+                <TableCell>{product.description}</TableCell>
+                <TableCell>{product.price}</TableCell>
+                <TableCell>
+                  {product.categories
+                    .map((category: Category) => category.name)
+                    .join(", ")}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    variant="flat"
+                    color={product.state ? "success" : "danger"}
+                  >
+                    {product.state ? "Activo" : "Inactivo"}
+                  </Chip>
+                </TableCell>
+                <TableCell>
+                  <ButtonGroup>
+                    <Tooltip content="Ver comentarios">
+                      <IconButton onClick={onOpenCommentsModal}>
+                        <ModeCommentOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip content="Editar">
+                      <IconButton onClick={() => editProduct(product.id)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip content={product.state ? "Desactivar" : "Activar"}>
+                      <Switch
+                        {...label}
+                        checked={product.state}
+                        onChange={() => toggleProductStatus(product)}
+                      />
+                    </Tooltip>
+                  </ButtonGroup>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       <ProductCommentsModal
         isOpen={openCommentsModal}

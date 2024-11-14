@@ -156,7 +156,11 @@ const CategoriesTable = () => {
         </TableHeader>
         <TableBody
           isLoading={loading}
-          loadingContent={<Spinner label="Cargando categorias..." />}
+          loadingContent={
+            <div style={{ height: "100px", width: "100px" }}>
+              <Lottie animationData={animationData} width={50} height={50} />
+            </div>
+          }
           items={items}
         >
           {(item) => (
