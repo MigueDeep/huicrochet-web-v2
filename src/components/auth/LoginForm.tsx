@@ -13,7 +13,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import AuthService from "../../service/AuthService";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
@@ -28,12 +27,14 @@ const Loginform = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
   const navigate = useNavigate();
-  
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -45,10 +46,8 @@ const Loginform = () => {
       try {
         const response = await AuthService.login(values);
         localStorage.setItem("token", response.data.token);
-        toast.success("Inicio de sesión exitoso!"); 
         navigate("/dashboard");
       } catch (error) {
-        toast.error("Error al iniciar sesión. Intenta nuevamente."); 
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +65,11 @@ const Loginform = () => {
           Calidad en cada puntada, arte en cada detalle.
         </h6>
         <form onSubmit={formik.handleSubmit}>
-          <FormControl sx={{ width: "100%" }} variant="outlined" className="mt-5">
+          <FormControl
+            sx={{ width: "100%" }}
+            variant="outlined"
+            className="mt-5"
+          >
             <TextField
               id="email"
               label="Correo"
@@ -81,8 +84,14 @@ const Loginform = () => {
             )}
           </FormControl>
 
-          <FormControl sx={{ width: "100%" }} variant="outlined" className="mt-4">
-            <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
+          <FormControl
+            sx={{ width: "100%" }}
+            variant="outlined"
+            className="mt-4"
+          >
+            <InputLabel htmlFor="outlined-adornment-password">
+              Contraseña
+            </InputLabel>
             <OutlinedInput
               id="password"
               type={showPassword ? "text" : "password"}
@@ -107,13 +116,19 @@ const Loginform = () => {
             )}
           </FormControl>
 
-          <FormControl sx={{ width: "100%" }} variant="outlined" className="mt-4">
-            <Button 
-              sx={{ p: 1.5 }} 
-              variant="contained" 
-              type="submit" 
+          <FormControl
+            sx={{ width: "100%" }}
+            variant="outlined"
+            className="mt-4"
+          >
+            <Button
+              sx={{ p: 1.5 }}
+              variant="contained"
+              type="submit"
               disabled={isLoading}
-              startIcon={isLoading && <CircularProgress size={24} color="inherit" />}
+              startIcon={
+                isLoading && <CircularProgress size={24} color="inherit" />
+              }
             >
               {isLoading ? "Cargando..." : "Iniciar sesión"}
             </Button>

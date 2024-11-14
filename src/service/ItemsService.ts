@@ -1,5 +1,5 @@
 import axios from "axios";
-import { doGet, doPost } from "../config/Axios";
+import { doGet } from "../config/Axios";
 import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
 
 export const ItemsService = {

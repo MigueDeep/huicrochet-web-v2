@@ -4,7 +4,6 @@ import { getAllActiveCategories } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import { ProductServices } from "../../service/ProductService";
 import { ICreateProduct } from "../../interfaces/products/ProductsIterface";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -49,7 +48,6 @@ export const CreateProductBase = () => {
     try {
       setLoading(true);
       await ProductServices.create(values);
-      toast.success("Producto creado exitosamente");
       navigate("/products/base");
     } catch (error) {
       console.error("Error al crear el producto:", error);

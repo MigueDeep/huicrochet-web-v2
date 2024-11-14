@@ -1,3 +1,5 @@
+import Lottie from "lottie-react";
+import animationData from "./animation.json";
 export const DashboardIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -315,3 +317,4 @@ export const StockIcon = () => (
     />
   </svg>
 );
+

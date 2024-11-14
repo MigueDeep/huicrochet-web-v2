@@ -4,7 +4,6 @@ import { getAllActiveCategories } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import { ProductServices } from "../../service/ProductService";
 import { IUpdateProduct } from "../../interfaces/products/ProductsIterface";
-import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -41,11 +40,9 @@ export const EditProductBase = () => {
         throw new Error("ID is undefined");
       }
       console.log(values);
-      toast.success("Producto actualizado con éxito");
       navigate("/products/base");
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
-      toast.error("Error al actualizar el producto");
     } finally {
       setLoading(false);
     }

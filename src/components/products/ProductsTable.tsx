@@ -5,11 +5,11 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue,
   Tooltip,
   Chip,
   Pagination,
   ButtonGroup,
+  Spinner,
 } from "@nextui-org/react";
 import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
@@ -22,6 +22,7 @@ import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { Datum } from "../../interfaces/Items/ItemsInterface";
 import { ItemsService } from "../../service/ItemsService";
+
 const columns = [
   { key: "image", label: "Imagen" },
   { key: "name", label: "Nombre" },
@@ -110,7 +111,11 @@ export const ProductsTable = () => {
             <TableColumn key={column.key}>{column.label}</TableColumn>
           )}
         </TableHeader>
-        <TableBody items={items}>
+        <TableBody
+          items={items}
+          isLoading={isLoading}
+          loadingContent={<Spinner label="Loading..." />}
+        >
           {(item) => (
             <TableRow key={item.id}>
               {columns.map((column) => {
@@ -121,7 +126,13 @@ export const ProductsTable = () => {
                     cellContent = (
                       <Avatar
                         alt={item.product?.productName || "Producto sin nombre"}
-                        src="ruta_estatica_de_imagen.png"
+                        src={
+                          item.images && item.images.length > 0
+                            ? `http://localhost:8080/${item.images[0].imageUri
+                                .split("/")
+                                .pop()}`
+                            : "ruta/a/imagen/por/defecto.jpg"
+                        }
                       />
                     );
                     break;

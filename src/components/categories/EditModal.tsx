@@ -11,7 +11,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { updateCategory } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
-import toast from "react-hot-toast";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
 
@@ -54,7 +53,6 @@ const EditModal = ({
             { name: values.name.trim(), state: selectedCategory.state },
             selectedCategory.id
           );
-          toast.success("Categoría actualizada exitosamente");
           onCloseEditModal();
           await fetchCategories();
         } catch (error) {

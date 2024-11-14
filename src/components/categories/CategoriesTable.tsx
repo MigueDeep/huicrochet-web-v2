@@ -25,7 +25,6 @@ import {
   updateCategoryStatus,
 } from "../../service/CategoryService";
 import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
-import toast from "react-hot-toast";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
@@ -79,9 +78,7 @@ const CategoriesTable = () => {
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
       fetchCategories();
-      toast.success("Estado de la categoría actualizado correctamente");
     } catch (error) {
-      console.error("Error al actualizar el estado de la categoría:", error);
     } finally {
       setLoading(false);
     }

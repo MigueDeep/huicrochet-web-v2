@@ -29,7 +29,6 @@ import { ProductCommentsModal } from "./ProductCommentsModal";
 import { Category, Datum } from "../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../service/ProductService";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import DoneIcon from "@mui/icons-material/Done";
 const columns = [
   { key: "name", label: "Producto" },
@@ -75,7 +74,6 @@ export const ProductsBase = () => {
       await ProductServices.changeStatus(product.id, newState);
       setIsLoading(true);
       fetchProducts();
-      toast.success("Estado del producto actualizado correctamente");
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
     }

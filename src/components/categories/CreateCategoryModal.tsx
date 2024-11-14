@@ -10,7 +10,6 @@ import { createCategory } from "../../service/CategoryService";
 import { ICreateCategory } from "../../interfaces/CategoriesInterface.ts/Category";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import toast from "react-hot-toast";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
 import { useState } from "react";
@@ -50,7 +49,6 @@ export const CreateCategoryModal = ({
 
         resetForm();
         onCloseCreateModal();
-        toast.success("Categoría creada exitosamente");
         await fetchCategories();
       } catch (error) {
         console.error("Error al crear la categoría", error);

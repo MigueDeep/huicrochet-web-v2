@@ -5,7 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import "../../styles/products/products.css";
-import { IconButton, Button, InputAdornment } from "@mui/material";
+import {
+  IconButton,
+  Button,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material";
 import {
   CategoriasIconBlack,
   HiloIConGary,
@@ -13,11 +18,12 @@ import {
   XCircleIcon,
 } from "../../utils/icons";
 import { Product } from "./ProductBaseGrid";
-import { createItem, ItemsService } from "../../service/ItemsService";
+import { createItem } from "../../service/ItemsService";
 import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
 import { IColor } from "../../interfaces/IColor";
 import ColorService from "../../service/ColorService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 interface CreateItemProductProps {
   selectedProduct: Product | null;
@@ -28,6 +34,7 @@ export const CreateItemProduct = ({
 }: CreateItemProductProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
@@ -39,6 +46,7 @@ export const CreateItemProduct = ({
     description: "",
     price: "",
   });
+  const navigate = useNavigate();
   const fetchColors = useCallback(async () => {
     try {
       const response = await ColorService.getColors();
@@ -152,13 +160,16 @@ export const CreateItemProduct = ({
     }
 
     try {
+      setIsLoading(true);
       const response = await createItem(formData);
-      
-      toast.success(response.message);
 
+      toast.success(response.message);
+      navigate("/products");
     } catch (error) {
       console.error("Error al crear el producto:", error);
       toast.error("Error al crear el producto");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -340,8 +351,15 @@ export const CreateItemProduct = ({
         <Button variant="outlined" className="me-2">
           Cancelar
         </Button>
-        <Button variant="contained" onClick={handleSave}>
-          Guardar
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isLoading}
+          startIcon={
+            isLoading && <CircularProgress size={24} color="inherit" />
+          }
+        >
+          {isLoading ? "Guardando..." : "Guardar"}
         </Button>
       </div>
     </>
