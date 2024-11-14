@@ -23,7 +23,7 @@ const columns = [
   { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 5;
+const rowsPerPage = 10;
 
 export default function ColorsTable() {
   const [colorsData, setColorsData] = useState<IColor[]>([]);

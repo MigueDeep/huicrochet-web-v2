@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Tooltip } from '@nextui-org/react';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import { Tooltip } from '@nextui-org/react';  
+import Switch from '@mui/material/Switch';
 
 interface ChangeStatusProps {
   id: string;
@@ -21,13 +20,12 @@ export default function ChangeStatus({ id, initialStatus, type }: Readonly<Chang
     <Tooltip 
       content={isActive ? "Desactivar" : "Activar"}
     >
-      <span onClick={handleChangeStatus} className="cursor-pointer">
-        {isActive ? (
-          <ToggleOnIcon fontSize="large" color="success" /> 
-        ) : (
-          <ToggleOffIcon fontSize="large" color="error" /> 
-        )}
-      </span>
+      <Switch 
+        checked={isActive} 
+        onChange={handleChangeStatus} 
+        color="primary" 
+        inputProps={{ 'aria-label': 'primary checkbox' }} 
+      />
     </Tooltip>
   );
 }

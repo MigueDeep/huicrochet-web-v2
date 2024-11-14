@@ -1,5 +1,5 @@
 // src/services/AuthService.ts
-import { doPost, doGet, doPut } from "../config/Axios";
+import { doPost, doGet, doPut, doPutId } from "../config/Axios";
 import { IColor } from "../interfaces/IColor";
 
 
@@ -32,7 +32,16 @@ const ColorService = {
         } catch (error) {
             throw new Error("An error occurred while updating color. Please try again.");
         }
-    }
+    },
+
+    diableColorById: async (id: string) => {
+        try {
+            const response = await doPutId(`/color/disable/${id}`);
+            return response.data;
+        } catch (error) {
+            throw new Error("An error occurred while disabling color. Please try again.");
+        }
+    },
 
 };
 
