@@ -13,7 +13,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import AuthService from "../../service/AuthService";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
@@ -45,10 +44,9 @@ const Loginform = () => {
       try {
         const response = await AuthService.login(values);
         localStorage.setItem("token", response.data.token);
-        toast.success("Inicio de sesión exitoso!"); 
         navigate("/dashboard");
       } catch (error) {
-        toast.error("Error al iniciar sesión. Intenta nuevamente."); 
+        throw error;
       } finally {
         setIsLoading(false);
       }
