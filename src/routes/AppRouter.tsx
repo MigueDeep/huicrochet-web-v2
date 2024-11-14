@@ -40,7 +40,7 @@ const AppRouter = () => {
           path="/products/base/create"
           element={<CreateProductBasePage />}
         />
-        <Route path="/products/edit" element={<EditProductPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
       </Route>
     </Routes>
   );

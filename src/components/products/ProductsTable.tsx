@@ -44,10 +44,9 @@ export const ProductsTable = () => {
 
   const pages = Math.ceil(products.length / rowsPerPage);
   const navigate = useNavigate();
-  const onEdit = () => {
-    navigate(`/products/edit`);
+  const onEdit = async (id: string) => {
+    navigate(`/products/edit/${id}`);
   };
-
   const onDelete = () => {
     console.log("Eliminar");
   };
@@ -178,7 +177,7 @@ export const ProductsTable = () => {
                     cellContent = (
                       <ButtonGroup>
                         <Tooltip content="Editar">
-                          <IconButton onClick={onEdit}>
+                          <IconButton onClick={() => onEdit(item.id)}>
                             <EditIcon />
                           </IconButton>
                         </Tooltip>

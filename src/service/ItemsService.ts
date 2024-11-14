@@ -11,6 +11,14 @@ export const ItemsService = {
       throw error;
     }
   },
+  getById: async (id: string): Promise<IItemProduct> => {
+    try {
+      const response = await doGet(`/item/getById/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 
 };
 
