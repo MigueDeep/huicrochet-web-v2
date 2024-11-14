@@ -1,88 +1,25 @@
+import { useState, useEffect } from "react";
 import { ProductCardGrid } from "./ProductCardGrid";
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
-const products = [
-  {
-    id: 1,
-    image: "/snoopyVerde.jpg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso verde",
-    category: "Jugetes",
-    quantity: 67,
-    price: 230.0,
-    status: 1,
-    colors: ["pink", "blue", "green"],
-    onEdit: () => console.log("Edit product 1"),
-  },
-  {
-    id: 2,
-    image: "/ropa.jpg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso rosa",
-    category: "Jugetes",
-    quantity: 67,
-    price: 230.0,
-    status: 1,
-
-    colors: ["pink", "blue", "green"],
-    onEdit: () => console.log("Edit product 2"),
-  },
-  {
-    id: 3,
-    image: "/snoopyAzul.jpg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso azul",
-    category: "Jugetes",
-    quantity: 67,
-    price: 230.0,
-    colors: ["pink", "blue", "green"],
-    status: 1,
-
-    onEdit: () => console.log("Edit product 3"),
-  },
-  {
-    id: 4,
-    image: "/sueterazul.jpg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso amarillo",
-    category: "Jugetes",
-    quantity: 67,
-    price: 230.0,
-    status: 1,
-
-    colors: ["pink", "blue", "green"],
-    onEdit: () => console.log("Edit product 4"),
-  },
-  {
-    id: 5,
-    image: "/perro.jpeg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso rojo",
-    category: "Jugetes",
-    quantity: 67,
-    price: 230.0,
-    status: 1,
-
-    colors: ["pink", "blue", "green"],
-    onEdit: () => console.log("Edit product 5"),
-  },
-  {
-    id: 6,
-    image: "/pajaro.jpg",
-    title: "Snoopy",
-    description: "El perro mas fabuloso naranja",
-    category: "Jugetes",
-    quantity: 67,
-    status: 1,
-
-    price: 230.0,
-    colors: ["pink", "blue", "green"],
-    onEdit: () => console.log("Edit product 6"),
-  },
-];
+import { ItemsService } from "../../service/ItemsService";
+import { Datum } from "../../interfaces/Items/ItemsInterface";
 
 export const ProductsGrid = () => {
+  const [products, setProducts] = useState<Datum[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await ItemsService.getAll();
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <>
       <div className="col-6 mb-2">
@@ -91,21 +28,33 @@ export const ProductsGrid = () => {
           placeholder="Ingresa el nombre del producto"
           variant="outlined"
           fullWidth
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
         />
       </div>
       <div className="row text-center">
         {products.map((product) => (
           <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
-            <ProductCardGrid {...product} />
+            <ProductCardGrid
+              image={
+                `http://localhost:8080/${product.images[0].imageUri
+                  .split("/")
+                  .pop()}` || "/default.webp"
+              }
+              title={product.product?.productName || "Sin nombre"}
+              description={product.product?.description || "Sin descripción"}
+              category={product.product?.categories[0]?.name || "Sin categoría"}
+              quantity={product.stock}
+              price={product.product?.price || 0}
+              colors={[product.color.colorCod]}
+              status={product.product?.state ? 1 : 0}
+              onEdit={() => console.log(`Edit product ${product.id}`)}
+            />
           </div>
         ))}
       </div>

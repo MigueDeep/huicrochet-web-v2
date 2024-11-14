@@ -131,7 +131,7 @@ export const ProductsTable = () => {
                             ? `http://localhost:8080/${item.images[0].imageUri
                                 .split("/")
                                 .pop()}`
-                            : "ruta/a/imagen/por/defecto.jpg"
+                            : "/default.webp"
                         }
                       />
                     );
