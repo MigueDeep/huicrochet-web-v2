@@ -48,6 +48,7 @@ const Loginform = () => {
         localStorage.setItem("token", response.data.token);
         navigate("/dashboard");
       } catch (error) {
+        throw error;
       } finally {
         setIsLoading(false);
       }

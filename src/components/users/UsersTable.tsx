@@ -5,87 +5,69 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  getKeyValue,
   Tooltip,
   Chip,
   Pagination,
+  Spinner,
 } from "@nextui-org/react";
-import Avatar from "@mui/material/Avatar"; // Importación de Avatar
+import Avatar from "@mui/material/Avatar";
 import ChangeStatus from "../common/ChangesStatus";
-import { useMemo, useState } from "react";
-
-const rows = [
-  {
-    key: "1",
-    name: "Tony Reichert",
-    phone: "1234567890",
-    email: "tony@email.com",
-    age: 29,
-    status: "activo",
-    pic: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-  },
-  {
-    key: "2",
-    name: "Zoey Lang",
-    phone: "1234567890",
-    email: "zoey@email.com",
-    age: 25,
-    status: "bloqueado",
-    pic: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-  },
-  {
-    key: "3",
-    name: "Jane Fisher",
-    phone: "9876543210",
-    email: "jane@email.com",
-    age: 32,
-    status: "activo",
-    pic: "https://i.pravatar.cc/150?u=a042581f4e29026304d",
-  },
-  {
-    key: "4",
-    name: "William Howard",
-    phone: "1122334455",
-    email: "william@email.com",
-    age: 40,
-    status: "vacaciones",
-    pic: "https://i.pravatar.cc/150?u=a042581f4e29026404d",
-  },
-];
+import { useEffect, useMemo, useState } from "react";
+import { IUser } from "../../interfaces/IUser";
+import UserService from "../../service/UserService";
 
 const columns = [
   { key: "pic", label: "FOTO" },
   { key: "name", label: "NOMBRE COMPLETO" },
-  { key: "phone", label: "TELEFONO" },
   { key: "email", label: "CORREO" },
-  { key: "age", label: "EDAD" },
+  { key: "birthday", label: "FECHA DE NACIMIENTO" },
   { key: "status", label: "ESTADO" },
   { key: "actions", label: "ACTIVAR/DESACTIVAR" },
 ];
 
-const rowsPerPage = 2; // Filas por página
+const rowsPerPage = 10;
 
 export default function App() {
+  const [users, setUsers] = useState<IUser[]>([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const pages = Math.ceil(rows.length / rowsPerPage);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await UserService.getUsers();
+        console.log(response.data);
+        setUsers(response.data);
+      } catch (err) {
+        setError("Error al obtener los usuarios. Intente nuevamente.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const pages = Math.ceil(users.length / rowsPerPage);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return rows.slice(start, end);
-  }, [page]);
+    return users.slice(start, end);
+  }, [page, users]);
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <>
       <Table
         aria-label="Example table with dynamic content"
         bottomContent={
-          <div
-            className="
-          flex w-full justify-center mt-4 pb-4 border-b border-gray-200
-          "
-          >
+          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
             <Pagination
               loop
               showControls
@@ -95,53 +77,63 @@ export default function App() {
               total={pages}
               onChange={(page) => setPage(page)}
             />
-        </div>
-      }
-    >
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={items}>
-        {(item) => (
-          <TableRow key={item.key}>
-            {columns.map((column) => (
-              <TableCell key={column.key}>
-                {column.key === "pic" ? (
-                  <Avatar alt={item.name} src={item.pic} />
-                ) : column.key === "actions" ? (
-                  <Tooltip
-                    showArrow={true}
-                    content={
-                      item.status === "activo" ? "Desactivar" : "Activar"
-                    }
-                  >
-                    <span className="text-danger cursor-pointer active:opacity-50">
-                      <ChangeStatus
-                        id={item.key}
-                        initialStatus={item.status === "activo"}
-                        type="user"
-                      />
-                    </span>
-                  </Tooltip>
-                ) : column.key === "status" ? (
-                  <Chip
-                    className="capitalize"
-                    size="sm"
-                    variant="flat"
-                    color={item.status === "activo" ? "success" : "danger"}
-                  >
-                    {item.status}
-                  </Chip>
-                ) : (
-                  getKeyValue(item, column.key)
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-          
+          </div>
+        }
+      >
+        <TableHeader columns={columns}>
+          {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+        </TableHeader>
+        <TableBody
+        isLoading={isLoading}
+        loadingContent={<Spinner label="Cargando usuarios..." />}
+         items={items}>
+          {(user) => (
+            <TableRow key={user.id}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  {column.key === "pic" ? (
+                    user.image?.imageUri ? (
+                      <Avatar alt={user.fullName}  src={
+                        user.image
+                          ? `http://localhost:8080/${user.image.imageUri
+                              .split("/")
+                              .pop()}`
+                          : "/default.webp"
+                      } />
+                    ) : (
+                      <Avatar>{user.fullName.charAt(0).toUpperCase()}</Avatar>
+                    )
+                  ) : column.key === "actions" ? (
+                    <Tooltip
+                      showArrow
+                      content={user.status ? "Desactivar" : "Activar"}
+                    >
+                      <span className="text-danger cursor-pointer active:opacity-50">
+                        <ChangeStatus id={user.id} initialStatus={user.status} type="user" />
+                      </span>
+                    </Tooltip>
+                  ) : column.key === "status" ? (
+                    <Chip
+                      className="capitalize"
+                      size="sm"
+                      variant="flat"
+                      color={user.status ? "success" : "danger"}
+                    >
+                      {user.status ? "activo" : "inactivo"}
+                    </Chip>
+                  ) : column.key === "name" ? (
+                    user.fullName
+                  ) : column.key === "email" ? (
+                    user.email
+                  ) : column.key === "birthday" ? (
+                    new Date(user.birthday).toLocaleDateString()
+                  ) : null}
+                </TableCell>
+              ))}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </>
   );
 }

@@ -23,7 +23,7 @@ const columns = [
   { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 5;
+const rowsPerPage = 10;
 
 export default function ColorsTable() {
   const [colorsData, setColorsData] = useState<IColor[]>([]);
@@ -34,7 +34,7 @@ export default function ColorsTable() {
       const response = await ColorService.getColors();
       setColorsData(response.data); 
     } catch (error) {
-      console.error("Error fetching colors: ", error);
+      throw new Error("An error occurred while fetching colors. Please try again.");
     }
   }, []);
 
@@ -82,7 +82,7 @@ export default function ColorsTable() {
               <TableRow key={item.id}>
                 {columns.map((column) => (
                   <TableCell key={column.key}>
-                    {renderCellContent(column.key, item)}
+                    {renderCellContent(column.key, item, fetchColors)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -94,7 +94,7 @@ export default function ColorsTable() {
   );
 }
 
-function renderCellContent(key: string, item: IColor) {
+function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
   switch (key) {
     case "color":
       return (
@@ -113,7 +113,12 @@ function renderCellContent(key: string, item: IColor) {
     case "actions":
       return (
         <ButtonGroup className="gap-2">
-          <EditColorModal id={item.id} />
+           <EditColorModal 
+             id={item.id} 
+             colorName={item.colorName} 
+             colorCod={item.colorCod} 
+             onColorUpdated={fetchColors} 
+           />
           <ChangeStatus id={item.id} initialStatus={item.status} type="color" />
         </ButtonGroup>
       );

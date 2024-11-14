@@ -51,6 +51,10 @@ export const doPut = (url: string, data: any) => {
   return instance.put(url, data);
 };
 
+export const doPutId = (url: string) => {
+  return instance.put(url);
+};
+
 export const doDelete = (url: string) => {
   return instance.delete(url);
 };
