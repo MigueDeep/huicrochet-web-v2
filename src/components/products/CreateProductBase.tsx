@@ -137,6 +137,7 @@ export const CreateProductBase = () => {
                         }
                         fullWidth
                         variant="outlined"
+                        
                         className="form-control"
                         error={touched.categories && !!errors.categories}
                         helperText={<ErrorMessage name="categories" />}
