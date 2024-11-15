@@ -1,74 +1,90 @@
-// EditColorModal.jsx
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Button, TextField, IconButton } from "@mui/material";
+// EditColorModal
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Tooltip } from "@nextui-org/react";
+import { Button, CircularProgress, TextField, IconButton } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import EditIcon from '@mui/icons-material/Edit';
+import ColorService from "../../service/ColorService";
+import { IColor } from "../../interfaces/IColor";
+import { useState } from "react";
 
-export default function EditColorModal({ id }: { id: string }) { // Ajustado para recibir id como propiedad
+export default function EditColorModal({ id, colorName, colorCod, onColorUpdated }: Readonly<{ id: string, colorName: string, colorCod: string, onColorUpdated: () => void }>) {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object({
-        name: yup.string().required("El nombre es requerido"),
-        color: yup.string().required("El color es requerido"),
+        colorName: yup.string().required("El nombre del color es requerido"),
+        colorCod: yup.string().required("El código de color es requerido"),
     });
 
     const formik = useFormik({
         initialValues: {
-            name: "",
-            color: "#000000",
+            id: id,
+            colorName: colorName || '',
+            colorCod: colorCod || '#FFFFFF',
+            status: true
         },
+        enableReinitialize: true, 
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            console.log(id);
-            console.log(values);
-            formik.resetForm();
-            onClose();
+        onSubmit: async(values: IColor) => {
+            setLoading(true);
+            try {
+                await ColorService.updateColor(id, values);
+                onColorUpdated();
+            } catch (error) {
+                console.error("Error updating color:", error);
+            } finally {
+                setLoading(false);
+                formik.resetForm();
+                onClose();
+            }
         }
     });
 
     return (
         <>
-            <IconButton
-                color="primary"
-                size="small"
-                onClick={onOpen}
-            >
-                <EditIcon />
-            </IconButton>
+            <Tooltip content="Editar color" placement="top">
+                <IconButton color="primary" size="small" onClick={onOpen}>
+                    <EditIcon />
+                </IconButton>
+            </Tooltip>
             <Modal isOpen={isOpen} onOpenChange={(open) => open ? onOpen() : onClose()}>
                 <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">Crear color</ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Editar color</ModalHeader>
                     <ModalBody>
                         <TextField
                             label="Nombre"
                             fullWidth
                             placeholder="Nombre del color"
-                            name="name"
-                            value={formik.values.name}
+                            name="colorName"
+                            value={formik.values.colorName}
                             onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
+                            error={formik.touched.colorName && Boolean(formik.errors.colorName)}
+                            helperText={formik.touched.colorName && formik.errors.colorName}
                         />
                         <TextField
                             label="Selecciona un color"
                             type="color"
                             fullWidth
-                            name="color"
-                            value={formik.values.color}
+                            name="colorCod"
+                            value={formik.values.colorCod}
                             onChange={formik.handleChange}
-                            InputLabelProps={{ shrink: true }}
                             sx={{ mt: 2 }}
-                            error={formik.touched.color && Boolean(formik.errors.color)}
-                            helperText={formik.touched.color && formik.errors.color}
+                            error={formik.touched.colorCod && Boolean(formik.errors.colorCod)}
+                            helperText={formik.touched.colorCod && formik.errors.colorCod}
                         />
                     </ModalBody>
                     <ModalFooter>
                         <Button color="error" onClick={onClose}>
                             Cerrar
                         </Button>
-                        <Button color="primary" variant="contained" onClick={() => formik.handleSubmit()}>
-                            Guardar
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => formik.handleSubmit()}
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={24} /> : "Guardar"}
                         </Button>
                     </ModalFooter>
                 </ModalContent>

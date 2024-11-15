@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Toaster } from "react-hot-toast"
 
 const theme = createTheme({
   palette: {
@@ -69,6 +70,7 @@ function App() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <NextUIProvider>
+          <Toaster />
           <BrowserRouter>
             <AppRouter />
           </BrowserRouter>

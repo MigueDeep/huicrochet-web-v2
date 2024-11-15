@@ -1,0 +1,136 @@
+.card-base {
+  width: 100%;
+  max-width: 120px;
+  min-width: 80px;
+  height: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #ffe0eb;
+  box-sizing: border-box;
+}
+
+.file-upload-container {
+  position: relative;
+  border: 2px dashed var(--primary);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.file-upload-container:hover {
+  border-color: var(--primary);
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-preview-container img {
+  border-radius: 8px;
+}
+
+.image-preview-wrapper {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.image-preview-wrapper.fade-in {
+  opacity: 0;
+  transform: scale(0.9);
+  animation: fadeIn 0.3s forwards;
+}
+
+.image-preview-wrapper.fade-out {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.product-base-grid {
+  width: 100%; /* O usa un porcentaje como 90% para dejar margen */
+  max-width: 1550px; /* Limita el ancho máximo en pantallas grandes */
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px;
+}
+/* Personalizar scrollbar */
+.product-base-grid::-webkit-scrollbar {
+  height: 8px; /* Altura de la barra de desplazamiento horizontal */
+}
+
+.product-base-grid::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color de fondo de la pista */
+  border-radius: 10px;
+}
+
+.product-base-grid::-webkit-scrollbar-thumb {
+  background: var(--primary); /* Color del "thumb" o el deslizador */
+  border-radius: 10px;
+}
+
+.product-base-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--primary); /* Color del "thumb" al pasar el cursor */
+}
+
+@media (max-width: 768px) {
+  .product-base-grid {
+    max-width: 100%; /* Ocupa todo el ancho en pantallas pequeñas */
+    padding: 5px; /* Ajusta el padding si es necesario */
+  }
+}
+
+.product-card {
+  border-radius: 18px;
+  padding: 20px;
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-card.selected {
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5); /* Sombra rosa cuando está seleccionado */
+}
+
+.product-card:hover {
+  box-shadow: 0 6px 20px rgba(255, 105, 180, 0.7); /* Sombra más prominente cuando hover */
+  transform: scale(1.05); /* Ligeramente aumentar el tamaño */
+}
+
+/* Desactivar hover cuando la tarjeta tiene la clase "selected" */
+.product-card.selected:hover {
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5); /* Mantener la sombra seleccionada */
+  transform: none; /* No aplicar la transformación de escala */
+}
+
+.product-card .text-center {
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

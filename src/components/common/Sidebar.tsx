@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Drawer from "@mui/material/Drawer";
@@ -16,11 +17,12 @@ import {
   ProductosIcon,
   UsuariosIcon,
   ColorIcon,
-  CategoryIcon
+  CategoryIcon,
+  HiloICon,
+  BaseProductIcon,
 } from "../../utils/icons";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-
 
 const drawerWidth = 240;
 
@@ -28,17 +30,31 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
+  const [openProductos, setOpenProductos] = useState(false);
+  const [openCatalogos, setOpenCatalogos] = useState(false);
+
+  useEffect(() => {
+    // Abrir el collapse correspondiente si la ruta coincide con una de sus subrutas
+    setOpenProductos(location.pathname.startsWith("/products"));
+    setOpenCatalogos(location.pathname.startsWith("/categories") || location.pathname.startsWith("/colors"));
+  }, [location.pathname]);
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { text: "Productos", icon: <ProductosIcon />, path: "/products" },
+    {
+      text: "Productos",
+      icon: <ProductosIcon />,
+      children: [
+        { text: "Producto base", path: "/products/base", icon: <BaseProductIcon /> },
+        { text: "Productos", path: "/products", icon: <HiloICon /> },
+      ],
+    },
     {
       text: "Catálogos",
       icon: <CategoriasIcon />,
       children: [
-        { text: "Categorías", path: "/categories", icon: <CategoryIcon/> },
-        { text: "Colores", path: "/colors", icon: <ColorIcon/> },
+        { text: "Categorías", path: "/categories", icon: <CategoryIcon /> },
+        { text: "Colores", path: "/colors", icon: <ColorIcon /> },
       ],
     },
     { text: "Usuarios", icon: <UsuariosIcon />, path: "/users" },
@@ -47,8 +63,18 @@ const Sidebar = () => {
 
   const navigateTo = (path: string) => navigate(path);
 
-  const handleClick = () => {
-    setOpen(!open);
+  const handleProductosClick = () => {
+    setOpenProductos(!openProductos);
+  };
+
+  const handleCatalogosClick = () => {
+    setOpenCatalogos(!openCatalogos);
+  };
+
+  const closeSession = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    navigate("/login");
   };
 
   return (
@@ -81,20 +107,42 @@ const Sidebar = () => {
         </div>
         <Divider />
         <div className="container">
-          <p className="text-semibold ">Menú</p>
+          <p className="text-semibold">Menú</p>
           <List>
             {menuItems.map((item) => (
               <div key={item.text}>
                 {item.children ? (
                   <>
                     <ListItem disablePadding>
-                      <ListItemButton onClick={handleClick}>
+                      <ListItemButton
+                        onClick={
+                          item.text === "Productos"
+                            ? handleProductosClick
+                            : handleCatalogosClick
+                        }
+                      >
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {(
+                          item.text === "Productos"
+                            ? openProductos
+                            : openCatalogos
+                        ) ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
                       </ListItemButton>
                     </ListItem>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={
+                        item.text === "Productos"
+                          ? openProductos
+                          : openCatalogos
+                      }
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <List component="div" disablePadding>
                         {item.children.map((child) => (
                           <ListItem
@@ -160,7 +208,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <CerrarSesionIcon />
               </ListItemIcon>
-              <ListItemText primary="Cerrar sesión" />
+              <ListItemText primary="Cerrar sesión" onClick={closeSession} />
             </ListItemButton>
           </ListItem>
         </List>

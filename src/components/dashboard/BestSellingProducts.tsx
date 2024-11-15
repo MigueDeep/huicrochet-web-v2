@@ -1,8 +1,6 @@
-import React from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CardProductVertical from "./CardProductVertical";
 import "../../styles/dashboard/dashboard.css"; // Import the CSS file
-import { card } from "@nextui-org/react";
 
 export const BestSellingProducts = () => {
   return (

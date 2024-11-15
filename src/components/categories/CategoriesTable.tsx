@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { Button, IconButton } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Switch,
+  TextField,
+} from "@mui/material";
 import {
   Table,
   TableHeader,
@@ -8,54 +14,86 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
+  Pagination,
 } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 import EditModal from "./EditModal";
 import { CreateCategoryModal } from "./CreateCategoryModal";
-
-const rows = [
-  { key: 1, name: "Figuras", status: 1 },
-  { key: 2, name: "Decoraciones", status: 0 },
-  { key: 3, name: "Ropa", status: 1 },
-  { key: 4, name: "Muñecos", status: 0 },
-  { key: 5, name: "Juguetes", status: 1 },
-];
+import {
+  getAllCategories,
+  updateCategoryStatus,
+} from "../../service/CategoryService";
+import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
+import SearchIcon from "@mui/icons-material/Search";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
+const label = { inputProps: { "aria-label": "Switch demo" } };
+const rowsPerPage = 10;
 
 const columns = [
-  {
-    key: "name",
-    label: "Categoria",
-  },
-  {
-    key: "status",
-    label: "Estado",
-  },
-  {
-    key: "actions",
-    label: "Acciones",
-  },
+  { key: "name", label: "Categoria" },
+  { key: "state", label: "Estado" },
+  { key: "actions", label: "Acciones" },
 ];
 
 const CategoriesTable = () => {
   const [openCreateModal, setopenCreateModal] = useState(false);
   const [openEditModal, setopenEditModal] = useState(false);
+  const [categories, setCategories] = useState<Datum[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
-  const onOpenEditModal = () => {
-    setopenEditModal(true);
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories();
+      setCategories(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al obtener categorías:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onOpenCreateModal = () => {
-    setopenCreateModal(true);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const onOpenEditModal = (category: Datum) => {
+    setSelectedCategory(category);
+    setopenEditModal(true);
   };
 
   const onCloseEditModal = () => {
     setopenEditModal(false);
+    setSelectedCategory(null);
   };
 
-  const onCloseCreateModal = () => {
-    setopenCreateModal(false);
+  const onOpenCreateModal = () => setopenCreateModal(true);
+  const onCloseCreateModal = () => setopenCreateModal(false);
+
+  const toggleCategoryStatus = async (category: Datum) => {
+    setLoading(true);
+    try {
+      const newState = !category.state;
+      await updateCategoryStatus(category.id, newState);
+      fetchCategories();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const pages = Math.ceil(categories.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return categories.slice(start, end);
+  }, [page, categories]);
 
   return (
     <>
@@ -66,11 +104,48 @@ const CategoriesTable = () => {
           padding: "1rem 0",
         }}
       >
-        <Button variant="contained" onClick={onOpenCreateModal}>
+        <Button
+          variant="contained"
+          onClick={onOpenCreateModal}
+          startIcon={<AddIcon />}
+        >
           Agregar Categoría
         </Button>
       </div>
-      <Table aria-label="Example table with dynamic content">
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre de la categoría"
+          variant="outlined"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
+
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key} style={{ textAlign: "center" }}>
@@ -78,26 +153,39 @@ const CategoriesTable = () => {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={rows}>
+        <TableBody
+          isLoading={loading}
+          loadingContent={
+            <div style={{ height: "100px", width: "100px" }}>
+              <Lottie animationData={animationData} width={50} height={50} />
+            </div>
+          }
+          items={items}
+        >
           {(item) => (
-            <TableRow key={item.key}>
+            <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell style={{ textAlign: "center" }}>
                   {columnKey === "actions" ? (
                     <>
-                      <IconButton aria-label="edit" onClick={onOpenEditModal}>
-                        <Edit color="info" />
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => onOpenEditModal(item)}
+                      >
+                        <Edit />
                       </IconButton>
-                      <IconButton aria-label="delete">
-                        <Delete color="error" />
-                      </IconButton>
+                      <Switch
+                        {...label}
+                        checked={item.state}
+                        onChange={() => toggleCategoryStatus(item)}
+                      />
                     </>
-                  ) : columnKey === "status" ? (
+                  ) : columnKey === "state" ? (
                     <Chip
-                      color={item.status === 1 ? "success" : "danger"}
+                      color={item.state ? "success" : "danger"}
                       variant="flat"
                     >
-                      {item.status === 1 ? "Activo" : "Inactivo"}
+                      {item.state ? "Activo" : "Inactivo"}
                     </Chip>
                   ) : (
                     getKeyValue(item, columnKey)
@@ -108,15 +196,18 @@ const CategoriesTable = () => {
           )}
         </TableBody>
       </Table>
+
       <EditModal
         isOpen={openEditModal}
-        onOpenChange={onOpenEditModal}
         onCloseEditModal={onCloseEditModal}
+        selectedCategory={selectedCategory}
+        fetchCategories={fetchCategories}
       />
       <CreateCategoryModal
         isOpen={openCreateModal}
         onOpenChange={onOpenCreateModal}
         onCloseCreateModal={onCloseCreateModal}
+        fetchCategories={fetchCategories}
       />
     </>
   );

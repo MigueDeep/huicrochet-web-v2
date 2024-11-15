@@ -1,136 +1,154 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    getKeyValue,
-    Chip,
-    Pagination,
-    ButtonGroup,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip,
+  Pagination,
+  ButtonGroup,
 } from "@nextui-org/react";
-import ColorCircle from "../common/ColorCircle";
 import ChangeStatus from "../common/ChangesStatus";
+import CreateColorModal from "../../components/colors/CreateColor";
 import EditColorModal from "./EditColor";
-
-const rows = [
-    {
-        key: '1',
-        color: "#FF0000",
-        name: "Rojo",
-        status: "activo",
-    },
-    {
-        key: '2',
-        color: "#00FF00",
-        name: "Verde",
-        status: "deshabilitado",
-    },
-    {
-        key: '3',
-        color: "#0000FF",
-        name: "Azul",
-        status: "activo",
-    },
-    {
-        key: '4',
-        color: "#FFFF00",
-        name: "Amarillo",
-        status: "activo",
-    },
-    {
-        key: '5',
-        color: "#FF00FF",
-        name: "Morado",
-        status: "deshabilitado",
-    },
-    {
-        key: '6',
-        color: "#00FFFF",
-        name: "Cyan",
-        status: "deshabilitado",
-    },
-];
+import { IColor } from "../../interfaces/IColor";
+import ColorService from "../../service/ColorService";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
 
 const columns = [
-    { key: "color", label: "COLOR" },
-    { key: "name", label: "NOMBRE" },
-    { key: "status", label: "ESTADO" },
-    { key: "actions", label: "ACCIONES" },
+  { key: "color", label: "COLOR" },
+  { key: "name", label: "NOMBRE" },
+  { key: "status", label: "ESTADO" },
+  { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 5;
+const rowsPerPage = 10;
 
-export default function OrdersTable() {
-    const [page, setPage] = useState(1);
+export default function ColorsTable() {
+  const [colorsData, setColorsData] = useState<IColor[]>([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const pages = Math.ceil(rows.length / rowsPerPage);
+  const fetchColors = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await ColorService.getColors();
+      setColorsData(response.data); 
+    } catch (error) {
+      throw new Error("An error occurred while fetching colors. Please try again.");
+    }finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    const items = useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        return rows.slice(start, end);
-    }, [page]);
+  useEffect(() => {
+    fetchColors();
+  }, [fetchColors]);
 
-    return (
+  const pages = Math.ceil(colorsData.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return colorsData.slice(start, end);
+  }, [page, colorsData]);
+
+  return (
+    <>
+      <div className="row d-flex justify-content-end mb-4">
+        <CreateColorModal onColorCreated={fetchColors} />
+      </div>
+      <div className="row">
         <Table
-            aria-label="Example table with dynamic content"
-            bottomContent={
-                <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
-                    <Pagination
-                        loop showControls
-                        color="success"
-                        initialPage={1} page={page}
-                        total={pages}
-                        onChange={(page) => setPage(page)}
-                    />
-                </div>
-            }
+          aria-label="Example table with dynamic content"
+          bottomContent={
+            <div className="flex w-full justify-center pb-4 border-b border-gray-200">
+              <Pagination
+                loop
+                showControls
+                color="success"
+                initialPage={1}
+                page={page}
+                total={pages}
+                onChange={(page) => setPage(page)}
+              />
+            </div>
+          }
         >
-            <TableHeader columns={columns}>
-                {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-            </TableHeader>
-            <TableBody items={items}>
-                {(item) => (
-                    <TableRow key={item.key}>
-                        {columns.map((column) => (
-                            <TableCell key={column.key}>
-                                {
-                                    column.key === "color" ? (
-                                        <ColorCircle color={item.color} />
-                                    ) : column.key === "actions" ? (
-                                        <ButtonGroup
-                                            className="gap-2"
-                                        >
-                                            <EditColorModal id={item.key} />
-                                            <ChangeStatus
-                                                id={item.key}
-                                                initialStatus={item.status === "activo"}
-                                                type="color"
-                                            />
-                                        </ButtonGroup>
-
-
-                                    ) : column.key === "status" ? (
-                                        <Chip
-                                            className="capitalize"
-                                            size="sm"
-                                            variant="flat"
-                                            color={item.status === "activo" ? "success" : "danger"}
-                                        >
-                                            {item.status}
-                                        </Chip>
-                                    ) :
-                                        (
-                                            getKeyValue(item, column.key)
-                                        )}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                )}
-            </TableBody>
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.key}>{column.label}</TableColumn>
+            )}
+          </TableHeader>
+          <TableBody 
+            isLoading={isLoading}
+            loadingContent={
+              <div style={{ height: "100px", width: "100px" }}>
+                <Lottie animationData={animationData} width={50} height={50} />
+              </div>
+            }
+            items={items}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {columns.map((column) => (
+                  <TableCell key={column.key}>
+                    {renderCellContent(column.key, item, fetchColors)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )}
+          </TableBody>
         </Table>
-    );
+      </div>
+    </>
+  );
+}
+
+function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
+  switch (key) {
+    case "color":
+      return (
+        <div className="d-flex gap-2">
+          <div
+            style={{
+              backgroundColor: item.colorCod,
+              width: 20,
+              height: 20,
+              borderRadius: "50%",
+            }}
+          ></div>
+          <p>{item.colorCod}</p>
+        </div>
+      );
+    case "actions":
+      return (
+        <ButtonGroup className="gap-2">
+           <EditColorModal 
+             id={item.id} 
+             colorName={item.colorName} 
+             colorCod={item.colorCod} 
+             onColorUpdated={fetchColors} 
+           />
+          <ChangeStatus id={item.id} initialStatus={item.status} type="color" />
+        </ButtonGroup>
+      );
+    case "status":
+      return (
+        <Chip
+          className="capitalize"
+          size="sm"
+          variant="flat"
+          color={item.status ? "success" : "danger"}
+        >
+          {item.status ? "Activo" : "Desactivado"}
+        </Chip>
+      );
+    default:
+      return (
+        <p className="text-sm font-medium">{item.colorName}</p>
+      );
+  }
 }

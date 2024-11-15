@@ -11,7 +11,6 @@ import {
   Chip,
   Pagination,
 } from "@nextui-org/react";
-import ChangeOrderStatus from "./ChangeOrderStatus";
 import OrderDetail from "./OrderDetail";
 
 const rows = [
@@ -36,7 +35,7 @@ const columns = [
   { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 2; 
+const rowsPerPage = 10; 
 
 export default function OrdersTable() {
   const [page, setPage] = useState(1);
@@ -50,7 +49,6 @@ export default function OrdersTable() {
   }, [page]);
 
   return (
-    <>
     <Table
       aria-label="Example table with dynamic content"
       bottomContent={
@@ -85,7 +83,6 @@ export default function OrdersTable() {
                   >
                     <span className="text-danger cursor-pointer active:opacity-50">
                       <OrderDetail/>
-                      <ChangeOrderStatus/>
                     </span>
                   </Tooltip>
                 ) 
@@ -107,6 +104,5 @@ export default function OrdersTable() {
         )}
       </TableBody>
     </Table>
-    </>
   );
 }
