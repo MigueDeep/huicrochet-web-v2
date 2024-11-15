@@ -1,6 +1,4 @@
-import React from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import CardProductVertical from "./CardProductVertical";
 import { LineChart } from "@mui/x-charts";
 
 export const ViewsDateStats = () => {

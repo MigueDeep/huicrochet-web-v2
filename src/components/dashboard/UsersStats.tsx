@@ -1,5 +1,4 @@
-import React from "react";
-import GroupIcon from "@mui/icons-material/Group";
+
 import { UserNoOnlineIcon, UserOnlineIcon, UsersIcon } from "../../utils/icons";
 
 export const UsersStats = () => {

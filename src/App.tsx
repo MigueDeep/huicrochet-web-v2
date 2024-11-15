@@ -5,7 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Toaster } from "react-hot-toast"
+import { Toaster } from "react-hot-toast";
+import { DndContext } from "@dnd-kit/core";
 
 const theme = createTheme({
   palette: {
@@ -71,9 +72,11 @@ function App() {
       <ThemeProvider theme={theme}>
         <NextUIProvider>
           <Toaster />
-          <BrowserRouter>
-            <AppRouter />
-          </BrowserRouter>
+          <DndContext>
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
+          </DndContext>
         </NextUIProvider>
       </ThemeProvider>
     </LocalizationProvider>
