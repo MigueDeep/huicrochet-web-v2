@@ -60,9 +60,9 @@ const DraggableDroppable: React.FC<DraggableDroppableProps> = ({
 
   const style = {
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
-    transition: isDragging ? "none" : "transform 200ms ease", 
+    transition: isDragging ? "none" : "transform 200ms ease",
     marginBottom: "16px", // Espacio entre los elementos
-    cursor: "move",
+    cursor: "drag",
   };
 
   return (
