@@ -35,6 +35,8 @@ export const CreateItemProduct = ({
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [stockError, setStockError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
@@ -88,7 +90,13 @@ export const CreateItemProduct = ({
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
         isNew: true,
       }));
-
+      if (validFiles.some((file) => file.size > 5 * 1024 * 1024)) {
+        setImageError(true);
+        toast.error("Las imagenes no deben ser mayores a 5MB.");
+        return;
+      } else {
+        setImageError(false);
+      }
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
@@ -135,14 +143,39 @@ export const CreateItemProduct = ({
       });
     }
   }, [selectedProduct]);
-  const handleSave = async () => {
+  const validateForm = () => {
+    let isValid = true;
+
     if (!selectedProduct) {
-      alert("No product selected");
-      return;
+      toast.error("Debe seleccionar un producto base.");
+      isValid = false;
     }
 
+    if (!stock || stock <= 0) {
+      setStockError(true);
+      isValid = false;
+      toast.error("El stock debe ser mayor a 0.");
+    } else {
+      setStockError(false);
+    }
+
+    if (!selectedColor) {
+      toast.error("Debe seleccionar un color.");
+      isValid = false;
+    }
+
+    if (files.length === 0) {
+      toast.error("Debe subir al menos una imagen.");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
     const data: ICreateItem = {
-      productId: selectedProduct.id,
+      productId: selectedProduct ? selectedProduct.id : "",
       colorId: selectedColor,
       stock: stock,
       state: true,
@@ -255,6 +288,8 @@ export const CreateItemProduct = ({
               fullWidth
               value={stock}
               onChange={(e) => setStock(Number(e.target.value))}
+              error={stockError}
+              helperText={stockError ? "El stock debe ser mayor a 0." : ""}
               slotProps={{
                 input: {
                   startAdornment: (
