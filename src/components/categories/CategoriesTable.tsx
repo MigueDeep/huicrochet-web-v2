@@ -29,6 +29,7 @@ import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
+
 const label = { inputProps: { "aria-label": "Switch demo" } };
 const rowsPerPage = 10;
 
@@ -45,6 +46,7 @@ const CategoriesTable = () => {
   const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la búsqueda
 
   const fetchCategories = async () => {
     try {
@@ -75,29 +77,35 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async (category: Datum) => {
-    setLoading(true); // Establece el estado de carga
+    setLoading(true);
     try {
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
-
-      // Vacía las categorías antes de recargar
       setCategories([]);
-      await fetchCategories(); // Vuelve a cargar las categorías
+      await fetchCategories();
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
   };
 
   const pages = Math.ceil(categories.length / rowsPerPage);
 
+  // Filtrar categorías por el término de búsqueda
+  const filteredCategories = useMemo(() => {
+    if (!searchTerm) return categories;
+    return categories.filter((category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, categories]);
+
   const items = useMemo(() => {
     if (loading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return categories.slice(start, end);
-  }, [page, categories, loading]);
+    return filteredCategories.slice(start, end);
+  }, [page, filteredCategories, loading]);
 
   return (
     <>
@@ -122,6 +130,8 @@ const CategoriesTable = () => {
           placeholder="Ingresa el nombre de la categoría"
           variant="outlined"
           fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el valor de la búsqueda
           slotProps={{
             input: {
               startAdornment: (
