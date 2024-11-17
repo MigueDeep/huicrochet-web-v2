@@ -1,15 +1,16 @@
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import { Product, ProductBaseGrid } from "../create/ProductBaseGrid";
+import { Product } from "../create/ProductBaseGrid";
+import { ProductBaseEditGrid } from "./ProductBaseEditGrid";
 
 interface SelectProductBaseProps {
   onSelectProduct: (product: Product | null) => void;
 }
 
-export const EditSelectProductBase = (
-  { onSelectProduct }: SelectProductBaseProps
-) => {
+export const EditSelectProductBase = ({
+  onSelectProduct,
+}: SelectProductBaseProps) => {
   const navigate = useNavigate();
   const onCreateProduct = () => {
     navigate("/products/base/create");
@@ -30,7 +31,7 @@ export const EditSelectProductBase = (
           </Button>
         </div>
       </div>
-      <ProductBaseGrid onSelectProduct={onSelectProduct} />
+      <ProductBaseEditGrid onSelectProduct={onSelectProduct} />
     </>
   );
 };
