@@ -50,10 +50,11 @@ export const ProductsBase = () => {
 
   const pages = Math.ceil(products.length / rowsPerPage);
   const items = useMemo(() => {
+    if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return products.slice(start, end);
-  }, [page, products]);
+  }, [page, products, isLoading]);
 
   const fetchProducts = async () => {
     try {
@@ -70,11 +71,12 @@ export const ProductsBase = () => {
     navigate(`/products/base/edit/${id}`);
   };
   const toggleProductStatus = async (product: Datum) => {
+    setIsLoading(true);
     try {
       const newState = !product.state;
       await ProductServices.changeStatus(product.id, newState);
-      setIsLoading(true);
-      fetchProducts();
+      setProducts([]);
+      await fetchProducts();
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
     }
@@ -147,14 +149,14 @@ export const ProductsBase = () => {
             ))}
           </TableHeader>
           <TableBody
-            items={items}
+            items={items} // Si está cargando, pasar lista vacía
             isLoading={isLoading}
             loadingContent={
               <div style={{ height: "100px", width: "100px" }}>
                 <Lottie animationData={animationData} width={50} height={50} />
               </div>
-            } 
-           emptyContent={"No hay productos para mostrar"}
+            }
+            emptyContent={"No hay productos para mostrar"}
           >
             {items.map((product) => (
               <TableRow key={product.id}>

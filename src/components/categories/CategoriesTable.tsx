@@ -50,7 +50,6 @@ const CategoriesTable = () => {
     try {
       const response = await getAllCategories();
       setCategories(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
     } finally {
@@ -76,24 +75,29 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async (category: Datum) => {
-    setLoading(true);
+    setLoading(true); // Establece el estado de carga
     try {
       const newState = !category.state;
       await updateCategoryStatus(category.id, newState);
-      fetchCategories();
+
+      // Vacía las categorías antes de recargar
+      setCategories([]);
+      await fetchCategories(); // Vuelve a cargar las categorías
     } catch (error) {
+      console.error("Error al actualizar el estado de la categoría:", error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Finaliza el estado de carga
     }
   };
 
   const pages = Math.ceil(categories.length / rowsPerPage);
 
   const items = useMemo(() => {
+    if (loading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return categories.slice(start, end);
-  }, [page, categories]);
+  }, [page, categories, loading]);
 
   return (
     <>
@@ -161,7 +165,7 @@ const CategoriesTable = () => {
             </div>
           }
           items={items}
-          emptyContent={"No hay categorias para mostrar"}
+          emptyContent={"No hay categorías para mostrar"}
         >
           {(item) => (
             <TableRow key={item.id}>

@@ -55,7 +55,8 @@ export const ProductsTable = () => {
     try {
       const newState = !item.state;
       await ItemsService.chngeStatus(item.id, newState);
-      fetchProducts();
+      setProducts([])
+    await  fetchProducts();
     } catch (error) {
       console.error("Error al cambiar el estado del ítem");
     } finally {
@@ -64,10 +65,12 @@ export const ProductsTable = () => {
   };
 
   const items = useMemo(() => {
+    if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return products.slice(start, end);
-  }, [page, products]);
+  }, [page, products,isLoading]);
+  
   const fetchProducts = async () => {
     try {
       const response = await ItemsService.getAll();
