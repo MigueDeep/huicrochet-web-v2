@@ -1,6 +1,7 @@
 import axios from "axios";
 import { doGet, doPut } from "../config/Axios";
 import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
+import { IItem } from "../interfaces/Items/ItemById";
 
 export const ItemsService = {
   getAll: async (): Promise<IItemProduct> => {
@@ -11,7 +12,7 @@ export const ItemsService = {
       throw error;
     }
   },
-  getById: async (id: string): Promise<IItemProduct> => {
+  getById: async (id: string): Promise<IItem> => {
     try {
       const response = await doGet(`/item/getById/${id}`);
       return response.data;

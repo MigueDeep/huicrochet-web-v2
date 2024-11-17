@@ -17,26 +17,58 @@ import {
   XCircleIcon,
 } from "../../../utils/icons";
 
-import { createItem } from "../../../service/ItemsService";
-import { ICreateItem } from "../../../interfaces/Items/ItemsInterface";
+import { createItem, ItemsService } from "../../../service/ItemsService";
 import { IColor } from "../../../interfaces/IColor";
 import ColorService from "../../../service/ColorService";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ColorCircle from "../../common/ColorCircle";
-import { Product } from "../create/ProductBaseGrid";
 
-interface CreateItemProductProps {
-  selectedProduct: Product | null;
-}
+interface CreateItemProductProps {}
+export const EditItemProduct = ({}: CreateItemProductProps) => {
+  const { id } = useParams<{ id: string }>();
 
-export const EditItemProduct = ({
-  selectedProduct,
-}: CreateItemProductProps) => {
+  const fetchProductById = async (id: string) => {
+    try {
+      const response = await ItemsService.getById(id);
+      const { data } = response;
+
+      if (data) {
+        // Establecer datos del producto base
+        setProductDetails({
+          name: data.product.productName,
+          category: data.product.categories[0]?.name || "Sin categoría",
+          description: data.product.description,
+          price: data.product.price.toString(),
+        });
+
+        // Establecer datos del item
+        setStock(data.stock || 0);
+        setSelectedColor(data.color.id);
+
+        // Configurar imágenes para la vista previa
+        const previews = data.images.map((image: any) => ({
+          url: `http://localhost:8080/${image.imageUri.split("/").pop()}`,
+          name: image.name,
+          size: "Tamaño desconocido", // No se provee en los datos actuales
+          isNew: false,
+        }));
+        setImagePreviews(previews);
+      }
+    } catch (error) {
+      console.error("Error al obtener el producto:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchProductById(id);
+    }
+  }, [id]);
+
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
   >([]);
@@ -48,6 +80,7 @@ export const EditItemProduct = ({
     price: "",
   });
   const navigate = useNavigate();
+
   const fetchColors = useCallback(async () => {
     try {
       const response = await ColorService.getColors();
@@ -60,6 +93,7 @@ export const EditItemProduct = ({
   useEffect(() => {
     fetchColors();
   }, [fetchColors]);
+
   const [value, setValue] = useState(0);
   const [stock, setStock] = useState<number>(0);
   const [selectedColor, setSelectedColor] = useState("");
@@ -75,10 +109,9 @@ export const EditItemProduct = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
     if (selectedFiles) {
-      const newFiles = Array.from(selectedFiles);
-      const validFiles = newFiles.filter((file) => file.type.includes("image"));
-
-      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+      const validFiles = Array.from(selectedFiles).filter((file) =>
+        file.type.includes("image")
+      );
 
       const newPreviews = validFiles.map((file) => ({
         url: URL.createObjectURL(file),
@@ -90,6 +123,7 @@ export const EditItemProduct = ({
         isNew: true,
       }));
 
+      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
@@ -105,60 +139,26 @@ export const EditItemProduct = ({
     }, 300);
   };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setImagePreviews((prevPreviews) =>
-        prevPreviews.map((preview) => ({ ...preview, isNew: false }))
-      );
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [imagePreviews]);
-
   const handleColorSelect = (color: IColor) => {
     setSelectedColor(color.id);
   };
 
-  useEffect(() => {
-    if (selectedProduct) {
-      setProductDetails({
-        name: selectedProduct.title,
-        category: selectedProduct.category,
-        description: selectedProduct.description,
-        price: selectedProduct.price.toString(),
-      });
-    } else {
-      setProductDetails({
-        name: "",
-        category: "",
-        description: "",
-        price: "",
-      });
-    }
-  }, [selectedProduct]);
   const handleSave = async () => {
-    if (!selectedProduct) {
-      alert("No product selected");
+    if (!selectedColor) {
+      toast.error("Selecciona un color.");
       return;
     }
 
-    const data: ICreateItem = {
-      productId: selectedProduct.id,
-      colorId: selectedColor,
-      stock: stock,
-      state: true,
-    };
+    if (stock <= 0) {
+      toast.error("El stock debe ser mayor a 0.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append("itemDto", JSON.stringify(data));
 
     files.forEach((file) => {
       formData.append("images", file);
     });
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
 
     try {
       setIsLoading(true);

@@ -16,6 +16,13 @@ export interface Product {
     items:       Datum[];
 }
 
+export interface ProductI {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  description: string;
+}
 export interface Datum {
     id:       string;
     product?: Product;
