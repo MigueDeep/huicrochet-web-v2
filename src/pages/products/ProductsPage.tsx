@@ -4,10 +4,10 @@ import Layout from "../../components/common/Layout";
 import { Button, IconButton } from "@mui/material";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ListIcon from "@mui/icons-material/List";
-import { ProductsGrid } from "../../components/products/ProductsGrid";
-import { ProductsTable } from "../../components/products/ProductsTable";
+import { ProductsGrid } from "../../components/products/table/ProductsGrid";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import { ProductsTable } from "../../components/products/table/ProductsTable";
 
 export const ProductsPage = () => {
   const [view, setView] = useState("table");

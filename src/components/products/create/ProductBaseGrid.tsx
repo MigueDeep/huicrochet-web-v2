@@ -1,12 +1,13 @@
-import { ProductCardBase } from "./ProductCardBase";
+import { ProductCardBase } from "../ProductCardBase";
 import { useEffect, useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import "../../styles/products/products.css";
-import { Datum } from "../../interfaces/products/ProductsIterface";
-import { ProductServices } from "../../service/ProductService";
+import "../../../styles/products/products.css";
+
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
+import animationData from "../../../utils/animation.json";
+import { ProductServices } from "../../../service/ProductService";
+import { Datum } from "../../../interfaces/products/ProductsIterface";
 
 export interface Product {
   id: string;
@@ -89,7 +90,7 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
               title={product.productName}
               onSelect={() =>
                 handleSelectProduct({
-                  id: product.id, 
+                  id: product.id,
                   title: product.productName,
                   category: product.categories[0].name,
                   price: product.price,

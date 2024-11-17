@@ -23,11 +23,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
-import "../../styles/products/products.css";
-import { ProductCommentsModal } from "./ProductCommentsModal";
-import { Category, Datum } from "../../interfaces/products/ProductsIterface";
-import { ProductServices } from "../../service/ProductService";
+import animationData from "../../../utils/animation.json";
+import "../../../styles/products/products.css";
+import { ProductCommentsModal } from "../ProductCommentsModal";
+import { Category, Datum } from "../../../interfaces/products/ProductsIterface";
+import { ProductServices } from "../../../service/ProductService";
 import { useNavigate } from "react-router-dom";
 const label = { inputProps: { "aria-label": "Switch demo" } };
 

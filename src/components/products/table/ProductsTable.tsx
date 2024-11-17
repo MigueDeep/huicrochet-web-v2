@@ -13,16 +13,16 @@ import {
 } from "@nextui-org/react";
 import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
-import ColorCircle from "../common/ColorCircle";
+import ColorCircle from "../../common/ColorCircle";
 import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import { Datum } from "../../interfaces/Items/ItemsInterface";
-import { ItemsService } from "../../service/ItemsService";
+import { Datum } from "../../../interfaces/Items/ItemsInterface";
+import { ItemsService } from "../../../service/ItemsService";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
+import animationData from "../../../utils/animation.json";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 

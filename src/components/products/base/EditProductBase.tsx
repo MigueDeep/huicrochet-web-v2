@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
-import { getAllActiveCategories } from "../../service/CategoryService";
-import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
-import { ProductServices } from "../../service/ProductService";
-import { IUpdateProduct } from "../../interfaces/products/ProductsIterface";
+import animationData from "../../../utils/animation.json";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { ArrowLeft } from "@mui/icons-material";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
-import { CategoriasIconBlack, HiloIConGary } from "../../utils/icons";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
+import { IUpdateProduct } from "../../../interfaces/products/ProductsIterface";
+import { ProductServices } from "../../../service/ProductService";
+import { getAllActiveCategories } from "../../../service/CategoryService";
+import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
 const validationSchema = Yup.object({
   productName: Yup.string().required("El nombre del producto es obligatorio"),
   price: Yup.number()

@@ -1,5 +1,5 @@
 import Layout from "../../components/common/Layout";
-import { ProductsBase } from "../../components/products/ProductsBase";
+import { ProductsBase } from "../../components/products/table/ProductsBase";
 
 export const ProductsBasePage = () => {
   return (

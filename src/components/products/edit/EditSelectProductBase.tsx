@@ -1,7 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import { Product, ProductBaseGrid } from "./ProductBaseGrid";
+import { Product, ProductBaseGrid } from "../create/ProductBaseGrid";
 
 interface SelectProductBaseProps {
   onSelectProduct: (product: Product | null) => void;

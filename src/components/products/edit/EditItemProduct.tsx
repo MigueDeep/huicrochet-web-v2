@@ -1,10 +1,9 @@
 import TextField from "@mui/material/TextField";
 import { Divider, Progress } from "@nextui-org/react";
-import ColorCircle from "../common/ColorCircle";
 import { useCallback, useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
-import "../../styles/products/products.css";
+import "../../../styles/products/products.css";
 import {
   IconButton,
   Button,
@@ -16,27 +15,27 @@ import {
   HiloIConGary,
   StockIcon,
   XCircleIcon,
-} from "../../utils/icons";
-import { Product } from "./ProductBaseGrid";
-import { createItem } from "../../service/ItemsService";
-import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
-import { IColor } from "../../interfaces/IColor";
-import ColorService from "../../service/ColorService";
+} from "../../../utils/icons";
+
+import { createItem } from "../../../service/ItemsService";
+import { ICreateItem } from "../../../interfaces/Items/ItemsInterface";
+import { IColor } from "../../../interfaces/IColor";
+import ColorService from "../../../service/ColorService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ColorCircle from "../../common/ColorCircle";
+import { Product } from "../create/ProductBaseGrid";
 
 interface CreateItemProductProps {
   selectedProduct: Product | null;
 }
 
-export const CreateItemProduct = ({
+export const EditItemProduct = ({
   selectedProduct,
 }: CreateItemProductProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [stockError, setStockError] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
@@ -90,13 +89,7 @@ export const CreateItemProduct = ({
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
         isNew: true,
       }));
-      if (validFiles.some((file) => file.size > 5 * 1024 * 1024)) {
-        setImageError(true);
-        toast.error("Las imagenes no deben ser mayores a 5MB.");
-        return;
-      } else {
-        setImageError(false);
-      }
+
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
@@ -143,39 +136,14 @@ export const CreateItemProduct = ({
       });
     }
   }, [selectedProduct]);
-  const validateForm = () => {
-    let isValid = true;
-
-    if (!selectedProduct) {
-      toast.error("Debe seleccionar un producto base.");
-      isValid = false;
-    }
-
-    if (!stock || stock <= 0) {
-      setStockError(true);
-      isValid = false;
-      toast.error("El stock debe ser mayor a 0.");
-    } else {
-      setStockError(false);
-    }
-
-    if (!selectedColor) {
-      toast.error("Debe seleccionar un color.");
-      isValid = false;
-    }
-
-    if (files.length === 0) {
-      toast.error("Debe subir al menos una imagen.");
-      isValid = false;
-    }
-
-    return isValid;
-  };
   const handleSave = async () => {
-    if (!validateForm()) return;
+    if (!selectedProduct) {
+      alert("No product selected");
+      return;
+    }
 
     const data: ICreateItem = {
-      productId: selectedProduct ? selectedProduct.id : "",
+      productId: selectedProduct.id,
       colorId: selectedColor,
       stock: stock,
       state: true,
@@ -288,8 +256,6 @@ export const CreateItemProduct = ({
               fullWidth
               value={stock}
               onChange={(e) => setStock(Number(e.target.value))}
-              error={stockError}
-              helperText={stockError ? "El stock debe ser mayor a 0." : ""}
               slotProps={{
                 input: {
                   startAdornment: (

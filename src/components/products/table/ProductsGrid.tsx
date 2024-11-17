@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { ProductCardGrid } from "./ProductCardGrid";
+import { ProductCardGrid } from "../ProductCardGrid";
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { ItemsService } from "../../service/ItemsService";
-import { Datum } from "../../interfaces/Items/ItemsInterface";
+import { ItemsService } from "../../../service/ItemsService";
+import { Datum } from "../../../interfaces/Items/ItemsInterface";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
+import animationData from "../../../utils/animation.json";
 
 export const ProductsGrid = () => {
   const [products, setProducts] = useState<Datum[]>([]);
@@ -65,9 +65,11 @@ export const ProductsGrid = () => {
             <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
               <ProductCardGrid
                 image={
-                  `http://localhost:8080/${product.images[0].imageUri
-                    .split("/")
-                    .pop()}` || "/default.webp"
+                  product.images && product.images.length > 0
+                    ? `http://localhost:8080/${product.images[0].imageUri
+                        .split("/")
+                        .pop()}`
+                    : `../../../public/logo.png` // Cambiar por la imagen por defecto
                 }
                 title={product.product?.productName || "Sin nombre"}
                 description={product.product?.description || "Sin descripción"}
