@@ -49,11 +49,9 @@ export const EditItemProduct = () => {
           price: data.product.price.toString(),
         });
 
-        // Establecer datos del item
         setStock(data.stock || 0);
         setSelectedColor(data.color.id);
 
-        // Descargar las imágenes y convertirlas en objetos File
         const filePromises = data.images.map(async (image: any) => {
           const imageUrl = `http://localhost:8080/${image.imageUri
             .split("/")
@@ -144,7 +142,7 @@ export const EditItemProduct = () => {
           file.size / 1024 < 1024
             ? (file.size / 1024).toFixed(2) + " KB"
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        isNew: true, // Marcar como nueva imagen
+        isNew: true,
       }));
 
       setFiles((prevFiles) => [
@@ -161,17 +159,15 @@ export const EditItemProduct = () => {
     const imageToRemove = imagePreviews[index];
 
     if (!imageToRemove.isNew) {
-      // Imagen existente en el servidor, mantener el estado consistente
       setFiles((prevFiles) =>
         prevFiles.filter(
           (file) =>
-            file.name !== imageToRemove.name && // Comparar con el nombre
-            !file.name.includes(imageToRemove.url) // O con la URL original
+            file.name !== imageToRemove.name && 
+            !file.name.includes(imageToRemove.url)
         )
       );
     }
 
-    // Actualizar las vistas previas para eliminar la imagen seleccionada
     setImagePreviews((prevPreviews) =>
       prevPreviews.filter((_, i) => i !== index)
     );
