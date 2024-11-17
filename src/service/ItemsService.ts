@@ -1,7 +1,8 @@
 import axios from "axios";
 import { doGet, doPut } from "../config/Axios";
-import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
+import {  IItemProduct, IUpdateItem } from "../interfaces/Items/ItemsInterface";
 import { IItem } from "../interfaces/Items/ItemById";
+import toast from "react-hot-toast";
 
 export const ItemsService = {
   getAll: async (): Promise<IItemProduct> => {
@@ -64,6 +65,12 @@ export const UpdateItem = async (id: string, formData: FormData): Promise<IItemP
         },
       }
     );
+    if (!response.data.error) {
+      toast.success(response.data.message);
+    }else{
+      toast.error(response.data.message);
+    }
+
     return response.data;
   } catch (error) {
     throw error;

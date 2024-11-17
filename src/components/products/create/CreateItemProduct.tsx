@@ -190,11 +190,6 @@ export const CreateItemProduct = ({
     files.forEach((file) => {
       formData.append("images", file);
     });
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-
     try {
       setIsLoading(true);
       const response = await createItem(formData);

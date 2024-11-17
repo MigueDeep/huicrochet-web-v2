@@ -52,3 +52,10 @@ export interface ICreateItem {
     state:     boolean;
 }
 
+
+export interface IUpdateItem {
+   productId: string;
+    colorId:   string;
+    stock:     number;
+    state:     boolean;
+}

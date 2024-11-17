@@ -17,21 +17,28 @@ import {
   XCircleIcon,
 } from "../../../utils/icons";
 
-import { createItem, ItemsService } from "../../../service/ItemsService";
+import { ItemsService, UpdateItem } from "../../../service/ItemsService";
 import { IColor } from "../../../interfaces/IColor";
 import ColorService from "../../../service/ColorService";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import ColorCircle from "../../common/ColorCircle";
+import { IUpdateItem } from "../../../interfaces/Items/ItemsInterface";
 
-interface CreateItemProductProps {}
-export const EditItemProduct = ({}: CreateItemProductProps) => {
+import { IItem } from "../../../interfaces/Items/ItemById";
+
+export const EditItemProduct = () => {
   const { id } = useParams<{ id: string }>();
+  const [item, setItem] = useState<IItem | null>(null);
 
   const fetchProductById = async (id: string) => {
     try {
       const response = await ItemsService.getById(id);
       const { data } = response;
+
+      if (response) {
+        setItem(response);
+      }
 
       if (data) {
         // Establecer datos del producto base
@@ -46,11 +53,28 @@ export const EditItemProduct = ({}: CreateItemProductProps) => {
         setStock(data.stock || 0);
         setSelectedColor(data.color.id);
 
-        // Configurar imágenes para la vista previa
-        const previews = data.images.map((image: any) => ({
-          url: `http://localhost:8080/${image.imageUri.split("/").pop()}`,
-          name: image.name,
-          size: "Tamaño desconocido", // No se provee en los datos actuales
+        // Descargar las imágenes y convertirlas en objetos File
+        const filePromises = data.images.map(async (image: any) => {
+          const imageUrl = `http://localhost:8080/${image.imageUri
+            .split("/")
+            .pop()}`;
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          return new File([blob], image.name, { type: blob.type });
+        });
+
+        // Esperar la conversión de todas las imágenes
+        const files = await Promise.all(filePromises);
+        setFiles(files);
+
+        // Configurar vistas previas de las imágenes
+        const previews = files.map((file) => ({
+          url: URL.createObjectURL(file),
+          name: file.name,
+          size:
+            file.size / 1024 < 1024
+              ? (file.size / 1024).toFixed(2) + " KB"
+              : (file.size / (1024 * 1024)).toFixed(2) + " MB",
           isNew: false,
         }));
         setImagePreviews(previews);
@@ -120,23 +144,37 @@ export const EditItemProduct = ({}: CreateItemProductProps) => {
           file.size / 1024 < 1024
             ? (file.size / 1024).toFixed(2) + " KB"
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
-        isNew: true,
+        isNew: true, // Marcar como nueva imagen
       }));
 
-      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+      setFiles((prevFiles) => [
+        ...prevFiles.filter(
+          (file) => !newPreviews.some((np) => np.name === file.name)
+        ),
+        ...validFiles,
+      ]);
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setRemovingIndex(index);
-    setTimeout(() => {
-      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-      setImagePreviews((prevPreviews) =>
-        prevPreviews.filter((_, i) => i !== index)
+    const imageToRemove = imagePreviews[index];
+
+    if (!imageToRemove.isNew) {
+      // Imagen existente en el servidor, mantener el estado consistente
+      setFiles((prevFiles) =>
+        prevFiles.filter(
+          (file) =>
+            file.name !== imageToRemove.name && // Comparar con el nombre
+            !file.name.includes(imageToRemove.url) // O con la URL original
+        )
       );
-      setRemovingIndex(null);
-    }, 300);
+    }
+
+    // Actualizar las vistas previas para eliminar la imagen seleccionada
+    setImagePreviews((prevPreviews) =>
+      prevPreviews.filter((_, i) => i !== index)
+    );
   };
 
   const handleColorSelect = (color: IColor) => {
@@ -154,21 +192,31 @@ export const EditItemProduct = ({}: CreateItemProductProps) => {
       return;
     }
 
+    const data: IUpdateItem = {
+      productId: item?.data.product.id || "",
+      colorId: selectedColor,
+      stock: stock,
+      state: true,
+    };
+
     const formData = new FormData();
+    formData.append("itemDto", JSON.stringify(data));
 
     files.forEach((file) => {
+      console.log(file);
       formData.append("images", file);
     });
 
     try {
       setIsLoading(true);
-      const response = await createItem(formData);
+      const response = await UpdateItem(id!, formData);
+      console.log(response);
 
-      toast.success(response.message);
+      toast.success("Producto actualizado correctamente");
       navigate("/products");
     } catch (error) {
-      console.error("Error al crear el producto:", error);
-      toast.error("Error al crear el producto");
+      console.error("Error al actualizar el producto:", error);
+      toast.error("Error al actualizar el producto");
     } finally {
       setIsLoading(false);
     }
