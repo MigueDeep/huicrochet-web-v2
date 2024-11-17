@@ -161,6 +161,7 @@ const CategoriesTable = () => {
             </div>
           }
           items={items}
+          emptyContent={"No hay categorias para mostrar"}
         >
           {(item) => (
             <TableRow key={item.id}>

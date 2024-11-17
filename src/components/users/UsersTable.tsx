@@ -83,29 +83,36 @@ export default function App() {
         }
       >
         <TableHeader columns={columns}>
-          {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
         </TableHeader>
         <TableBody
-        isLoading={isLoading}
-        loadingContent={
-          <div style={{ height: "100px", width: "100px" }}>
-            <Lottie animationData={animationData} width={50} height={50} />
-          </div>
-        }
-         items={items}>
+          isLoading={isLoading}
+          loadingContent={
+            <div style={{ height: "100px", width: "100px" }}>
+              <Lottie animationData={animationData} width={50} height={50} />
+            </div>
+          }
+          emptyContent={"No hay usuarios para mostrar"}
+          items={items}
+        >
           {(user) => (
             <TableRow key={user.id}>
               {columns.map((column) => (
                 <TableCell key={column.key}>
                   {column.key === "pic" ? (
                     user.image?.imageUri ? (
-                      <Avatar alt={user.fullName}  src={
-                        user.image
-                          ? `http://localhost:8080/${user.image.imageUri
-                              .split("/")
-                              .pop()}`
-                          : "/default.webp"
-                      } />
+                      <Avatar
+                        alt={user.fullName}
+                        src={
+                          user.image
+                            ? `http://localhost:8080/${user.image.imageUri
+                                .split("/")
+                                .pop()}`
+                            : "/default.webp"
+                        }
+                      />
                     ) : (
                       <Avatar>{user.fullName.charAt(0).toUpperCase()}</Avatar>
                     )
@@ -115,7 +122,11 @@ export default function App() {
                       content={user.status ? "Desactivar" : "Activar"}
                     >
                       <span className="text-danger cursor-pointer active:opacity-50">
-                        <ChangeStatus id={user.id} initialStatus={user.status} type="user" />
+                        <ChangeStatus
+                          id={user.id}
+                          initialStatus={user.status}
+                          type="user"
+                        />
                       </span>
                     </Tooltip>
                   ) : column.key === "status" ? (

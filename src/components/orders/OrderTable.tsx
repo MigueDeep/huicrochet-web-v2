@@ -14,15 +14,15 @@ import {
 import OrderDetail from "./OrderDetail";
 
 const rows = [
-    {
-        key: '1',
-        order: "001",
-        customer: "Juan Perez",
-        email: "jhon@email.com",
-        shopping_date: "2024-10-10",
-        shipping_date: "2024-10-15",
-        status: "activo",
-    }
+  {
+    key: "1",
+    order: "001",
+    customer: "Juan Perez",
+    email: "jhon@email.com",
+    shopping_date: "2024-10-10",
+    shipping_date: "2024-10-15",
+    status: "activo",
+  },
 ];
 
 const columns = [
@@ -35,7 +35,7 @@ const columns = [
   { key: "actions", label: "ACCIONES" },
 ];
 
-const rowsPerPage = 10; 
+const rowsPerPage = 10;
 
 export default function OrdersTable() {
   const [page, setPage] = useState(1);
@@ -52,29 +52,32 @@ export default function OrdersTable() {
     <Table
       aria-label="Example table with dynamic content"
       bottomContent={
-        <div className="
+        <div
+          className="
           flex w-full justify-center mt-4 pb-4 border-b border-gray-200
-          ">
-            <Pagination 
-              loop showControls 
-              color="success" 
-              initialPage={1}  page={page}
-              total={pages}
-              onChange={(page) => setPage(page)}
-            />
+          "
+        >
+          <Pagination
+            loop
+            showControls
+            color="success"
+            initialPage={1}
+            page={page}
+            total={pages}
+            onChange={(page) => setPage(page)}
+          />
         </div>
       }
     >
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
-      <TableBody items={items}>
+      <TableBody items={items} emptyContent={"No hay ordenes para mostrar"}>
         {(item) => (
           <TableRow key={item.key}>
             {columns.map((column) => (
               <TableCell key={column.key}>
-                {
-                 column.key === "actions" ? (
+                {column.key === "actions" ? (
                   <Tooltip
                     showArrow={true}
                     content={
@@ -82,11 +85,10 @@ export default function OrdersTable() {
                     }
                   >
                     <span className="text-danger cursor-pointer active:opacity-50">
-                      <OrderDetail/>
+                      <OrderDetail />
                     </span>
                   </Tooltip>
-                ) 
-                : column.key === "status" ? (
+                ) : column.key === "status" ? (
                   <Chip
                     className="capitalize"
                     size="sm"

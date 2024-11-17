@@ -90,7 +90,7 @@ export const OrderDetailTable = () => {
             <TableColumn key={column.key}>{column.label}</TableColumn>
           )}
         </TableHeader>
-        <TableBody items={items}>
+        <TableBody items={items} emptyContent={"No hay productos para mostrar"}>
           {(item) => (
             <TableRow key={item.id}>
               {columns.map((column) => (

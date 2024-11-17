@@ -36,10 +36,12 @@ export default function ColorsTable() {
     setIsLoading(true);
     try {
       const response = await ColorService.getColors();
-      setColorsData(response.data); 
+      setColorsData(response.data);
     } catch (error) {
-      throw new Error("An error occurred while fetching colors. Please try again.");
-    }finally {
+      throw new Error(
+        "An error occurred while fetching colors. Please try again."
+      );
+    } finally {
       setIsLoading(false);
     }
   }, []);
@@ -83,14 +85,16 @@ export default function ColorsTable() {
               <TableColumn key={column.key}>{column.label}</TableColumn>
             )}
           </TableHeader>
-          <TableBody 
+          <TableBody
             isLoading={isLoading}
             loadingContent={
               <div style={{ height: "100px", width: "100px" }}>
                 <Lottie animationData={animationData} width={50} height={50} />
               </div>
             }
-            items={items}>
+            emptyContent={"No hay colores para mostrar"}
+            items={items}
+          >
             {(item) => (
               <TableRow key={item.id}>
                 {columns.map((column) => (
@@ -126,12 +130,12 @@ function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
     case "actions":
       return (
         <ButtonGroup className="gap-2">
-           <EditColorModal 
-             id={item.id} 
-             colorName={item.colorName} 
-             colorCod={item.colorCod} 
-             onColorUpdated={fetchColors} 
-           />
+          <EditColorModal
+            id={item.id}
+            colorName={item.colorName}
+            colorCod={item.colorCod}
+            onColorUpdated={fetchColors}
+          />
           <ChangeStatus id={item.id} initialStatus={item.status} type="color" />
         </ButtonGroup>
       );
@@ -147,8 +151,6 @@ function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
         </Chip>
       );
     default:
-      return (
-        <p className="text-sm font-medium">{item.colorName}</p>
-      );
+      return <p className="text-sm font-medium">{item.colorName}</p>;
   }
 }

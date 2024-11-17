@@ -153,7 +153,8 @@ export const ProductsBase = () => {
               <div style={{ height: "100px", width: "100px" }}>
                 <Lottie animationData={animationData} width={50} height={50} />
               </div>
-            }
+            } 
+           emptyContent={"No hay productos para mostrar"}
           >
             {items.map((product) => (
               <TableRow key={product.id}>
