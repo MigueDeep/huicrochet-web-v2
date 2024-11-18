@@ -308,10 +308,7 @@ export const CreateItemProduct = ({
                   fontSize: "1.2rem",
                   color: "#666",
                   padding: "20px",
-                  borderRadius: "8px",
-
-                  width: "100%",
-                  marginTop: "20px",
+                  marginTop: "10px",
                 }}
               >
                 No hay colores disponibles, recueda que puedes crearlos en la

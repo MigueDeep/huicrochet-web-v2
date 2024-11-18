@@ -320,9 +320,6 @@ export const EditItemProduct = () => {
                   fontSize: "1.2rem",
                   color: "#666",
                   padding: "20px",
-                  borderRadius: "8px",
-
-                  width: "100%",
                   marginTop: "20px",
                 }}
               >
