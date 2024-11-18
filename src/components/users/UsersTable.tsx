@@ -94,7 +94,7 @@ export default function App() {
               <Lottie animationData={animationData} width={50} height={50} />
             </div>
           }
-          emptyContent={"No hay usuarios para mostrar"}
+          emptyContent={"✨ No hay usuarios para mostrar...✨"}
           items={items}
         >
           {(user) => (

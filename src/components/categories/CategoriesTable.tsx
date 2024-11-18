@@ -130,7 +130,7 @@ const CategoriesTable = () => {
           variant="outlined"
           fullWidth
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} 
+          onChange={(e) => setSearchTerm(e.target.value)}
           slotProps={{
             input: {
               startAdornment: (
@@ -174,7 +174,7 @@ const CategoriesTable = () => {
             </div>
           }
           items={items}
-          emptyContent={"No hay categorías para mostrar"}
+          emptyContent={"✨No hay categorías para mostra...✨"}
         >
           {(item) => (
             <TableRow key={item.id}>

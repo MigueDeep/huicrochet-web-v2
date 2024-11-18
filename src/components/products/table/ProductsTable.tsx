@@ -145,7 +145,7 @@ export const ProductsTable = () => {
               <Lottie animationData={animationData} width={50} height={50} />
             </div>
           }
-          emptyContent={"No hay productos para mostrar"}
+          emptyContent={"✨ No hay productos para mostrar...✨"}
         >
           {(item) => (
             <TableRow key={item.id}>

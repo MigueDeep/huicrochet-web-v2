@@ -160,14 +160,14 @@ export const ProductsBase = () => {
             ))}
           </TableHeader>
           <TableBody
-            items={items} // Si está cargando, pasar lista vacía
+            items={items}
             isLoading={isLoading}
             loadingContent={
               <div style={{ height: "100px", width: "100px" }}>
                 <Lottie animationData={animationData} width={50} height={50} />
               </div>
             }
-            emptyContent={"No hay productos para mostrar"}
+            emptyContent={"✨ No hay productos para mostrar...✨"}
           >
             {items.map((product) => (
               <TableRow key={product.id}>

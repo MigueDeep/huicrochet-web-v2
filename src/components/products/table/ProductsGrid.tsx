@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ProductCardGrid } from "../ProductCardGrid";
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -10,6 +10,17 @@ import animationData from "../../../utils/animation.json";
 export const ProductsGrid = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Filtrar productos según el término de búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.product?.productName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,12 +39,15 @@ export const ProductsGrid = () => {
 
   return (
     <>
+      {/* Barra de búsqueda */}
       <div className="col-6 mb-2">
         <TextField
-          label="Busqueda"
+          label="Búsqueda"
           placeholder="Ingresa el nombre del producto"
           variant="outlined"
           fullWidth
+          value={searchTerm} // Vincular al estado
+          onChange={(e) => setSearchTerm(e.target.value)} // Actualizar el estado
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -43,6 +57,8 @@ export const ProductsGrid = () => {
           }}
         />
       </div>
+
+      {/* Productos o animación de carga */}
       <div className="row text-center">
         {isLoading ? (
           <div
@@ -60,8 +76,25 @@ export const ProductsGrid = () => {
               loop={true}
             />
           </div>
+        ) : filteredProducts.length === 0 ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "50vh",
+              color: "#6c757d",
+              fontSize: "1.5rem",
+            }}
+          >
+            <p>✨ Nada que mostrar... ✨</p>
+            <p style={{ fontSize: "1rem" }}>
+              Intenta ajustar tu búsqueda o agrega nuevos productos.
+            </p>
+          </div>
         ) : (
-          products.map((product) => (
+          filteredProducts.map((product) => (
             <div key={product.id} className="mb-4 col-12 col-sm-6 col-md-3">
               <ProductCardGrid
                 image={
@@ -69,7 +102,7 @@ export const ProductsGrid = () => {
                     ? `http://localhost:8080/${product.images[0].imageUri
                         .split("/")
                         .pop()}`
-                    : `../../../public/logo.png` // Cambiar por la imagen por defecto
+                    : `../../../public/logo.png`
                 }
                 title={product.product?.productName || "Sin nombre"}
                 description={product.product?.description || "Sin descripción"}
