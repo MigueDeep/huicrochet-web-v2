@@ -46,7 +46,7 @@ const CategoriesTable = () => {
   const [selectedCategory, setSelectedCategory] = useState<Datum | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para la búsqueda
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchCategories = async () => {
     try {
@@ -92,7 +92,6 @@ const CategoriesTable = () => {
 
   const pages = Math.ceil(categories.length / rowsPerPage);
 
-  // Filtrar categorías por el término de búsqueda
   const filteredCategories = useMemo(() => {
     if (!searchTerm) return categories;
     return categories.filter((category) =>
@@ -131,7 +130,7 @@ const CategoriesTable = () => {
           variant="outlined"
           fullWidth
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el valor de la búsqueda
+          onChange={(e) => setSearchTerm(e.target.value)} 
           slotProps={{
             input: {
               startAdornment: (

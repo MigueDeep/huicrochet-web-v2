@@ -47,14 +47,23 @@ export const ProductsBase = () => {
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const pages = Math.ceil(products.length / rowsPerPage);
+
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
+
   const items = useMemo(() => {
     if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return products.slice(start, end);
-  }, [page, products, isLoading]);
+    return filteredProducts.slice(start, end);
+  }, [page, filteredProducts, isLoading]);
 
   const fetchProducts = async () => {
     try {
@@ -111,6 +120,8 @@ export const ProductsBase = () => {
           placeholder="Ingresa el nombre del producto base"
           variant="outlined"
           fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

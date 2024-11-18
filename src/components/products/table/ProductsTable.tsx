@@ -9,7 +9,6 @@ import {
   Chip,
   Pagination,
   ButtonGroup,
-  Spinner,
 } from "@nextui-org/react";
 import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
@@ -44,19 +43,22 @@ export const ProductsTable = () => {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const pages = Math.ceil(products.length / rowsPerPage);
   const navigate = useNavigate();
+
   const onEdit = async (id: string) => {
     navigate(`/products/edit/${id}`);
   };
+
   const onDelete = async (item: Datum) => {
     setIsLoading(true);
     try {
       const newState = !item.state;
       await ItemsService.chngeStatus(item.id, newState);
-      setProducts([])
-    await  fetchProducts();
+      setProducts([]);
+      await fetchProducts();
     } catch (error) {
       console.error("Error al cambiar el estado del ítem");
     } finally {
@@ -64,13 +66,22 @@ export const ProductsTable = () => {
     }
   };
 
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.product?.productName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
+
   const items = useMemo(() => {
     if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return products.slice(start, end);
-  }, [page, products,isLoading]);
-  
+    return filteredProducts.slice(start, end);
+  }, [page, filteredProducts, isLoading]);
+
   const fetchProducts = async () => {
     try {
       const response = await ItemsService.getAll();
@@ -81,6 +92,7 @@ export const ProductsTable = () => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -89,23 +101,23 @@ export const ProductsTable = () => {
     <>
       <div className="col-6 mb-2">
         <TextField
-          label="Busqueda"
+          label="Búsqueda"
           placeholder="Ingresa el nombre del producto"
           variant="outlined"
           fullWidth
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
         />
       </div>
       <Table
-        aria-label="Example table with dynamic content"
+        aria-label="Tabla de productos con búsqueda"
         bottomContent={
           <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
             <Pagination
@@ -210,7 +222,6 @@ export const ProductsTable = () => {
                           content={item.state ? "Desactivar" : "Activar"}
                         >
                           <Switch
-                            {...label}
                             checked={item.state}
                             onChange={() => onDelete(item)}
                           />
