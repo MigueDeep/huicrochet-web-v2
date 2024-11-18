@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom"; // Importar useParams
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -16,6 +16,14 @@ export const ProductBaseEditGrid = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams<{ id: string }>();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
 
   const fetchProducts = async () => {
     try {
@@ -53,6 +61,8 @@ export const ProductBaseEditGrid = () => {
           placeholder="Ingresa el nombre del producto base"
           variant="outlined"
           fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           slotProps={{
             input: {
               startAdornment: (
@@ -78,15 +88,34 @@ export const ProductBaseEditGrid = () => {
             loop
           />
         </div>
-      ) : (
+      ) : filteredProducts.length > 0 ? (
         <div className="product-base-grid">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCardEditBase
               key={product.id}
               title={product.productName}
               isSelected={item?.data.product?.id === product.id}
             />
           ))}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "2rem 0",
+            color: "#666",
+            fontSize: "1.2rem",
+          }}
+        >
+          <p style={{ margin: 0, textAlign: "center" }}>
+            ✨ No encontramos productos para tu búsqueda. ✨
+          </p>
+          <p style={{ margin: 0, textAlign: "center" }}>
+            Prueba con otro término y encuentra algo especial. 🌟
+          </p>
         </div>
       )}
     </div>

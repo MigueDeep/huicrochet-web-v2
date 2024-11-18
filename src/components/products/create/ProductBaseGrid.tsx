@@ -1,5 +1,5 @@
 import { ProductCardBase } from "../ProductCardBase";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import "../../../styles/products/products.css";
@@ -23,9 +23,16 @@ interface ProductBaseGridProps {
 
 export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
 
   const fetchProducts = async () => {
     try {
@@ -53,18 +60,18 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
     <div className="col-12">
       <div className="col-6">
         <TextField
-          label="Busqueda"
-          placeholder="Ingresa el nombre del poducto base "
+          label="Búsqueda"
+          placeholder="Ingresa el nombre del producto base"
           variant="outlined"
           fullWidth
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
         />
       </div>
@@ -82,24 +89,44 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
             loop={true}
           />
         </div>
-      ) : (
+      ) : filteredProducts.length > 0 ? (
         <div className="product-base-grid">
-          {products.map((product) => (
-            <ProductCardBase
-              key={product.id}
-              title={product.productName}
-              onSelect={() =>
-                handleSelectProduct({
-                  id: product.id,
-                  title: product.productName,
-                  category: product.categories[0].name,
-                  price: product.price,
-                  description: product.description,
-                })
-              }
-              isSelected={selectedProduct?.title === product.productName}
-            />
+          {filteredProducts.map((product) => (
+          
+              <ProductCardBase
+                key={product.id}
+                title={product.productName}
+                onSelect={() =>
+                  handleSelectProduct({
+                    id: product.id,
+                    title: product.productName,
+                    category: product.categories[0].name,
+                    price: product.price,
+                    description: product.description,
+                  })
+                }
+                isSelected={selectedProduct?.title === product.productName}
+              />   
           ))}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#666",
+            fontSize: "1.2rem",
+            padding: "2rem 0",
+          }}
+        >
+          <p style={{ margin: 0, textAlign: "center" }}>
+            ✨ No encontramos productos ✨
+          </p>
+          <p style={{ margin: 0, textAlign: "center" }}>
+            Prueba con otro término o agrega nuevos productos 🌟
+          </p>
         </div>
       )}
     </div>

@@ -162,7 +162,7 @@ export const EditItemProduct = () => {
       setFiles((prevFiles) =>
         prevFiles.filter(
           (file) =>
-            file.name !== imageToRemove.name && 
+            file.name !== imageToRemove.name &&
             !file.name.includes(imageToRemove.url)
         )
       );
@@ -312,15 +312,72 @@ export const EditItemProduct = () => {
             />
           </div>
           <p>Selecciona el color</p>
-          <div className="d-flex gap-2">
-            {colorsData.map((color) => (
-              <ColorCircle
-                key={color.id}
-                color={color.colorCod}
-                isSelected={selectedColor === color.id}
-                onSelect={() => handleColorSelect(color)}
-              />
-            ))}
+          <div className="d-flex gap-3 flex-wrap ">
+            {colorsData.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  fontSize: "1.2rem",
+                  color: "#666",
+                  padding: "20px",
+                  borderRadius: "8px",
+
+                  width: "100%",
+                  marginTop: "20px",
+                }}
+              >
+                No hay colores disponibles, recueda que puedes crearlos en la
+                sección de colores...✨
+              </div>
+            ) : (
+              colorsData.map((color) => (
+                <div
+                  key={color.id}
+                  className="d-flex flex-column align-items-center gap-2"
+                  style={{
+                    width: "100px",
+                    textAlign: "center",
+                    padding: "10px",
+                    borderRadius: "18px",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow:
+                      selectedColor === color.id
+                        ? "0 4px 15px rgba(255, 105, 180, 0.5)"
+                        : "none",
+                    transform:
+                      selectedColor === color.id ? "scale(1.1)" : "scale(1)",
+                    backgroundColor:
+                      selectedColor === color.id ? "#fff" : "transparent",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleColorSelect(color)}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50px",
+                    }}
+                  >
+                    <ColorCircle
+                      color={color.colorCod}
+                      isSelected={selectedColor === color.id}
+                      onSelect={() => handleColorSelect(color)}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      color: selectedColor === color.id ? "#333" : "#999",
+                      fontWeight: selectedColor === color.id ? "600" : "400",
+                    }}
+                  >
+                    {color.colorName}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
