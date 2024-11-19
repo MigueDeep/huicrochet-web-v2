@@ -79,7 +79,7 @@ const DashboardPage = () => {
     </Layout>
   );
 };
-
+///holaa
 const DraggableDroppable: React.FC<{
   id: string;
   children: React.ReactNode;
@@ -104,7 +104,7 @@ const DraggableDroppable: React.FC<{
     <div
       ref={(node) => {
         setDraggableRef(node);
-        setDroppableRef(node); 
+        setDroppableRef(node);
       }}
       style={style}
       {...listeners}
