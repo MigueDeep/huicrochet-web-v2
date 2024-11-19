@@ -38,9 +38,7 @@ export default function ColorsTable() {
       const response = await ColorService.getColors();
       setColorsData(response.data);
     } catch (error) {
-      throw new Error(
-        "An error occurred while fetching colors. Please try again."
-      );
+      console.error("Error al cargar colores:", error);
     } finally {
       setIsLoading(false);
     }
@@ -49,6 +47,21 @@ export default function ColorsTable() {
   useEffect(() => {
     fetchColors();
   }, [fetchColors]);
+
+  const handleStatusChange = async (id: string) => {
+    try {
+      // Actualiza el estado del color localmente para reflejar cambios rápidos
+      setColorsData((prevColors) =>
+        prevColors.map((color) =>
+          color.id === id ? { ...color, status: !color.status } : color
+        )
+      );
+      // Llama al servicio para persistir el cambio
+      await ColorService.changeColorStatus(id);
+    } catch (error) {
+      console.error("Error al actualizar el estado del color:", error);
+    }
+  };
 
   const pages = Math.ceil(colorsData.length / rowsPerPage);
 
@@ -99,7 +112,7 @@ export default function ColorsTable() {
               <TableRow key={item.id}>
                 {columns.map((column) => (
                   <TableCell key={column.key}>
-                    {renderCellContent(column.key, item, fetchColors)}
+                    {renderCellContent(column.key, item, handleStatusChange, fetchColors)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -111,7 +124,12 @@ export default function ColorsTable() {
   );
 }
 
-function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
+function renderCellContent(
+  key: string,
+  item: IColor,
+  handleStatusChange: (id: string) => void,
+  fetchColors: () => void
+) {
   switch (key) {
     case "color":
       return (
@@ -136,7 +154,12 @@ function renderCellContent(key: string, item: IColor, fetchColors: () => void) {
             colorCod={item.colorCod}
             onColorUpdated={fetchColors}
           />
-          <ChangeStatus id={item.id} initialStatus={item.status} type="color" />
+          <ChangeStatus
+            id={item.id}
+            initialStatus={item.status}
+            type="color"
+            onStatusChange={handleStatusChange}
+          />
         </ButtonGroup>
       );
     case "status":
