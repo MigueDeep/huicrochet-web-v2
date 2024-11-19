@@ -13,7 +13,6 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 
 const DashboardPage = () => {
-  // Identificadores o configuraciones que se almacenan en localStorage
   const initialComponents = [
     { id: "views" },
     { id: "bestSellingUserDate" },
@@ -25,7 +24,6 @@ const DashboardPage = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Solo almacenamos las configuraciones de los componentes, no los componentes mismos
     localStorage.setItem("components", JSON.stringify(components));
   }, [components]);
 
@@ -98,17 +96,15 @@ const DraggableDroppable: React.FC<{
 
   const style = {
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
-    transition: isDragging ? "none" : "transform 200ms ease",
-    marginBottom: "16px", // Espaciado entre los elementos
-    cursor: "move",
-    flex: 1, // Esto asegura que los elementos se distribuyan correctamente
+    opacity: isDragging ? 0.5 : 1,
+    cursor: "grab",
   };
 
   return (
     <div
       ref={(node) => {
         setDraggableRef(node);
-        setDroppableRef(node); // No es estrictamente necesario, pero se puede dejar
+        setDroppableRef(node); 
       }}
       style={style}
       {...listeners}

@@ -40,7 +40,6 @@ const Views = () => {
   const [cards, setCards] = useState(initialCards);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // Guardar el estado en localStorage al actualizar las tarjetas
   useEffect(() => {
     localStorage.setItem("cards", JSON.stringify(cards));
   }, [cards]);
@@ -78,7 +77,7 @@ const Views = () => {
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
           gap: "16px",
           width: "100%",
-          position: "relative", // Contexto de posición para que el DragOverlay funcione correctamente
+          position: "relative", 
         }}
       >
         {cards.map((card: any) => (
