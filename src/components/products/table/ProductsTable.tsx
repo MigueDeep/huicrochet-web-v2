@@ -22,6 +22,7 @@ import { Datum } from "../../../interfaces/Items/ItemsInterface";
 import { ItemsService } from "../../../service/ItemsService";
 import Lottie from "lottie-react";
 import animationData from "../../../utils/animation.json";
+import { HoverableAvatar } from "../../common/HoverableAvatar";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -155,7 +156,7 @@ export const ProductsTable = () => {
                 switch (column.key) {
                   case "image":
                     cellContent = (
-                      <Avatar
+                      <HoverableAvatar
                         alt={item.product?.productName || "Producto sin nombre"}
                         src={
                           item.images && item.images.length > 0
