@@ -6,7 +6,10 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import ColorCircle from "../common/ColorCircle";
 import { Chip } from "@nextui-org/react";
-
+import { ButtonGroup, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 interface ProductCardGridProps {
   image: string;
   title: string;
@@ -16,7 +19,9 @@ interface ProductCardGridProps {
   price: number;
   colors: string[];
   status: number;
+  onView: () => void;
   onEdit: () => void;
+  onChangeStatus: () => void;
 }
 
 export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
@@ -29,6 +34,8 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
   colors,
   status,
   onEdit,
+  onChangeStatus,
+  onView,
 }) => {
   return (
     <Box sx={{ width: 400 }}>
@@ -57,10 +64,21 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
             {status === 1 ? "Disponible" : "No disponible"}
           </Chip>
         </CardContent>
-        <CardActions>
-          <Button variant="contained" onClick={onEdit}>
-            Ver detalles
-          </Button>
+        <CardActions sx={{ justifyContent: "end", padding: 2 }}>
+          <ButtonGroup>
+            <IconButton aria-label="Ver detalles" onClick={onView}>
+              <RemoveRedEyeOutlinedIcon />
+            </IconButton>
+            <IconButton aria-label="Editar" onClick={onEdit}>
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              aria-label={status === 1 ? "Desactivar" : "Activar"}
+              onClick={onChangeStatus}
+            >
+              <DeleteOutlineIcon />
+            </IconButton>
+          </ButtonGroup>
         </CardActions>
       </Card>
     </Box>

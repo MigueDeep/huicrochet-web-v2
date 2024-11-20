@@ -6,13 +6,15 @@ import { ItemsService } from "../../../service/ItemsService";
 import { Datum } from "../../../interfaces/Items/ItemsInterface";
 import Lottie from "lottie-react";
 import animationData from "../../../utils/animation.json";
+import { useNavigate } from "react-router-dom";
 
 export const ProductsGrid = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Filtrar productos según el término de búsqueda
+  const navigate = useNavigate();
+
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products;
     return products.filter((product) =>
@@ -21,6 +23,9 @@ export const ProductsGrid = () => {
         .includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, products]);
+  const onEdit = async (id: string) => {
+    navigate(`/products/edit/${id}`);
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -39,15 +44,14 @@ export const ProductsGrid = () => {
 
   return (
     <>
-      {/* Barra de búsqueda */}
       <div className="col-6 mb-2">
         <TextField
           label="Búsqueda"
           placeholder="Ingresa el nombre del producto"
           variant="outlined"
           fullWidth
-          value={searchTerm} // Vincular al estado
-          onChange={(e) => setSearchTerm(e.target.value)} // Actualizar el estado
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -113,7 +117,9 @@ export const ProductsGrid = () => {
                 price={product.product?.price || 0}
                 colors={[product.color.colorCod]}
                 status={product.product?.state ? 1 : 0}
-                onEdit={() => console.log(`Edit product ${product.id}`)}
+                onEdit={() => onEdit(product.id)}
+                onChangeStatus={() => console.log("Cambiar estado")}
+                onView={() => console.log("Ver detalles")}
               />
             </div>
           ))

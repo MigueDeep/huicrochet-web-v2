@@ -22,7 +22,7 @@ export const HoverableAvatar = ({ src, alt }: { src: string; alt: string }) => {
           width: "50px",
           height: "50px",
           transition: "transform 0.3s ease",
-          transform: isHovered ? "scale(2.2)" : "scale(1)",
+          transform: isHovered ? "scale(1.7)" : "scale(1)",
           zIndex: isHovered ? 1000 : "auto",
         }}
       />
