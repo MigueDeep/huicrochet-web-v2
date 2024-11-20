@@ -77,16 +77,22 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async (category: Datum) => {
-    setLoading(true);
     try {
       const newState = !category.state;
+
+      setCategories((prevCategories) =>
+        prevCategories.map((cat) =>
+          cat.id === category.id ? { ...cat, state: newState } : cat
+        )
+      );
       await updateCategoryStatus(category.id, newState);
-      setCategories([]);
-      await fetchCategories();
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
-    } finally {
-      setLoading(false);
+      setCategories((prevCategories) =>
+        prevCategories.map((cat) =>
+          cat.id === category.id ? { ...cat, state: category.state } : cat
+        )
+      );
     }
   };
 

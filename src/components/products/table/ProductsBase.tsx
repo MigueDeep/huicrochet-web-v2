@@ -80,14 +80,21 @@ export const ProductsBase = () => {
     navigate(`/products/base/edit/${id}`);
   };
   const toggleProductStatus = async (product: Datum) => {
-    setIsLoading(true);
     try {
       const newState = !product.state;
+      setProducts((prevProducts) =>
+        prevProducts.map((prod) =>
+          prod.id === product.id ? { ...prod, state: newState } : prod
+        )
+      );
       await ProductServices.changeStatus(product.id, newState);
-      setProducts([]);
-      await fetchProducts();
     } catch (error) {
-      console.error("Error al actualizar el estado de la categoría:", error);
+      console.error("Error al actualizar el estado del producto:", error);
+      setProducts((prevProducts) =>
+        prevProducts.map((prod) =>
+          prod.id === product.id ? { ...prod, state: product.state } : prod
+        )
+      );
     }
   };
 

@@ -54,16 +54,21 @@ export const ProductsTable = () => {
   };
 
   const onDelete = async (item: Datum) => {
-    setIsLoading(true);
     try {
       const newState = !item.state;
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === item.id ? { ...product, state: newState } : product
+        )
+      );
       await ItemsService.chngeStatus(item.id, newState);
-      setProducts([]);
-      await fetchProducts();
     } catch (error) {
-      console.error("Error al cambiar el estado del ítem");
-    } finally {
-      setIsLoading(false);
+      console.error("Error al cambiar el estado del producto:", error);
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === item.id ? { ...product, state: !item.state } : product
+        )
+      );
     }
   };
 
