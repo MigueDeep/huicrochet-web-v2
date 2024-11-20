@@ -126,6 +126,7 @@ export default function App() {
                           id={user.id}
                           initialStatus={user.status}
                           type="user"
+                          onStatusChange={() => console.log("status changed")}
                         />
                       </span>
                     </Tooltip>
