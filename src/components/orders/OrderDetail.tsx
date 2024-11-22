@@ -19,14 +19,21 @@ import {
   Button,
   Typography,
   Grid,
+  IconButton,
 } from "@mui/material";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { DatePicker } from "@mui/x-date-pickers";
 import PaymentIcon from "@mui/icons-material/Payment";
 import { PedidosIconBlack } from "../../utils/icons";
 import { OrderDetailTable } from "./OrderDetailTable";
 import { useState } from "react";
+import { IOrder } from "../../interfaces/IOrder";
 
-export default function OrderDetail() {
+interface IOrderDetailProps {
+  order: IOrder;
+}
+
+export default function OrderDetail( { order }: IOrderDetailProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const status = [
     { value: "1", label: "En proceso", color: "warning" },
@@ -38,9 +45,9 @@ export default function OrderDetail() {
   return (
     <>
       <Tooltip content="Detalle de la orden">
-        <Button onClick={onOpen} variant="contained">
-          Ver detalles
-        </Button>
+        <IconButton onClick={onOpen} >
+          <RemoveRedEyeIcon/>
+        </IconButton>
       </Tooltip>
       <Modal
         size="5xl"
@@ -75,7 +82,7 @@ export default function OrderDetail() {
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1">
-                      Orden ID: #168012
+                      Orden ID: <span className="text-semibold">#{formatId(order.id)}</span>
                     </Typography>
                     <Typography color="text.secondary">
                       Lunes 20 de Octubre, 2024
@@ -200,4 +207,23 @@ export default function OrderDetail() {
       </Modal>
     </>
   );
+}
+
+const formatId = (id: string) => {
+  return id.slice(0, 8);
+}
+
+ const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString();
+}
+
+const traduceStatus = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "Pendiente";
+    case "SHIPPED":
+      return "Enviado";
+    default:
+      return status;
+  }
 }

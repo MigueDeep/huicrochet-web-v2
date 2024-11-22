@@ -25,7 +25,6 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    console.log(response.data.message);
     toast.success(response.data.message);
     return response;
   },

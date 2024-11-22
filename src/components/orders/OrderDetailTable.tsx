@@ -9,7 +9,7 @@ import {
   Pagination,
 } from "@nextui-org/react";
 import ColorCircle from "../common/ColorCircle";
-import Avatar from "@mui/material/Avatar"; // Importación de Avatar
+import Avatar from "@mui/material/Avatar";
 
 const rows = [
   {
