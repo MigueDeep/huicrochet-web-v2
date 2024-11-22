@@ -1,6 +1,6 @@
 import axios from "axios";
 import { doGet, doPut } from "../config/Axios";
-import {  IItemProduct, IUpdateItem } from "../interfaces/Items/ItemsInterface";
+import {  IItemProduct } from "../interfaces/Items/ItemsInterface";
 import { IItem } from "../interfaces/Items/ItemById";
 import toast from "react-hot-toast";
 

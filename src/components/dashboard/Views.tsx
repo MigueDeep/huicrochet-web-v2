@@ -5,44 +5,43 @@ import {
   useDroppable,
   closestCenter,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable"; 
+import { arrayMove } from "@dnd-kit/sortable";
 import CardStats from "./CardStats";
+import { DashboardService } from "../../service/DashboardService";
 
 const Views = () => {
-  // Cargar el estado inicial desde localStorage o usar valores por defecto
-  const initialCards = JSON.parse(localStorage.getItem("cards") || "null") || [
-    {
-      id: "daily",
-      title: "Visitas diarias",
-      visits: 33,
-      data: [3.9, 3.9, 3.9, 3.9],
-    },
-    {
-      id: "weekly",
-      title: "Visitas semanales",
-      visits: 210,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "monthly",
-      title: "Visitas mensuales",
-      visits: 900,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "yearly",
-      title: "Visitas anuales",
-      visits: 12000,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-  ];
-
-  const [cards, setCards] = useState(initialCards);
+  const [cards, setCards] = useState<any[]>([
+    { title: "Card 1", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Card 2", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Card 3", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Card 4", visits: 0, data: [0, 0, 0, 0] },
+  ]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
+  // Función para obtener los datos del servicio
+  const fetchViewsStats = async () => {
+    setLoading(true); // Marca el inicio de la carga
+    try {
+      const response = await DashboardService.getAllViewsStats();
+      if (response?.data) {
+        setCards(response.data);
+      } else {
+        throw new Error("No se encontraron datos.");
+      }
+    } catch (err) {
+      setError("Error al obtener los datos de las visitas.");
+    } finally {
+      setLoading(false); // Finaliza el estado de carga
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem("cards", JSON.stringify(cards));
-  }, [cards]);
+    fetchViewsStats();
+    const interval = setInterval(fetchViewsStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
@@ -52,17 +51,21 @@ const Views = () => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = cards.findIndex((card: any) => card.id === active.id);
-    const newIndex = cards.findIndex((card: any) => card.id === over.id);
+    const oldIndex = cards.findIndex((card) => card.title === active.id);
+    const newIndex = cards.findIndex((card) => card.title === over.id);
 
     if (oldIndex !== newIndex) {
-      setCards((prev: any) => arrayMove(prev, oldIndex, newIndex));
+      setCards((prev) => arrayMove(prev, oldIndex, newIndex));
     }
   };
 
   const handleDragEnd = () => {
     setActiveId(null);
   };
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <DndContext
@@ -77,12 +80,12 @@ const Views = () => {
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
           gap: "16px",
           width: "100%",
-          position: "relative", 
+          position: "relative",
         }}
       >
         {cards.map((card: any) => (
-          <Droppable key={card.id} id={card.id}>
-            <Draggable id={card.id}>
+          <Droppable key={card.title} id={card.title}>
+            <Draggable id={card.title}>
               <CardStats
                 title={card.title}
                 visits={card.visits}

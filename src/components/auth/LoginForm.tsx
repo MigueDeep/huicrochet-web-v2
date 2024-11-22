@@ -46,7 +46,7 @@ const Loginform = () => {
       try {
         const response = await AuthService.login(values);
         localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+        window.location.replace("/dashboard");
       } catch (error) {
         throw error;
       } finally {
