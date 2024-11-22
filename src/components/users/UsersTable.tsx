@@ -8,8 +8,8 @@ import {
   TableCell,
   Chip,
   Pagination,
-  Avatar,
 } from "@nextui-org/react";
+import Avatar from "@mui/material/Avatar";
 import ChangeStatus from "../common/ChangesStatus";
 import UserService from "../../service/UserService";
 import { IUser } from "../../interfaces/IUser";
@@ -80,11 +80,17 @@ export default function UsersTable() {
         return user.image?.imageUri ? (
           <Avatar
             alt={user.fullName}
-            src={`http://localhost:8080/${user.image.imageUri.split("/").pop()}`}
+            src={
+              user.image
+                ? `http://localhost:8080/${user.image.imageUri
+                    .split("/")
+                    .pop()}`
+                : "/default.webp"
+            }
           />
         ) : (
           <Avatar>{user.fullName.charAt(0).toUpperCase()}</Avatar>
-        );
+        )
       case "name":
         return user.fullName;
       case "email":

@@ -7,14 +7,14 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
-  Tooltip,
   Chip,
   Pagination,
 } from "@nextui-org/react";
+import Lottie from "lottie-react";
+import { format } from "@formkit/tempo"
 import animationData from "../../utils/animation.json";
 import OrderDetail from "./OrderDetail";
 import { IOrder } from "../../interfaces/IOrder";
-import Lottie from "lottie-react";
 import OrderService from "../../service/OrderService";
 
 
@@ -158,7 +158,8 @@ const formatId = (id: string) => {
 }
 
  const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString();
+  const readable = format(date, "medium")
+  return readable
 }
 
 const traduceStatus = (status: string) => {
@@ -167,6 +168,8 @@ const traduceStatus = (status: string) => {
       return "Pendiente";
     case "SHIPPED":
       return "Enviado";
+    case "DELIVERED":
+      return "Entregado";
     default:
       return status;
   }
@@ -178,6 +181,8 @@ const renderColor = (status: string) => {
       return "warning";
     case "SHIPPED":
       return "secondary";
+    case "DELIVERED":
+      return "success";
     default:
       return "danger";
   }

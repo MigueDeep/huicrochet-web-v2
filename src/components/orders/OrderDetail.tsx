@@ -9,38 +9,36 @@ import {
   Divider,
   Chip,
 } from "@nextui-org/react";
-import Select from "@mui/material/Select";
 import {
   Avatar,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Button,
   Typography,
   Grid,
   IconButton,
 } from "@mui/material";
+import { format } from "@formkit/tempo"
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { DatePicker } from "@mui/x-date-pickers";
 import PaymentIcon from "@mui/icons-material/Payment";
 import { PedidosIconBlack } from "../../utils/icons";
 import { OrderDetailTable } from "./OrderDetailTable";
-import { useState } from "react";
 import { IOrder } from "../../interfaces/IOrder";
-
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 interface IOrderDetailProps {
   order: IOrder;
 }
 
+const steps = [
+    "Pendiente",
+    "Enviado",
+    "Entregado",
+];
+
+
 export default function OrderDetail( { order }: IOrderDetailProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const status = [
-    { value: "1", label: "En proceso", color: "warning" },
-    { value: "2", label: "Enviado", color: "primary" },
-    { value: "3", label: "Entregado", color: "success" },
-  ];
-  const [selectedStatus, setSelectedStatus] = useState("1");
 
   return (
     <>
@@ -63,20 +61,26 @@ export default function OrderDetail( { order }: IOrderDetailProps) {
               <ModalHeader className="flex flex-col items-center gap-2">
                 <Typography variant="h6">Detalle de la Orden</Typography>
                 <Chip
-                  color={
-                    (status.find((s) => s.value === selectedStatus)?.color as
-                      | "success"
-                      | "default"
-                      | "primary"
-                      | "secondary"
-                      | "warning"
-                      | "danger") || "default"
-                  }
+                  color={renderColor(order.orderState)}
                   size="md"
                   variant="flat"
+                  className="capitalize"
                 >
-                  {status.find((s) => s.value === selectedStatus)?.label || ""}
+                  {traduceStatus(order.orderState)}
                 </Chip>
+                <Box sx={{ width: '100%' }} mt={2}>
+                  <Stepper activeStep={
+                    order.orderState === "PENDING" ? 0 : 
+                    order.orderState === "SHIPPED" ? 1 :
+                    order.orderState === "DELIVERED" ? 3 : 0
+                  } alternativeLabel>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Box>
               </ModalHeader>
               <ModalBody className="max-h-[60vh] overflow-y-auto">
                 <Grid container spacing={3}>
@@ -85,29 +89,8 @@ export default function OrderDetail( { order }: IOrderDetailProps) {
                       Orden ID: <span className="text-semibold">#{formatId(order.id)}</span>
                     </Typography>
                     <Typography color="text.secondary">
-                      Lunes 20 de Octubre, 2024
+                        {formatDate(order.orderDate)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6} container spacing={2}>
-                    <Grid item xs={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Estado</InputLabel>
-                        <Select
-                          value={selectedStatus}
-                          onChange={(e) => setSelectedStatus(e.target.value)}
-                          label="Estado"
-                        >
-                          {status.map((item) => (
-                            <MenuItem key={item.value} value={item.value}>
-                              {item.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <DatePicker label="Fecha de entrega" />
-                    </Grid>
                   </Grid>
                 </Grid>
 
@@ -116,26 +99,26 @@ export default function OrderDetail( { order }: IOrderDetailProps) {
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
                     <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar
-                        src="/pajaro.jpg"
-                        sx={{ width: 40, height: 40 }}
-                      />
+                      {
+                        order.shippingAddress.user.image?.imageUri ? (
+                          <Avatar
+                            alt={order.shippingAddress.user.fullName}
+                            src={`http://localhost:8080/${order.shippingAddress.user.image.imageUri.split("/").pop()}`}
+                          />
+                        ) : (
+                          <Avatar>{order.shippingAddress.user.fullName.charAt(0).toUpperCase()}</Avatar>
+                        )
+                      }
                       <Typography variant="h6">Cliente</Typography>
                     </Box>
-                    <Box ml={5}>
+                    <Box ml={7}>
                       <Typography>
                         <span className="text-semibold text-pink">Nombre:</span>{" "}
-                        Miguel Delgado
+                        {order.shippingAddress.user.fullName}
                       </Typography>
                       <Typography>
                         <span className="text-semibold text-pink">Correo:</span>{" "}
-                        miguel@gmail.com
-                      </Typography>
-                      <Typography>
-                        <span className="text-semibold text-pink">
-                          Teléfono:
-                        </span>{" "}
-                        777 152 7761
+                        {order.shippingAddress.user.email}
                       </Typography>
                     </Box>
                   </Grid>
@@ -144,22 +127,20 @@ export default function OrderDetail( { order }: IOrderDetailProps) {
                       <PedidosIconBlack />
                       <Typography variant="h6">Dirección de entrega</Typography>
                     </Box>
-                    <Box ml={5}>
+                    <Box ml={6}>
                       <Typography>
                         <span className="text-semibold text-pink">
                           Dirección:
                         </span>{" "}
-                        Calle Falsa 123, Ciudad, País
+                        {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.state}
                       </Typography>
                       <Typography>
                         <span className="text-semibold text-pink">CP:</span>{" "}
-                        12345
+                        {order.shippingAddress.zipCode}
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
-
-                <Divider className="my-4" />
 
                 <Box display="flex" alignItems="center" gap={2} mt={2}>
                   <PaymentIcon />
@@ -168,19 +149,21 @@ export default function OrderDetail( { order }: IOrderDetailProps) {
                 <Box ml={5}>
                   <Typography>
                     <span className="text-semibold text-pink">Método:</span>{" "}
-                    Tarjeta de crédito
+                    {
+                      order.paymentMethod.cardType === "credit" ? "Tarjeta de crédito" : "Tarjeta de débito"
+                    }
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Número:</span>{" "}
-                    **** **** **** 1234
+                    **** **** **** **** {order.paymentMethod.cardNumber.slice(-4)} 
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Titular:</span>{" "}
-                    Miguel Delgado
+                    {order.shippingAddress.user.fullName}
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Fecha:</span>{" "}
-                    10/24
+                    {order.paymentMethod.expirationDate}
                   </Typography>
                 </Box>
 
@@ -214,7 +197,8 @@ const formatId = (id: string) => {
 }
 
  const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString();
+  const readable = format(date, "full")
+  return readable
 }
 
 const traduceStatus = (status: string) => {
@@ -223,7 +207,22 @@ const traduceStatus = (status: string) => {
       return "Pendiente";
     case "SHIPPED":
       return "Enviado";
+    case "DELIVERED":
+      return "Entregado";
     default:
       return status;
+  }
+}
+
+const renderColor = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "warning";
+    case "SHIPPED":
+      return "secondary";
+    case "DELIVERED":
+      return "success";
+    default:
+      return "danger";
   }
 }
