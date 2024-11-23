@@ -12,7 +12,18 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import ColorCircle from "../../common/ColorCircle";
-import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  InputAdornment,
+  Switch,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
@@ -42,6 +53,18 @@ export const ProductsTable = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [open, setOpen] = useState(false); // Estado del Dialog
+  const [productToToggle, setProductToToggle] = useState<Datum | null>(null); // Producto seleccionado para desactivar/activar
+
+  const handleClickOpen = (product: Datum) => {
+    setProductToToggle(product); // Guardar el producto
+    setOpen(true); // Abrir el Dialog
+  };
+
+  const handleClose = () => {
+    setOpen(false); // Cerrar el Dialog
+    setProductToToggle(null); // Limpiar el producto seleccionado
+  };
 
   const pages = Math.ceil(products.length / rowsPerPage);
   const navigate = useNavigate();
@@ -50,20 +73,26 @@ export const ProductsTable = () => {
     navigate(`/products/edit/${id}`);
   };
 
-  const onDelete = async (item: Datum) => {
+  const onDelete = async () => {
+    if (!productToToggle) return;
     try {
-      const newState = !item.state;
+      const newState = !productToToggle.state;
       setProducts((prev) =>
         prev.map((product) =>
-          product.id === item.id ? { ...product, state: newState } : product
+          product.id === productToToggle.id
+            ? { ...product, state: newState }
+            : product
         )
       );
-      await ItemsService.chngeStatus(item.id, newState);
+      handleClose();
+      await ItemsService.chngeStatus(productToToggle.id, newState);
     } catch (error) {
       console.error("Error al cambiar el estado del producto:", error);
       setProducts((prev) =>
         prev.map((product) =>
-          product.id === item.id ? { ...product, state: !item.state } : product
+          product.id === productToToggle.id
+            ? { ...product, state: !productToToggle.state }
+            : product
         )
       );
     }
@@ -228,7 +257,7 @@ export const ProductsTable = () => {
                         >
                           <Switch
                             checked={item.state}
-                            onChange={() => onDelete(item)}
+                            onClick={() => handleClickOpen(item)}
                           />
                         </Tooltip>
                       </ButtonGroup>
@@ -244,6 +273,29 @@ export const ProductsTable = () => {
           )}
         </TableBody>
       </Table>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas{" "}
+            {productToToggle?.state ? "desactivar" : "activar"} el item{" "}
+            <strong>{productToToggle?.product?.productName}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="warning" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={onDelete} autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
