@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
-import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  InputAdornment,
+  ListItemText,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import animationData from "../../../utils/animation.json";
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { ArrowLeft } from "@mui/icons-material";
+import { ArrowLeft, Check } from "@mui/icons-material";
 import Lottie from "lottie-react";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
@@ -154,34 +161,52 @@ export const EditProductBase = () => {
                       />
                     </div>
                     <div className="col-12 mb-3">
-                      <Field
-                        name="categories"
-                        as={TextField}
-                        select
-                        label="Selecciona la categoría"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFieldValue("categories", [e.target.value])
-                        }
-                        fullWidth
-                        variant="outlined"
-                        error={touched.categories && !!errors.categories}
-                        helperText={<ErrorMessage name="categories" />}
-                        defaultValue={values.categories}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CategoriasIconBlack />
-                            </InputAdornment>
-                          ),
-                        }}
-                      >
-                        {categories.map((category) => (
-                          <MenuItem key={category.id} value={category.id}>
-                            {category.name}
-                          </MenuItem>
-                        ))}
+                      <Field name="categories">
+                        {({ field }: { field: any }) => (
+                          <TextField
+                            {...field}
+                            select
+                            label="Selecciona la categoría"
+                            fullWidth
+                            variant="outlined"
+                            SelectProps={{
+                              multiple: true,
+                              value: field.value || [],
+                              onChange: (
+                                e: React.ChangeEvent<{ value: unknown }>
+                              ) => setFieldValue("categories", e.target.value),
+                              renderValue: (selected: unknown) =>
+                                (selected as string[])
+                                  .map(
+                                    (id) =>
+                                      categories.find((cat) => cat.id === id)
+                                        ?.name || id
+                                  )
+                                  .join(", "),
+                            }}
+                            error={touched.categories && !!errors.categories}
+                            helperText={<ErrorMessage name="categories" />}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <CategoriasIconBlack />
+                                </InputAdornment>
+                              ),
+                            }}
+                          >
+                            {categories.map((category) => (
+                              <MenuItem key={category.id} value={category.id}>
+                                <Checkbox
+                                  checked={field.value.includes(category.id)}
+                                />
+                                <ListItemText primary={category.name} />
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        )}
                       </Field>
                     </div>
+
                     <div className="col-12 mb-3">
                       <Field
                         name="price"

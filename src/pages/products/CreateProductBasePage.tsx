@@ -1,5 +1,5 @@
 import Layout from "../../components/common/Layout";
-import { CreateProductBase } from "../../components/products/CreateProductBase";
+import { CreateProductBase } from "../../components/products/create/CreateProductBase";
 
 export const CreateProductBasePage = () => {
   return (

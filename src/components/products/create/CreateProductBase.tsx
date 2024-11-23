@@ -1,17 +1,40 @@
 import { useEffect, useState } from "react";
-import { Button, InputAdornment, MenuItem, TextField } from "@mui/material";
-import { getAllActiveCategories } from "../../service/CategoryService";
-import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
-import { ProductServices } from "../../service/ProductService";
-import { ICreateProduct } from "../../interfaces/products/ProductsIterface";
+import {
+  Button,
+  InputAdornment,
+  MenuItem,
+  TextField,
+  Select,
+  Checkbox,
+  OutlinedInput,
+  ListItemText,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import { getAllActiveCategories } from "../../../service/CategoryService";
+import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
+import { ProductServices } from "../../../service/ProductService";
+import { ICreateProduct } from "../../../interfaces/products/ProductsIterface";
 import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { ArrowLeft } from "@mui/icons-material";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
-import { CategoriasIconBlack, HiloIConGary } from "../../utils/icons";
+import animationData from "../../../utils/animation.json";
+import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
 const validationSchema = Yup.object({
   productName: Yup.string().required("El nombre del producto es obligatorio"),
   price: Yup.number()
@@ -96,7 +119,7 @@ export const CreateProductBase = () => {
             validationSchema={validationSchema}
             onSubmit={handleSave}
           >
-            {({ setFieldValue, errors, touched, resetForm }) => (
+            {({ setFieldValue, values, errors, touched, resetForm }) => (
               <Form>
                 <div className="row">
                   <div className="col-12 mb-3">
@@ -127,36 +150,54 @@ export const CreateProductBase = () => {
 
                   <div className="col-12 mb-3">
                     <div className="form-group">
-                      <Field
-                        name="categories"
-                        as={TextField}
-                        select
-                        label="Selecciona la categoría"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFieldValue("categories", [e.target.value])
-                        }
-                        fullWidth
-                        variant="outlined"
-                        
-                        className="form-control"
-                        error={touched.categories && !!errors.categories}
-                        helperText={<ErrorMessage name="categories" />}
-                        slotProps={{
-                          input: {
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <CategoriasIconBlack />
-                              </InputAdornment>
-                            ),
-                          },
-                        }}
-                      >
-                        {categories.map((category) => (
-                          <MenuItem key={category.id} value={category.id}>
-                            {category.name}
-                          </MenuItem>
-                        ))}
-                      </Field>
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-multiple-checkbox-label">
+                          Categorias*
+                        </InputLabel>
+
+                        <Select
+                          id="demo-multiple-checkbox"
+                          multiple
+                          value={values.categories}
+                          onChange={(event) =>
+                            setFieldValue("categories", event.target.value)
+                          }
+                          input={
+                            <OutlinedInput
+                              label="Categorías"
+                              startAdornment={
+                                <InputAdornment position="start">
+                                  <CategoriasIconBlack />
+                                </InputAdornment>
+                              }
+                            />
+                          }
+                          renderValue={(selected) =>
+                            selected
+                              .map(
+                                (id) =>
+                                  categories.find((cat) => cat.id === id)
+                                    ?.name || id
+                              )
+                              .join(", ")
+                          }
+                          MenuProps={MenuProps}
+                        >
+                          {categories.map((category) => (
+                            <MenuItem key={category.id} value={category.id}>
+                              <Checkbox
+                                checked={values.categories.includes(
+                                  category.id as never
+                                )}
+                              />
+                              <ListItemText primary={category.name} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {touched.categories && errors.categories && (
+                          <div className="text-danger">{errors.categories}</div>
+                        )}
+                      </FormControl>
                     </div>
                   </div>
 

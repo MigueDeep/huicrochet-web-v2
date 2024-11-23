@@ -53,13 +53,11 @@ export default function ColorsTable() {
 
   const handleStatusChange = async (id: string) => {
     try {
-      // Actualiza el estado del color localmente para reflejar cambios rápidos
       setColorsData((prevColors) =>
         prevColors.map((color) =>
           color.id === id ? { ...color, status: !color.status } : color
         )
       );
-      // Llama al servicio para persistir el cambio
       await ColorService.changeColorStatus(id);
     } catch (error) {
       console.error("Error al actualizar el estado del color:", error);

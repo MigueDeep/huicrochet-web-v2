@@ -10,7 +10,6 @@ import {
   Pagination,
   ButtonGroup,
 } from "@nextui-org/react";
-import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
 import ColorCircle from "../../common/ColorCircle";
 import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
@@ -179,13 +178,15 @@ export const ProductsTable = () => {
                       : "Producto sin nombre";
                     break;
                   case "category":
-                    const activeCategory = item.product?.categories.find(
-                      (category) => category.state
-                    );
-                    cellContent = activeCategory
-                      ? activeCategory.name
-                      : "Sin categoría activa";
+                    cellContent =
+                      item.product?.categories &&
+                      item.product.categories.length > 0
+                        ? item.product.categories
+                            .map((category) => category.name)
+                            .join(", ")
+                        : "Sin categorías";
                     break;
+
                   case "description":
                     cellContent =
                       item.product?.description ?? "Descripción no disponible";

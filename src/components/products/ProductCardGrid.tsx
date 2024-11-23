@@ -47,7 +47,7 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
         />
         <CardContent className="text-start">
           <p className="card-title">{title}</p>
-          <p className="text-secondary">{description}</p>
+          <p className="text-secondary mt-1">{description}</p>
           <p className="text-secondary">{category}</p>
           <p className="text-secondary">{quantity}</p>
           <p className="fw-bold text-pink">${price.toFixed(2)}</p>

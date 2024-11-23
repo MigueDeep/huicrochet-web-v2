@@ -111,7 +111,9 @@ export const ProductsGrid = () => {
                 title={product.product?.productName || "Sin nombre"}
                 description={product.product?.description || "Sin descripción"}
                 category={
-                  product.product?.categories[0]?.name || "Sin categoría"
+                  product.product?.categories
+                    .map((cat) => cat.name)
+                    .join(", ") || "Sin categorías"
                 }
                 quantity={product.stock}
                 price={product.product?.price || 0}
