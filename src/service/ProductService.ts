@@ -6,7 +6,7 @@ import { ICreateProduct, IProduct, IUpdateProduct } from "../interfaces/products
 export const ProductServices = {
   getAll: async (): Promise<IProduct> => {
     try {
-      const response = await doGet("/product/getAll");
+      const response = await doGet("/product/getAll", { showToast: false });
       return response.data;
     } catch (error) {
       throw error;
@@ -25,7 +25,7 @@ export const ProductServices = {
 
   getAllActive: async (): Promise<IProduct> => {
     try {
-      const response = await doGet("/product/getActiveProducts");
+      const response = await doGet("/product/getActiveProducts", { showToast: false });
       return response.data;
     } catch (error) {
       throw error;

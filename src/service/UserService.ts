@@ -1,10 +1,9 @@
-// src/services/AuthService.ts
-import { doGet, doPut, doPutId } from "../config/Axios";
+import { doGet, doPutId } from "../config/Axios";
 
 const UserService = {
         getUsers: async () => {
             try {
-            const response = await doGet("/auth/getAll");
+            const response = await doGet("/auth/getAll", { showToast: false });
             return response.data;
             } catch (error) {
             throw new Error(

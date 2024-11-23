@@ -29,6 +29,7 @@ import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
+import toast from "react-hot-toast";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 const rowsPerPage = 10;

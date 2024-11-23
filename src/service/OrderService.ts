@@ -6,7 +6,7 @@ const OrderService = {
 
     getOrders: async () => {
         try {
-            const response = await doGet("/order");
+            const response = await doGet("/order", { showToast: false });
             return response.data;
         } catch (error) {
             throw new Error("An error occurred while fetching order. Please try again.");

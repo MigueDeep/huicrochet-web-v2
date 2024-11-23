@@ -17,7 +17,7 @@ const ColorService = {
 
     getColors: async () => {
         try {
-            const response = await doGet("/color");
+            const response = await doGet("/color",  { showToast: false });
             return response.data;
         } catch (error) {
             throw new Error("An error occurred while fetching colors. Please try again.");
@@ -42,6 +42,8 @@ const ColorService = {
             throw new Error("An error occurred while disabling color. Please try again.");
         }
     },
+
+    
 
 };
 

@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 export const ItemsService = {
   getAll: async (): Promise<IItemProduct> => {
     try {
-      const response = await doGet("/item/getAll");
+      const response = await doGet("/item/getAll",  { showToast: false });
       return response.data;
     } catch (error) {
       throw error;

@@ -3,7 +3,7 @@ import { Icategory, ICreateCategory } from "../interfaces/CategoriesInterface.ts
 
 export const getAllCategories = async (): Promise<Icategory> => {
   try {
-    const response = await doGet("/category/getAllOrderByName");
+    const response = await doGet("/category/getAllOrderByName", { showToast: false });
     return response.data;
   } catch (error) {
     throw error;
@@ -40,7 +40,7 @@ export const updateCategoryStatus = async (id: string, newState: boolean) => {
 
 export const  getAllActiveCategories = async (): Promise<Icategory> => {
   try {
-    const response = await doGet("/category/getAllTrue");
+    const response = await doGet("/category/getAllTrue", { showToast: false });
     return response.data;
   } catch (error) {
     throw error;

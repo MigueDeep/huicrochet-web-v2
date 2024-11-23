@@ -5,7 +5,7 @@ import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
 export const DashboardService = {
   getAllViewsStats: async (): Promise<IViews> => {
     try {
-      const response = await doGet("/stats/visits");
+      const response = await doGet("/stats/visits",  { showToast: false });
       return response.data;
     } catch (error) {
       throw error;
@@ -14,7 +14,7 @@ export const DashboardService = {
   getAllCountUsers : async () => {
     console.log("getAllCountUsers");
     try {
-      const response = await doGet("/stats/users/count");
+      const response = await doGet("/stats/users/count",  { showToast: false });
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -23,7 +23,7 @@ export const DashboardService = {
   },
   getAllUsersLogged : async () => {
     try {
-      const response = await doGet("/stats/users/logged-in-today");
+      const response = await doGet("/stats/users/logged-in-today", { showToast: false });
       return response.data;
     } catch (error) {
       throw error;
@@ -31,7 +31,7 @@ export const DashboardService = {
   },
   getAllUsersLoggedOut : async () => {
     try {
-      const response = await doGet("/stats/users/not-logged-in");
+      const response = await doGet("/stats/users/not-logged-in", { showToast: false });
       return response.data;
     } catch (error) {
       throw error;
@@ -41,7 +41,7 @@ getVisitStatsInRange: async (startDate: string, endDate: string): Promise<IViews
   console.log("Servicio llamado con fechas:", startDate, endDate);
   try {
     const response = await doGet(
-      `/stats/visits/range?startDate=${startDate}&endDate=${endDate}`
+      `/stats/visits/range?startDate=${startDate}&endDate=${endDate}  `
     );
     console.log("Respuesta recibida:", response.data);
     return response.data;

@@ -9,6 +9,11 @@ const instance = axios.create({
   },
 });
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    showToast?: boolean;
+  }
+}
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -26,9 +31,11 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    console.log(response.data.message);
-    if(!response.config.url?.includes("stats")){
+    if (response.config.showToast !== false) {
+      if(!response.config.url?.includes("/item/getById/") && !response.config.url?.includes("/stats/visits/") && !response.config.url?.includes("/product/getById/")
+    ){
       toast.success(response.data.message);
+    }
     }
     return response;
   },
@@ -40,9 +47,10 @@ instance.interceptors.response.use(
   }
 );
 
-export const doGet = (url: string) => {
-  return instance.get(url);
+export const doGet = (url: string, config?: object) => {
+  return instance.get(url, config);
 };
+
 
 export const doGetId = (url: string, id: string) => {
   return instance.get(`${url}${id}`);
