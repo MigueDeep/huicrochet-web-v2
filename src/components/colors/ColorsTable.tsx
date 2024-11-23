@@ -89,7 +89,7 @@ export default function ColorsTable() {
       <div className="col-6 mb-2">
         <TextField
           label="Busqueda"
-          placeholder="Ingresa el nombre de la categoría"
+          placeholder="Ingresa el nombre del color"
           variant="outlined"
           fullWidth
           value={searchTerm}

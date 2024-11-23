@@ -8,6 +8,7 @@ import {
   TableCell,
   Chip,
   Pagination,
+  user,
 } from "@nextui-org/react";
 import Avatar from "@mui/material/Avatar";
 import ChangeStatus from "../common/ChangesStatus";
@@ -15,6 +16,8 @@ import UserService from "../../service/UserService";
 import { IUser } from "../../interfaces/IUser";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
+import { InputAdornment, TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 const columns = [
   { key: "pic", label: "FOTO" },
@@ -32,6 +35,7 @@ export default function UsersTable() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -63,12 +67,19 @@ export default function UsersTable() {
   };
 
   const pages = Math.ceil(users.length / rowsPerPage);
-
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users;
+    return users.filter((user) =>
+      user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, users]);
   const items = useMemo(() => {
+    if (isLoading) return [];
+
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return users.slice(start, end);
-  }, [page, users]);
+    return filteredUsers.slice(start, end);
+  }, [page, filteredUsers, isLoading]);
 
   const renderCellContent = (
     key: string,
@@ -90,7 +101,7 @@ export default function UsersTable() {
           />
         ) : (
           <Avatar>{user.fullName.charAt(0).toUpperCase()}</Avatar>
-        )
+        );
       case "name":
         return user.fullName;
       case "email":
@@ -127,45 +138,69 @@ export default function UsersTable() {
   }
 
   return (
-    <Table
-      aria-label="Example table with dynamic content"
-      bottomContent={
-        <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
-          <Pagination
-            loop
-            showControls
-            color="success"
-            initialPage={1}
-            page={page}
-            total={pages}
-            onChange={(page) => setPage(page)}
-          />
-        </div>
-      }
-    >
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody
-        isLoading={isLoading}
-        loadingContent={
-          <div style={{ height: "100px", width: "100px" }}>
-            <Lottie animationData={animationData} width={50} height={50} />
+    <>
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre del usuario"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </div>
+
+      <Table
+        aria-label="Example table with dynamic content"
+        bottomContent={
+          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
+            <Pagination
+              loop
+              showControls
+              color="success"
+              initialPage={1}
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
           </div>
         }
-        emptyContent={"✨ No hay usuarios para mostrar...✨"}
-        items={items}
       >
-        {(user) => (
-          <TableRow key={user.id}>
-            {columns.map((column) => (
-              <TableCell key={column.key}>
-                {renderCellContent(column.key, user, handleStatusChange)}
-              </TableCell>
-            ))}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          isLoading={isLoading}
+          loadingContent={
+            <div style={{ height: "100px", width: "100px" }}>
+              <Lottie animationData={animationData} width={50} height={50} />
+            </div>
+          }
+          emptyContent={"✨ No hay usuarios para mostrar...✨"}
+          items={items}
+        >
+          {(user) => (
+            <TableRow key={user.id}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>
+                  {renderCellContent(column.key, user, handleStatusChange)}
+                </TableCell>
+              ))}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </>
   );
 }
