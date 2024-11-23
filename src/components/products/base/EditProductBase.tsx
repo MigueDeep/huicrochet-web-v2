@@ -26,6 +26,8 @@ const validationSchema = Yup.object({
     .required("El precio es obligatorio"),
   categories: Yup.array()
     .min(1, "Selecciona al menos una categoría")
+    .max(3, "No puedes seleccionar más de 3 categorías") // Validación de máximo 3 categorías
+
     .required("La categoría es obligatoria"),
   description: Yup.string().max(
     250,
@@ -174,7 +176,12 @@ export const EditProductBase = () => {
                               value: field.value || [],
                               onChange: (
                                 e: React.ChangeEvent<{ value: unknown }>
-                              ) => setFieldValue("categories", e.target.value),
+                              ) => {
+                                // Solo actualizar si no se excede el límite de 3 categorías
+                                if ((e.target.value as string[]).length <= 3) {
+                                  setFieldValue("categories", e.target.value);
+                                }
+                              },
                               renderValue: (selected: unknown) =>
                                 (selected as string[])
                                   .map(
@@ -198,6 +205,10 @@ export const EditProductBase = () => {
                               <MenuItem key={category.id} value={category.id}>
                                 <Checkbox
                                   checked={field.value.includes(category.id)}
+                                  disabled={
+                                    field.value.length >= 3 &&
+                                    !field.value.includes(category.id)
+                                  } // Desactivar cuando hay 3 categorías seleccionadas
                                 />
                                 <ListItemText primary={category.name} />
                               </MenuItem>

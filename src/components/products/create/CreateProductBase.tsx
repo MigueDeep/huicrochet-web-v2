@@ -42,6 +42,7 @@ const validationSchema = Yup.object({
     .required("El precio es obligatorio"),
   categories: Yup.array()
     .min(1, "Selecciona al menos una categoría")
+    .max(3, "No puedes seleccionar más de 3 categorías")
     .required("La categoría es obligatoria"),
   description: Yup.string().max(
     250,
@@ -184,7 +185,16 @@ export const CreateProductBase = () => {
                           MenuProps={MenuProps}
                         >
                           {categories.map((category) => (
-                            <MenuItem key={category.id} value={category.id}>
+                            <MenuItem
+                              key={category.id}
+                              value={category.id}
+                              disabled={
+                                values.categories.length >= 3 &&
+                                !values.categories.includes(
+                                  category.id as never
+                                )
+                              }
+                            >
                               <Checkbox
                                 checked={values.categories.includes(
                                   category.id as never
@@ -194,6 +204,7 @@ export const CreateProductBase = () => {
                             </MenuItem>
                           ))}
                         </Select>
+
                         {touched.categories && errors.categories && (
                           <div className="text-danger">{errors.categories}</div>
                         )}
