@@ -29,6 +29,13 @@ import { ProductCommentsModal } from "../ProductCommentsModal";
 import { Category, Datum } from "../../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../../service/ProductService";
 import { useNavigate } from "react-router-dom";
+
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
@@ -51,7 +58,18 @@ export const ProductsBase = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const pages = Math.ceil(products.length / rowsPerPage);
+  const [open, setOpen] = useState(false); // Estado del Dialog
+  const [productToToggle, setProductToToggle] = useState<Datum | null>(null); // Producto seleccionado para desactivar/activar
 
+  const handleClickOpen = (product: Datum) => {
+    setProductToToggle(product); // Guardar el producto
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setProductToToggle(null);
+  };
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products;
     return products.filter((product) =>
@@ -80,20 +98,24 @@ export const ProductsBase = () => {
   const editProduct = async (id: string) => {
     navigate(`/products/base/edit/${id}`);
   };
-  const toggleProductStatus = async (product: Datum) => {
+  const toggleProductStatus = async () => {
+    if (!productToToggle) return; // Validación
     try {
-      const newState = !product.state;
+      const newState = !productToToggle.state;
       setProducts((prevProducts) =>
         prevProducts.map((prod) =>
-          prod.id === product.id ? { ...prod, state: newState } : prod
+          prod.id === productToToggle.id ? { ...prod, state: newState } : prod
         )
       );
-      await ProductServices.changeStatus(product.id, newState);
+      handleClose();
+      await ProductServices.changeStatus(productToToggle.id, newState);
     } catch (error) {
       console.error("Error al actualizar el estado del producto:", error);
       setProducts((prevProducts) =>
         prevProducts.map((prod) =>
-          prod.id === product.id ? { ...prod, state: product.state } : prod
+          prod.id === productToToggle.id
+            ? { ...prod, state: productToToggle.state }
+            : prod
         )
       );
     }
@@ -211,7 +233,7 @@ export const ProductsBase = () => {
                       <Switch
                         {...label}
                         checked={product.state}
-                        onChange={() => toggleProductStatus(product)}
+                        onClick={() => handleClickOpen(product)}
                       />
                     </Tooltip>
                   </ButtonGroup>
@@ -226,6 +248,29 @@ export const ProductsBase = () => {
         isOpen={openCommentsModal}
         onOpenChange={onCloseCommentsModal}
       />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas{" "}
+            {productToToggle?.state ? "desactivar" : "activar"} el producto{" "}
+            {productToToggle?.productName}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={toggleProductStatus} color="primary" autoFocus>
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
