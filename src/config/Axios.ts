@@ -6,9 +6,8 @@ const instance = axios.create({
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
-  },    
+  },
 });
-
 
 instance.interceptors.request.use(
   (config) => {
@@ -19,7 +18,9 @@ instance.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    const backendMessage = error.response?.data?.message || error.message || "Error al realizar la operación";
+    toast.error(backendMessage);
+    return Promise.reject(new Error(error.message || "Error al realizar la operación"));
   }
 );
 
@@ -32,7 +33,10 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
-    return Promise.reject(error);
+    const backendMessage =
+      error.response?.data?.message || error.message || "Error al realizar la operación";
+    toast.error(backendMessage);
+    return Promise.reject(new Error(backendMessage));
   }
 );
 
@@ -47,7 +51,6 @@ export const doGetId = (url: string, id: string) => {
 export const doPost = (url: string, data: any) => {
   return instance.post(url, data);
 };
-
 
 export const doPut = (url: string, data: any) => {
   return instance.put(url, data);

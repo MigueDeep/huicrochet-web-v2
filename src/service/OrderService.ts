@@ -1,6 +1,5 @@
 // src/services/AuthService.ts
-import { doPost, doGet, doPut, doPutId } from "../config/Axios";
-import { IOrder } from "../interfaces/IOrder";
+import { doGet, doPutId } from "../config/Axios";
 
 
 const OrderService = {
@@ -10,9 +9,18 @@ const OrderService = {
             const response = await doGet("/order");
             return response.data;
         } catch (error) {
-            throw new Error("An error occurred while fetching colors. Please try again.");
+            throw new Error("An error occurred while fetching order. Please try again.");
         }
     },
+
+    updateOrder: async (id: string, status: string) => {
+        try {
+            const response = await doPutId(`/order/${id}/status/${status}`);
+            return response.data;
+        } catch (error) {
+            throw new Error("An error occurred while updating the order. Please try again.");
+        }
+    }
 
 
 };

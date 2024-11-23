@@ -10,12 +10,15 @@ export interface IOrder {
 }
 
 export interface OrderDetails {
-    additionalProp1: AdditionalProp;
-    additionalProp2: AdditionalProp;
-    additionalProp3: AdditionalProp;
-}
-
-export interface AdditionalProp {
+    totalPrice:            number;
+    shippingAddress:       ShippingAddress;
+    paymentMethod:         PaymentMethod;
+    id:                    string;
+    orderDate:             Date;
+    user:                  User;
+    estimatedDeliveryDate: Date;
+    products:              ProductElement[];
+    status:                string;
 }
 
 export interface PaymentMethod {
@@ -26,6 +29,51 @@ export interface PaymentMethod {
     last4Numbers:   string;
     cvv:            string;
     status:         boolean;
+}
+
+export interface ProductElement {
+    id:       string;
+    item:     Item;
+    quantity: number;
+}
+
+export interface Item {
+    id:      string;
+    product: ItemProduct;
+    color:   Color;
+    stock:   number;
+    state:   boolean;
+    images:  Image[];
+}
+
+export interface Color {
+    id:        string;
+    colorName: string;
+    colorCod:  string;
+    status:    boolean;
+}
+
+export interface Image {
+    id:       string;
+    name:     string;
+    type:     string;
+    imageUri: string;
+}
+
+export interface ItemProduct {
+    id:          string;
+    productName: string;
+    description: string;
+    price:       number;
+    state:       boolean;
+    createdAt:   Date;
+    categories:  Category[];
+}
+
+export interface Category {
+    id:    string;
+    name:  string;
+    state: boolean;
 }
 
 export interface ShippingAddress {
@@ -47,57 +95,14 @@ export interface User {
     fullName: string;
     email:    string;
     birthday: Date;
+    status:   boolean;
+    blocked:  boolean;
     image:    Image;
-}
-
-export interface Image {
-    id:       string;
-    name:     string;
-    type:     string;
-    imageUri: string;
 }
 
 export interface ShoppingCart {
     id:        string;
     bought:    boolean;
     total:     number;
-    cartItems: CartItem[];
-}
-
-export interface CartItem {
-    id:       string;
-    item:     Item;
-    quantity: number;
-}
-
-export interface Item {
-    id:      string;
-    product: Product;
-    color:   Color;
-    stock:   number;
-    state:   boolean;
-    images:  Image[];
-}
-
-export interface Color {
-    id:        string;
-    colorName: string;
-    colorCod:  string;
-    status:    boolean;
-}
-
-export interface Product {
-    id:          string;
-    productName: string;
-    description: string;
-    price:       number;
-    state:       boolean;
-    createdAt:   Date;
-    categories:  Category[];
-}
-
-export interface Category {
-    id:    string;
-    name:  string;
-    state: boolean;
+    cartItems: ProductElement[];
 }
