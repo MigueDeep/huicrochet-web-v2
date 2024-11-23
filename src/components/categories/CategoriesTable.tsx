@@ -29,7 +29,12 @@ import { Datum } from "../../interfaces/CategoriesInterface.ts/Category";
 import SearchIcon from "@mui/icons-material/Search";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
-import toast from "react-hot-toast";
+
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 const rowsPerPage = 10;
@@ -48,6 +53,18 @@ const CategoriesTable = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [open, setOpen] = useState(false); // Estado del Dialog
+  const [categoryToToggle, setCategoryToToggle] = useState<Datum | null>(null); // Categoría seleccionada para desactivar/activar
+
+  const handleClickOpen = (category: Datum) => {
+    setCategoryToToggle(category); // Guardar la categoría
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setCategoryToToggle(null); // Limpiar categoría seleccionada
+  };
 
   const fetchCategories = async () => {
     try {
@@ -77,23 +94,31 @@ const CategoriesTable = () => {
   const onOpenCreateModal = () => setopenCreateModal(true);
   const onCloseCreateModal = () => setopenCreateModal(false);
 
-  const toggleCategoryStatus = async (category: Datum) => {
+  const toggleCategoryStatus = async () => {
+    if (!categoryToToggle) return; // Validación
     try {
-      const newState = !category.state;
+      const newState = !categoryToToggle.state;
 
       setCategories((prevCategories) =>
         prevCategories.map((cat) =>
-          cat.id === category.id ? { ...cat, state: newState } : cat
+          cat.id === categoryToToggle.id ? { ...cat, state: newState } : cat
         )
       );
-      await updateCategoryStatus(category.id, newState);
+
+      handleClose();
+      await updateCategoryStatus(categoryToToggle.id, newState);
     } catch (error) {
       console.error("Error al actualizar el estado de la categoría:", error);
+
       setCategories((prevCategories) =>
         prevCategories.map((cat) =>
-          cat.id === category.id ? { ...cat, state: category.state } : cat
+          cat.id === categoryToToggle.id
+            ? { ...cat, state: categoryToToggle.state }
+            : cat
         )
       );
+    } finally {
+      handleClose();
     }
   };
 
@@ -198,7 +223,7 @@ const CategoriesTable = () => {
                       <Switch
                         {...label}
                         checked={item.state}
-                        onChange={() => toggleCategoryStatus(item)}
+                        onClick={() => handleClickOpen(item)}
                       />
                     </>
                   ) : columnKey === "state" ? (
@@ -230,6 +255,29 @@ const CategoriesTable = () => {
         onCloseCreateModal={onCloseCreateModal}
         fetchCategories={fetchCategories}
       />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas{" "}
+            {categoryToToggle?.state ? "desactivar" : "activar"} la categoría{" "}
+            <strong>{categoryToToggle?.name}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="warning" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={toggleCategoryStatus} autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
