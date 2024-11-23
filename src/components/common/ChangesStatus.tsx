@@ -22,6 +22,10 @@ export default function ChangeStatus({
       setIsActive((prev) => !prev);
       onStatusChange(id);
     }
+    if (type === "user") {
+      setIsActive((prev) => !prev);
+      onStatusChange(id);
+    }
   };
 
   return (
