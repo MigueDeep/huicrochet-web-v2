@@ -34,9 +34,9 @@ const label = { inputProps: { "aria-label": "Switch demo" } };
 const rowsPerPage = 10;
 
 const columns = [
-  { key: "name", label: "Categoria" },
-  { key: "state", label: "Estado" },
-  { key: "actions", label: "Acciones" },
+  { key: "name", label: "CATEGORIA" },
+  { key: "state", label: "ESTADO" },
+  { key: "actions", label: "ACCIONES" },
 ];
 
 const CategoriesTable = () => {

@@ -32,13 +32,14 @@ import { useNavigate } from "react-router-dom";
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const columns = [
-  { key: "name", label: "Producto" },
-  { key: "description", label: "Descripción" },
-  { key: "price", label: "Precio" },
-  { key: "category", label: "Categoría" },
-  { key: "status", label: "Estado" },
-  { key: "actions", label: "Acciones" },
+  { key: "name", label: "PRODUCTO" },
+  { key: "description", label: "DESCRIPCIÓN" },
+  { key: "price", label: "PRECIO" },
+  { key: "category", label: "CATEGORÍA" },
+  { key: "status", label: "ESTADO" },
+  { key: "actions", label: "ACCIONES" },
 ];
+
 const rowsPerPage = 10;
 
 export const ProductsBase = () => {

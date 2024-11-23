@@ -23,18 +23,16 @@ import Lottie from "lottie-react";
 import animationData from "../../../utils/animation.json";
 import { HoverableAvatar } from "../../common/HoverableAvatar";
 
-const label = { inputProps: { "aria-label": "Switch demo" } };
-
 const columns = [
-  { key: "image", label: "Imagen" },
-  { key: "name", label: "Nombre" },
-  { key: "category", label: "Categoría" },
-  { key: "description", label: "Cartegoria" },
-  { key: "price", label: "Precio" },
-  { key: "stock", label: "Stock " },
-  { key: "colors", label: "Color" },
-  { key: "status", label: "Estado" },
-  { key: "actions", label: "Acciones" },
+  { key: "image", label: "IMAGEN" },
+  { key: "name", label: "NOMBRE" },
+  { key: "category", label: "CATEGORÍA" },
+  { key: "description", label: "DESCRIPCIÓN" },
+  { key: "price", label: "PRECIO" },
+  { key: "stock", label: "STOCK" },
+  { key: "colors", label: "COLOR" },
+  { key: "status", label: "ESTADO" },
+  { key: "actions", label: "ACCIONES" },
 ];
 
 const rowsPerPage = 10;
