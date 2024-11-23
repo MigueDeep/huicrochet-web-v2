@@ -10,41 +10,9 @@ import {
 } from "@nextui-org/react";
 import ColorCircle from "../common/ColorCircle";
 import Avatar from "@mui/material/Avatar";
+import { ProductElement } from "../../interfaces/IOrder";
 
-const rows = [
-  {
-    id: "1",
-    image: "/pajaro.jpg",
-    product: "Pajaro",
-    color: "blue",
-    quantity: "2",
-    price: "$100",
-  },
-  {
-    id: "2",
-    image: "/sueterazul.jpg",
-    product: "Gato",
-    color: "black",
-    quantity: "1",
-    price: "$200",
-  },
-  {
-    id: "3",
-    image: "/perro.jpeg",
-    product: "Perro",
-    color: "brown",
-    quantity: "3",
-    price: "$300",
-  },
-  {
-    id: "4",
-    image: "/pajaro.jpg",
-    product: "Pez",
-    color: "orange",
-    quantity: "4",
-    price: "$400",
-  },
-];
+const rows: ProductElement[] = [];
 
 const columns = [
   { key: "image", label: "Imagen" },
@@ -56,7 +24,11 @@ const columns = [
 
 const rowsPerPage = 10;
 
-export const OrderDetailTable = () => {
+interface IOrderProducts{
+  products: ProductElement[];
+}
+
+export const OrderDetailTable = ( { products }: Readonly<IOrderProducts>) => {
   const [page, setPage] = useState(1);
 
   const pages = Math.ceil(rows.length / rowsPerPage);
@@ -64,11 +36,11 @@ export const OrderDetailTable = () => {
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return rows.slice(start, end);
+    return products.slice(start, end);
   }, [page]);
+  
 
   return (
-    <>
       <Table
         aria-label="Example table with dynamic content"
         bottomContent={
@@ -95,19 +67,36 @@ export const OrderDetailTable = () => {
             <TableRow key={item.id}>
               {columns.map((column) => (
                 <TableCell key={column.key}>
-                  {column.key === "image" ? (
-                    <Avatar alt={item.product} src={item.image} />
-                  ) : column.key === "color" ? (
-                    <ColorCircle color={item.color} />
-                  ) : (
-                    item[column.key as keyof typeof item]
-                  )}
+                  {renderCell(item, column.key)}
                 </TableCell>
               ))}
             </TableRow>
           )}
         </TableBody>
       </Table>
-    </>
   );
+};
+
+const renderCell = (item: ProductElement, key: string) => {
+  switch (key) {
+  case "image":
+    {
+      const imageUri = `http://localhost:8080/${item.item.images[0].imageUri.split("/").pop()}`;
+      return imageUri ? <Avatar alt="img" src={'http://localhost:8080/snoopyAzul.png'} /> : "Sin imagen";
+    }
+  case "color":
+    return item.item?.color?.colorCod ? (
+      <ColorCircle color={item.item.color.colorCod} />
+    ) : (
+      "Sin color"
+    );
+  case "product":
+    return item.item?.product?.productName || "Sin nombre";
+  case "quantity":
+    return item.quantity;
+  case "price":
+    return `$ ${item.item.product.price}`;
+  }
+  const value = item[key as keyof ProductElement];
+  return typeof value === "string" || typeof value === "number" ? value : "N/A";
 };

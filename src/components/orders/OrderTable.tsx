@@ -35,13 +35,20 @@ export default function OrdersTable() {
   const [ordersData, setOrdersData] = useState<IOrder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
+  const updateOrderState = (id: string, newStatus: string) => {
+    setOrdersData((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === id ? { ...order, orderState: newStatus } : order
+      )
+    );
+  };
+  
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await OrderService.getOrders();
       setOrdersData(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error al cargar ordenes:", error);
     } finally {
@@ -94,64 +101,37 @@ export default function OrdersTable() {
           </div>
         }        
         items={items} emptyContent={"No hay ordenes para mostrar"}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {columns.map((column) => (
-              <TableCell key={column.key}>{renderCell(item, column.key)}</TableCell>
-            ))}
+         {items.map((order) => (
+          <TableRow key={order.id}>
+            <TableCell>
+            <p className="text-sm font-semibold">
+              {formatId(order.id)}
+            </p>
+            </TableCell>
+            <TableCell>{order.shippingAddress.user.fullName}</TableCell>
+            <TableCell>{order.shippingAddress.user.email}</TableCell>
+            <TableCell>{format(order.orderDate, "long")}</TableCell>
+            <TableCell>{format(order.orderDetails.estimatedDeliveryDate, "long")}</TableCell>
+            <TableCell>
+            <Chip
+              className="capitalize"
+              size="sm"
+              variant="flat"
+              color={renderColor(order.orderState)}
+            >
+              {traduceStatus(order.orderState)}
+            </Chip>
+            </TableCell>
+            <TableCell>
+              <OrderDetail order={order} onOrderUpdate={updateOrderState} />
+            </TableCell>
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </Table>
   );
 }
 
-
-const renderCell = (item: IOrder, columnKey: string) => {
-  switch (columnKey) {
-    case "status":
-      return (
-        <Chip
-          className="capitalize"
-          size="sm"
-          variant="flat"
-          color={renderColor(item.orderState)}
-        >
-          {traduceStatus(item.orderState)}
-        </Chip>
-      );
-    case 'order':
-      return(
-        <p className="text-sm font-semibold">
-          {formatId(item.id)}
-        </p>
-      )
-    case 'customer':
-      return(
-        <p className="text-sm">
-          {item.shippingAddress.user.fullName}
-        </p>
-      ) 
-    case 'email':
-      return(
-        <p className="text-sm">
-          {item.shippingAddress.user.email}
-        </p>
-      ) 
-    case 'shopping_date':
-      return(
-        <p className="text-sm">
-          {formatDate(item.orderDate)}
-        </p>
-      )
-    case 'actions':
-      return(
-        <OrderDetail order={item} />
-      )
-    default:
-      return getKeyValue(item, columnKey);
-  }
-};
 
 const formatId = (id: string) => {
   return id.slice(0, 8);

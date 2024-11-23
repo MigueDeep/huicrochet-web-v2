@@ -23,8 +23,6 @@ import { ItemsService } from "../../../service/ItemsService";
 import Lottie from "lottie-react";
 import animationData from "../../../utils/animation.json";
 
-const label = { inputProps: { "aria-label": "Switch demo" } };
-
 const columns = [
   { key: "image", label: "Imagen" },
   { key: "name", label: "Nombre" },

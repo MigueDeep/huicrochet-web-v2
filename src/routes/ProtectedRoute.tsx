@@ -10,7 +10,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRole }) => {
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-
+ 
   const payload = token.split(".")[1];
   const decodedPayload = JSON.parse(atob(payload));
   const role = decodedPayload.roles[0].authority;
