@@ -17,6 +17,8 @@ import { IColor } from "../../interfaces/IColor";
 import ColorService from "../../service/ColorService";
 import Lottie from "lottie-react";
 import animationData from "../../utils/animation.json";
+import { InputAdornment, TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 const columns = [
   { key: "color", label: "COLOR" },
@@ -31,6 +33,7 @@ export default function ColorsTable() {
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchColors = useCallback(async () => {
     setIsLoading(true);
@@ -64,17 +67,43 @@ export default function ColorsTable() {
   };
 
   const pages = Math.ceil(colorsData.length / rowsPerPage);
+  const filteredColors = useMemo(() => {
+    if (!searchTerm) return colorsData;
+    return colorsData.filter((color) =>
+      color.colorName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, colorsData]);
 
   const items = useMemo(() => {
+    if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return colorsData.slice(start, end);
-  }, [page, colorsData]);
+    return filteredColors.slice(start, end);
+  }, [page, filteredColors, isLoading]);
 
   return (
     <>
       <div className="row d-flex justify-content-end mb-4">
         <CreateColorModal onColorCreated={fetchColors} />
+      </div>
+      <div className="col-6 mb-2">
+        <TextField
+          label="Busqueda"
+          placeholder="Ingresa el nombre de la categoría"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
       </div>
       <div className="row">
         <Table
@@ -112,7 +141,12 @@ export default function ColorsTable() {
               <TableRow key={item.id}>
                 {columns.map((column) => (
                   <TableCell key={column.key}>
-                    {renderCellContent(column.key, item, handleStatusChange, fetchColors)}
+                    {renderCellContent(
+                      column.key,
+                      item,
+                      handleStatusChange,
+                      fetchColors
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
