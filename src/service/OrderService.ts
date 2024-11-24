@@ -13,9 +13,9 @@ const OrderService = {
         }
     },
 
-    updateOrder: async (id: string, status: string) => {
+    updateOrder: async (id: string, ) => {
         try {
-            const response = await doPutId(`/order/${id}/status/${status}`);
+            const response = await doPutId(`/order/${id}`);
             return response.data;
         } catch (error) {
             throw new Error("An error occurred while updating the order. Please try again.");

@@ -82,8 +82,8 @@ export default function OrderDetail({ order }: IOrderDetailProps) {
     const newStatus = nextStatus(currentStatus);
 
     try {
-      await OrderService.updateOrder(id, newStatus);
-      setOrderState(newStatus); 
+      await OrderService.updateOrder(id);
+      setOrderState(newStatus);
     } catch (error) {
       console.error("Error al actualizar el pedido:", error);
     }
@@ -110,7 +110,7 @@ export default function OrderDetail({ order }: IOrderDetailProps) {
               <ModalHeader className="flex flex-col items-center gap-2">
                 <Typography variant="h6">Detalle de la Orden</Typography>
                 <Chip
-                  color={renderColor(orderState)} 
+                  color={renderColor(orderState)}
                   size="md"
                   variant="flat"
                   className="capitalize"
@@ -153,12 +153,12 @@ export default function OrderDetail({ order }: IOrderDetailProps) {
                   <Grid item xs={12} sm={6}>
                     <Box textAlign="right">
                       <Button
-                        onClick={() => updateOrder(order.id, orderState)} 
+                        onClick={() => updateOrder(order.id, orderState)}
                         variant="contained"
                         color="primary"
-                        disabled={orderState === "DELIVERED"} 
+                        disabled={orderState === "DELIVERED"}
                       >
-                        {statusOrder(orderState)} 
+                        {statusOrder(orderState)}
                       </Button>
                     </Box>
                   </Grid>
