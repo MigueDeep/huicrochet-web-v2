@@ -6,12 +6,11 @@ import {
   ListItemText,
   MenuItem,
   TextField,
+  SelectChangeEvent,
 } from "@mui/material";
 import animationData from "../../../utils/animation.json";
 import { useNavigate, useParams } from "react-router-dom";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { ArrowLeft, Check } from "@mui/icons-material";
+import { ArrowLeft } from "@mui/icons-material";
 import Lottie from "lottie-react";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
@@ -19,36 +18,40 @@ import { IUpdateProduct } from "../../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../../service/ProductService";
 import { getAllActiveCategories } from "../../../service/CategoryService";
 import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
-const validationSchema = Yup.object({
-  productName: Yup.string().required("El nombre del producto es obligatorio"),
-  price: Yup.number()
-    .positive("El precio debe ser un número positivo")
-    .required("El precio es obligatorio"),
-  categories: Yup.array()
-    .min(1, "Selecciona al menos una categoría")
-    .max(3, "No puedes seleccionar más de 3 categorías") // Validación de máximo 3 categorías
 
-    .required("La categoría es obligatoria"),
-  description: Yup.string().max(
-    250,
-    "La descripción no puede exceder los 250 caracteres"
-  ),
-});
 export const EditProductBase = () => {
   const [categories, setCategories] = useState<Datum[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const id = useParams().id;
-  const handleSave = async (values: IUpdateProduct) => {
+  const [values, setValues] = useState<{
+    productName: string;
+    description: string;
+    price: number;
+    categories: string[];
+    state: boolean;
+    createdAt: string;
+  }>({
+    productName: "",
+    description: "",
+    price: 0,
+    categories: [],
+    state: true,
+    createdAt: "",
+  });
+
+  const handleSave = async () => {
     setLoading(true);
     try {
       if (id) {
-        await ProductServices.update(id, values);
+        await ProductServices.update(id, {
+          ...values,
+          createdAt: new Date(values.createdAt),
+        });
       } else {
         throw new Error("ID is undefined");
       }
-      console.log(values);
       navigate("/products/base");
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
@@ -57,12 +60,29 @@ export const EditProductBase = () => {
     }
   };
 
-  const loadProduct = async (id: string, setValues: Function) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: name === "price" ? parseFloat(value) : value,
+    }));
+  };
+
+  const handleCategoriesChange = (event: SelectChangeEvent<unknown>) => {
+    const selectedCategories = event.target.value as string[];
+    setValues((prev) => ({
+      ...prev,
+      categories: selectedCategories,
+    }));
+  };
+
+  const loadProduct = async (id: string) => {
+    setLoading(true);
     try {
       const response = await ProductServices.getById(id);
       const productData = response.data;
-      const createdAtISO = new Date(productData.createdAt).toISOString();
-
       setValues({
         productName: productData.productName,
         description: productData.description,
@@ -71,12 +91,20 @@ export const EditProductBase = () => {
           (category: Datum) => category.id
         ),
         state: productData.state,
-        createdAt: createdAtISO,
+        createdAt: new Date(productData.createdAt).toISOString(),
       });
     } catch (error) {
       console.error("Error al obtener el producto:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (id) {
+      loadProduct(id);
+    }
+  }, [id]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -119,155 +147,107 @@ export const EditProductBase = () => {
             />
           </div>
         ) : (
-          <Formik
-            initialValues={{
-              productName: "",
-              description: "",
-              price: 0,
-              categories: [],
-              state: true,
-              createdAt: new Date(),
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSave}
-            enableReinitialize
-          >
-            {({ setFieldValue, setValues, values, errors, touched }) => {
-              useEffect(() => {
-                if (id) {
-                  loadProduct(id, setValues);
-                }
-              }, [id, setValues]);
-
-              return (
-                <Form>
-                  <div className="row">
-                    <div className="col-12 mb-3">
-                      <Field
-                        name="productName"
-                        as={TextField}
-                        label="Producto"
-                        placeholder="Nombre del producto"
-                        fullWidth
-                        variant="outlined"
-                        required
-                        error={touched.productName && !!errors.productName}
-                        helperText={<ErrorMessage name="productName" />}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <HiloIConGary />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </div>
-                    <div className="col-12 mb-3">
-                      <Field name="categories">
-                        {({ field }: { field: any }) => (
-                          <TextField
-                            {...field}
-                            select
-                            label="Selecciona la categoría"
-                            fullWidth
-                            variant="outlined"
-                            SelectProps={{
-                              multiple: true,
-                              value: field.value || [],
-                              onChange: (
-                                e: React.ChangeEvent<{ value: unknown }>
-                              ) => {
-                                // Solo actualizar si no se excede el límite de 3 categorías
-                                if ((e.target.value as string[]).length <= 3) {
-                                  setFieldValue("categories", e.target.value);
-                                }
-                              },
-                              renderValue: (selected: unknown) =>
-                                (selected as string[])
-                                  .map(
-                                    (id) =>
-                                      categories.find((cat) => cat.id === id)
-                                        ?.name || id
-                                  )
-                                  .join(", "),
-                            }}
-                            error={touched.categories && !!errors.categories}
-                            helperText={<ErrorMessage name="categories" />}
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <CategoriasIconBlack />
-                                </InputAdornment>
-                              ),
-                            }}
-                          >
-                            {categories.map((category) => (
-                              <MenuItem key={category.id} value={category.id}>
-                                <Checkbox
-                                  checked={field.value.includes(category.id)}
-                                  disabled={
-                                    field.value.length >= 3 &&
-                                    !field.value.includes(category.id)
-                                  } // Desactivar cuando hay 3 categorías seleccionadas
-                                />
-                                <ListItemText primary={category.name} />
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        )}
-                      </Field>
-                    </div>
-
-                    <div className="col-12 mb-3">
-                      <Field
-                        name="price"
-                        as={TextField}
-                        label="Precio"
-                        fullWidth
-                        variant="outlined"
-                        type="number"
-                        required
-                        error={touched.price && !!errors.price}
-                        helperText={<ErrorMessage name="price" />}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <AttachMoneyOutlinedIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </div>
-                    <div className="col-12 mb-3">
-                      <Field
-                        name="description"
-                        as={TextField}
-                        label="Descripción"
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={4}
-                        error={touched.description && !!errors.description}
-                        helperText={<ErrorMessage name="description" />}
-                      />
-                    </div>
-                    <div className="col-12 d-flex justify-content-between gap-2">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => navigate("/products/base")}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button variant="contained" type="submit">
-                        Guardar
-                      </Button>
-                    </div>
-                  </div>
-                </Form>
-              );
-            }}
-          </Formik>
+          <div className="row">
+            <div className="col-12 mb-3">
+              <TextField
+                name="productName"
+                label="Producto"
+                placeholder="Nombre del producto"
+                fullWidth
+                variant="outlined"
+                required
+                value={values.productName}
+                onChange={handleInputChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <HiloIConGary />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+            <div className="col-12 mb-3">
+              <TextField
+                select
+                name="categories"
+                label="Selecciona la categoría"
+                fullWidth
+                variant="outlined"
+                SelectProps={{
+                  multiple: true,
+                  value: values.categories,
+                  onChange: handleCategoriesChange,
+                  renderValue: (selected) =>
+                    (selected as string[])
+                      .map(
+                        (id) =>
+                          categories.find((cat) => cat.id === id)?.name || id
+                      )
+                      .join(", "),
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CategoriasIconBlack />
+                    </InputAdornment>
+                  ),
+                }}
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    <Checkbox
+                      checked={values.categories.includes(category.id)}
+                    />
+                    <ListItemText primary={category.name} />
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
+            <div className="col-12 mb-3">
+              <TextField
+                name="price"
+                label="Precio"
+                fullWidth
+                variant="outlined"
+                type="number"
+                required
+                value={values.price}
+                onChange={handleInputChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AttachMoneyOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+            <div className="col-12 mb-3">
+              <TextField
+                name="description"
+                label="Descripción"
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={4}
+                value={values.description}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="col-12 d-flex justify-content-between gap-2">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => navigate("/products/base")}
+              >
+                Cancelar
+              </Button>
+              <Button variant="contained" type="submit" onClick={handleSave}>
+                Guardar
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </>
