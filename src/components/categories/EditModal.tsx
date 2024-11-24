@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import {
   Modal,
   ModalContent,
@@ -68,50 +68,35 @@ const EditModal = ({
     <Modal isOpen={isOpen} onOpenChange={onCloseEditModal} hideCloseButton>
       <ModalContent>
         <ModalHeader>Editar Categoría</ModalHeader>
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "2rem 0",
-            }}
-          >
-            <Lottie
-              animationData={animationData}
-              style={{ width: 150, height: 150 }}
-              loop={true}
+
+        <form onSubmit={formik.handleSubmit}>
+          <ModalBody>
+            <TextField
+              label="Categoria"
+              fullWidth
+              placeholder="Ingrese el nombre de la categoría"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+              disabled={loading}
             />
-          </div>
-        ) : (
-          <form onSubmit={formik.handleSubmit}>
-            <ModalBody>
-              <TextField
-                label="Categoria"
-                fullWidth
-                placeholder="Ingrese el nombre de la categoría"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={onCloseEditModal}
-              >
-                Cancelar
-              </Button>
-              <Button variant="contained" type="submit">
-                Confirmar
-              </Button>
-            </ModalFooter>
-          </form>
-        )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={onCloseEditModal}
+            >
+              Cancelar
+            </Button>
+            <Button disabled={loading} variant="contained" type="submit">
+              {loading ? <CircularProgress size={24} /> : "Guardar"}
+            </Button>
+          </ModalFooter>
+        </form>
       </ModalContent>
     </Modal>
   );

@@ -7,6 +7,7 @@ import {
   MenuItem,
   TextField,
   SelectChangeEvent,
+  CircularProgress,
 } from "@mui/material";
 import animationData from "../../../utils/animation.json";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,7 +15,6 @@ import { ArrowLeft } from "@mui/icons-material";
 import Lottie from "lottie-react";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
-import { IUpdateProduct } from "../../../interfaces/products/ProductsIterface";
 import { ProductServices } from "../../../service/ProductService";
 import { getAllActiveCategories } from "../../../service/CategoryService";
 import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
@@ -22,6 +22,8 @@ import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
 export const EditProductBase = () => {
   const [categories, setCategories] = useState<Datum[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingsave, setLoadingSave] = useState(false);
+
   const navigate = useNavigate();
 
   const id = useParams().id;
@@ -42,7 +44,7 @@ export const EditProductBase = () => {
   });
 
   const handleSave = async () => {
-    setLoading(true);
+    setLoadingSave(true);
     try {
       if (id) {
         await ProductServices.update(id, {
@@ -56,7 +58,7 @@ export const EditProductBase = () => {
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
     } finally {
-      setLoading(false);
+      setLoadingSave(false);
     }
   };
 
@@ -155,6 +157,7 @@ export const EditProductBase = () => {
                 placeholder="Nombre del producto"
                 fullWidth
                 variant="outlined"
+                disabled={loadingsave}
                 required
                 value={values.productName}
                 onChange={handleInputChange}
@@ -173,6 +176,7 @@ export const EditProductBase = () => {
                 name="categories"
                 label="Selecciona la categoría"
                 fullWidth
+                disabled={loadingsave}
                 variant="outlined"
                 SelectProps={{
                   multiple: true,
@@ -210,6 +214,7 @@ export const EditProductBase = () => {
                 label="Precio"
                 fullWidth
                 variant="outlined"
+                disabled={loadingsave}
                 type="number"
                 required
                 value={values.price}
@@ -229,6 +234,7 @@ export const EditProductBase = () => {
                 label="Descripción"
                 fullWidth
                 variant="outlined"
+                disabled={loadingsave}
                 multiline
                 rows={4}
                 value={values.description}
@@ -243,8 +249,13 @@ export const EditProductBase = () => {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" type="submit" onClick={handleSave}>
-                Guardar
+              <Button
+                disabled={loadingsave}
+                variant="contained"
+                type="submit"
+                onClick={handleSave}
+              >
+                {loadingsave ? <CircularProgress size={24} /> : "Guardar"}
               </Button>
             </div>
           </div>

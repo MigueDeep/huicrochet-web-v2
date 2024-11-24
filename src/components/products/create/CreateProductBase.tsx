@@ -10,6 +10,7 @@ import {
   ListItemText,
   FormControl,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import { getAllActiveCategories } from "../../../service/CategoryService";
 import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
@@ -92,190 +93,176 @@ export const CreateProductBase = () => {
         </Button>
       </div>
       <div className="container mt-4 mb-4">
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "2rem 0",
-            }}
-          >
-            <Lottie
-              animationData={animationData}
-              style={{ width: 150, height: 150 }}
-              loop={true}
-            />
-          </div>
-        ) : (
-          <Formik
-            initialValues={{
-              productName: "",
-              description: "",
-              price: 0,
-              categories: [],
-              state: true,
-              createdAt: new Date(),
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSave}
-          >
-            {({ setFieldValue, values, errors, touched, resetForm }) => (
-              <Form>
-                <div className="row">
-                  <div className="col-12 mb-3">
-                    <div className="form-group">
-                      <Field
-                        name="productName"
-                        as={TextField}
-                        label="Producto"
-                        placeholder="Nombre del producto"
-                        fullWidth
-                        variant="outlined"
-                        required
-                        className="form-control"
-                        error={touched.productName && !!errors.productName}
-                        helperText={<ErrorMessage name="productName" />}
-                        slotProps={{
-                          input: {
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <HiloIConGary />
-                              </InputAdornment>
-                            ),
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-12 mb-3">
-                    <div className="form-group">
-                      <FormControl fullWidth>
-                        <InputLabel id="demo-multiple-checkbox-label">
-                          Categorias*
-                        </InputLabel>
-
-                        <Select
-                          id="demo-multiple-checkbox"
-                          multiple
-                          value={values.categories}
-                          onChange={(event) =>
-                            setFieldValue("categories", event.target.value)
-                          }
-                          input={
-                            <OutlinedInput
-                              label="Categorías"
-                              startAdornment={
-                                <InputAdornment position="start">
-                                  <CategoriasIconBlack />
-                                </InputAdornment>
-                              }
-                            />
-                          }
-                          renderValue={(selected) =>
-                            selected
-                              .map(
-                                (id) =>
-                                  categories.find((cat) => cat.id === id)
-                                    ?.name || id
-                              )
-                              .join(", ")
-                          }
-                          MenuProps={MenuProps}
-                        >
-                          {categories.map((category) => (
-                            <MenuItem
-                              key={category.id}
-                              value={category.id}
-                              disabled={
-                                values.categories.length >= 3 &&
-                                !values.categories.includes(
-                                  category.id as never
-                                )
-                              }
-                            >
-                              <Checkbox
-                                checked={values.categories.includes(
-                                  category.id as never
-                                )}
-                              />
-                              <ListItemText primary={category.name} />
-                            </MenuItem>
-                          ))}
-                        </Select>
-
-                        {touched.categories && errors.categories && (
-                          <div className="text-danger">{errors.categories}</div>
-                        )}
-                      </FormControl>
-                    </div>
-                  </div>
-
-                  <div className="col-12 mb-3">
-                    <div className="form-group">
-                      <Field
-                        name="price"
-                        as={TextField}
-                        label="Precio"
-                        placeholder="Precio del producto"
-                        fullWidth
-                        variant="outlined"
-                        type="number"
-                        required
-                        className="form-control"
-                        error={touched.price && !!errors.price}
-                        helperText={<ErrorMessage name="price" />}
-                        slotProps={{
-                          input: {
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <AttachMoneyOutlinedIcon />
-                              </InputAdornment>
-                            ),
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-12 mb-3">
-                    <div className="form-group">
-                      <Field
-                        name="description"
-                        as={TextField}
-                        label="Descripción"
-                        placeholder="Descripción del producto"
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={4}
-                        className="form-control"
-                        error={touched.description && !!errors.description}
-                        helperText={<ErrorMessage name="description" />}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-12 d-flex justify-content-between gap-2">
-                    <Button
+        <Formik
+          initialValues={{
+            productName: "",
+            description: "",
+            price: 0,
+            categories: [],
+            state: true,
+            createdAt: new Date(),
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSave}
+        >
+          {({ setFieldValue, values, errors, touched, resetForm }) => (
+            <Form>
+              <div className="row">
+                <div className="col-12 mb-3">
+                  <div className="form-group">
+                    <Field
+                      name="productName"
+                      as={TextField}
+                      label="Producto"
+                      disabled={loading}
+                      placeholder="Nombre del producto"
+                      fullWidth
                       variant="outlined"
-                      color="secondary"
-                      onClick={() => {
-                        resetForm();
+                      required
+                      className="form-control"
+                      error={touched.productName && !!errors.productName}
+                      helperText={<ErrorMessage name="productName" />}
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <HiloIConGary />
+                            </InputAdornment>
+                          ),
+                        },
                       }}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button variant="contained" type="submit">
-                      Guardar
-                    </Button>
+                    />
                   </div>
                 </div>
-              </Form>
-            )}
-          </Formik>
-        )}
+
+                <div className="col-12 mb-3">
+                  <div className="form-group">
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-multiple-checkbox-label">
+                        Categorias*
+                      </InputLabel>
+
+                      <Select
+                        id="demo-multiple-checkbox"
+                        multiple
+                        disabled={loading}
+                        value={values.categories}
+                        onChange={(event) =>
+                          setFieldValue("categories", event.target.value)
+                        }
+                        input={
+                          <OutlinedInput
+                            label="Categorías"
+                            startAdornment={
+                              <InputAdornment position="start">
+                                <CategoriasIconBlack />
+                              </InputAdornment>
+                            }
+                          />
+                        }
+                        renderValue={(selected) =>
+                          selected
+                            .map(
+                              (id) =>
+                                categories.find((cat) => cat.id === id)?.name ||
+                                id
+                            )
+                            .join(", ")
+                        }
+                        MenuProps={MenuProps}
+                      >
+                        {categories.map((category) => (
+                          <MenuItem
+                            key={category.id}
+                            value={category.id}
+                            disabled={
+                              values.categories.length >= 3 &&
+                              !values.categories.includes(category.id as never)
+                            }
+                          >
+                            <Checkbox
+                              checked={values.categories.includes(
+                                category.id as never
+                              )}
+                            />
+                            <ListItemText primary={category.name} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+
+                      {touched.categories && errors.categories && (
+                        <div className="text-danger">{errors.categories}</div>
+                      )}
+                    </FormControl>
+                  </div>
+                </div>
+
+                <div className="col-12 mb-3">
+                  <div className="form-group">
+                    <Field
+                      name="price"
+                      as={TextField}
+                      label="Precio"
+                      placeholder="Precio del producto"
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                      required
+                      disabled={loading}
+                      className="form-control"
+                      error={touched.price && !!errors.price}
+                      helperText={<ErrorMessage name="price" />}
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AttachMoneyOutlinedIcon />
+                            </InputAdornment>
+                          ),
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-12 mb-3">
+                  <div className="form-group">
+                    <Field
+                      name="description"
+                      as={TextField}
+                      label="Descripción"
+                      placeholder="Descripción del producto"
+                      fullWidth
+                      variant="outlined"
+                      multiline
+                      rows={4}
+                      className="form-control"
+                      error={touched.description && !!errors.description}
+                      helperText={<ErrorMessage name="description" />}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-12 d-flex justify-content-between gap-2">
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      resetForm();
+                    }}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button variant="contained" type="submit">
+                    {loading ? <CircularProgress size={24} /> : "Guardar"}
+                  </Button>
+                </div>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </div>
     </>
   );
