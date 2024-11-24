@@ -227,6 +227,7 @@ export const EditItemProduct = () => {
             <TextField
               label="Nombre del producto"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.name}
               fullWidth
@@ -246,6 +247,7 @@ export const EditItemProduct = () => {
             <TextField
               label="Categoria"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.category}
               fullWidth
@@ -263,6 +265,7 @@ export const EditItemProduct = () => {
           <div className="mb-3">
             <TextField
               label="Descripcion"
+              disabled={isLoading}
               variant="outlined"
               InputProps={{ readOnly: true }}
               value={productDetails.description}
@@ -277,6 +280,7 @@ export const EditItemProduct = () => {
               variant="outlined"
               InputProps={{ readOnly: true }}
               value={productDetails.price}
+              disabled={isLoading}
               fullWidth
               slotProps={{
                 input: {
@@ -299,6 +303,7 @@ export const EditItemProduct = () => {
               type="number"
               fullWidth
               value={stock}
+              disabled={isLoading}
               onChange={(e) => setStock(Number(e.target.value))}
               slotProps={{
                 input: {

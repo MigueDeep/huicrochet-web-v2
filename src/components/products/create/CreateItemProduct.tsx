@@ -213,6 +213,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Nombre del producto"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.name}
               fullWidth
@@ -232,6 +233,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Categoria"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.category}
               fullWidth
@@ -250,6 +252,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Descripcion"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.description}
               rows={8}
@@ -261,6 +264,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Precio"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.price}
               fullWidth
@@ -284,6 +288,7 @@ export const CreateItemProduct = ({
               variant="outlined"
               type="number"
               fullWidth
+              disabled={isLoading}
               value={stock}
               onChange={(e) => setStock(Number(e.target.value))}
               error={stockError}
