@@ -35,6 +35,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { ReviewService } from "../../../service/ReviewService";
+import { Datum as ReviewDatum } from "../../../interfaces/IReview";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -128,8 +130,30 @@ export const ProductsBase = () => {
   const onAddProduct = () => {
     navigate("/products/base/create");
   };
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
+  const [comments, setComments] = useState<ReviewDatum[]>([]);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
 
-  const onOpenCommentsModal = () => setOpenCommentsModal(true);
+  const fetchComments = async (productId: string) => {
+    try {
+      setIsCommentsLoading(true);
+      const response = await ReviewService.getReviewsByProduct(productId);
+      setComments(response.data);
+    } catch (error) {
+      console.error("Error al cargar comentarios:", error);
+      setComments([]);
+    } finally {
+      setIsCommentsLoading(false);
+    }
+  };
+
+  const onOpenCommentsModal = (productId: string) => {
+    setSelectedProductId(productId);
+    fetchComments(productId);
+    setOpenCommentsModal(true);
+  };
   const onCloseCommentsModal = () => setOpenCommentsModal(false);
 
   return (
@@ -220,7 +244,9 @@ export const ProductsBase = () => {
                 <TableCell>
                   <ButtonGroup>
                     <Tooltip content="Ver comentarios">
-                      <IconButton onClick={onOpenCommentsModal}>
+                      <IconButton
+                        onClick={() => onOpenCommentsModal(product.id)}
+                      >
                         <ModeCommentOutlinedIcon />
                       </IconButton>
                     </Tooltip>
@@ -247,7 +273,10 @@ export const ProductsBase = () => {
       <ProductCommentsModal
         isOpen={openCommentsModal}
         onOpenChange={onCloseCommentsModal}
+        comments={comments}
+        isLoading={isCommentsLoading}
       />
+
       <Dialog
         open={open}
         onClose={handleClose}

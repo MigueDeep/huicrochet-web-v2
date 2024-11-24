@@ -44,7 +44,7 @@ export const CreateCategoryModal = ({
       };
 
       try {
-        setLoading(true); // Activar el loader al iniciar la actualización
+        setLoading(true); 
         await createCategory(data);
 
         resetForm();
@@ -53,7 +53,7 @@ export const CreateCategoryModal = ({
       } catch (error) {
         console.error("Error al crear la categoría", error);
       } finally {
-        setLoading(false); // Desactivar el loader después de la actualización
+        setLoading(false); 
       }
     },
   });

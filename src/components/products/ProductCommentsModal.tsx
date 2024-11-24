@@ -1,75 +1,22 @@
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/react";
-import {
-  Button,
-  Rating,
-  TextField,
-  Typography,
-  Avatar,
-  IconButton,
-} from "@mui/material";
-import { useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
+import { Rating, Typography, Avatar } from "@mui/material";
+import Lottie from "lottie-react";
+import animationData from "../../utils/animation.json";
+import { Datum } from "../../interfaces/IReview";
 
-const comments = [
-  {
-    id: 1,
-    user: "Ana López",
-    avatar: "https://randomuser.me/api/portraits/women/45.jpg",
-    rating: 4,
-    comment: "Muy buen producto, mis hijos lo adoran.",
-    date: "2024-11-01",
-  },
-  {
-    id: 2,
-    user: "Carlos Mendoza",
-    avatar: "https://randomuser.me/api/portraits/men/35.jpg",
-    rating: 5,
-    comment: "Excelente calidad y precio, ¡muy recomendado!",
-    date: "2024-10-28",
-  },
-  {
-    id: 3,
-    user: "Sara García",
-    avatar: "https://randomuser.me/api/portraits/women/25.jpg",
-    rating: 3,
-    comment: "El producto es bueno, pero llegó con retraso.",
-    date: "2024-10-25",
-  },
-  {
-    id: 4,
-    user: "Sara García",
-    avatar: "https://randomuser.me/api/portraits/women/25.jpg",
-    rating: 3,
-    comment: "El producto es bueno, pero llegó con retraso.",
-    date: "2024-10-25",
-  },
-  {
-    id: 5,
-    user: "Sara García",
-    avatar: "https://randomuser.me/api/portraits/women/25.jpg",
-    rating: 3,
-    comment: "El producto es bueno, pero llegó con retraso.",
-    date: "2024-10-25",
-  },
-];
 interface ProductCommentsProps {
   isOpen: boolean;
   onOpenChange: () => void;
+  comments: Datum[];
+  isLoading: boolean;
 }
 
 export const ProductCommentsModal = ({
   isOpen,
   onOpenChange,
+  comments,
+  isLoading,
 }: ProductCommentsProps) => {
-  const [newRating, setNewRating] = useState(0);
-  const [newComment, setNewComment] = useState("");
-
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} closeButton>
       <ModalContent>
@@ -79,23 +26,57 @@ export const ProductCommentsModal = ({
           </Typography>
         </ModalHeader>
         <ModalBody className="flex flex-col gap-4 mb-5">
-          {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-4 items-start">
-              <Avatar src={comment.avatar} alt={comment.user} />
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <Typography variant="body1" fontWeight="bold">
-                    {comment.user}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {comment.date}
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "2rem 0",
+              }}
+            >
+              <Lottie
+                animationData={animationData}
+                style={{ width: 100, height: 100 }}
+                loop={true}
+              />
+            </div>
+          ) : comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment.id} className="flex gap-4 items-start">
+                <Avatar
+                  src={
+                    comment.user.image
+                      ? `http://localhost:8080/${comment.user.image.imageUri
+                          .split("/")
+                          .pop()}`
+                      : "/default.webp"
+                  }
+                  alt={comment.user.fullName}
+                />
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <Typography variant="body1" fontWeight="bold">
+                      {comment.user.fullName}
+                    </Typography>
+                    <Rating value={comment.stars} readOnly size="small" />
+                  </div>
+                  <Typography variant="body2">{comment.review}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(comment.reviewDate).toLocaleDateString()}
                   </Typography>
                 </div>
-                <Rating value={comment.rating} readOnly size="small" />
-                <Typography variant="body2">{comment.comment}</Typography>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <Typography
+              color="text.secondary"
+              align="center"
+              style={{ marginTop: "20px" }}
+            >
+              ✨ No hay comentarios disponibles por ahora. ✨
+            </Typography>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -32,7 +32,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     if (response.config.showToast !== false) {
-      if(!response.config.url?.includes("/item/getById/") && !response.config.url?.includes("/stats/visits/") && !response.config.url?.includes("/product/getById/")
+      if(!response.config.url?.includes("/item/getById/") && !response.config.url?.includes("/stats/visits/") && !response.config.url?.includes("/product/getById/") && !response.config.url?.includes("/review/")
     ){
       toast.success(response.data.message);
     }
