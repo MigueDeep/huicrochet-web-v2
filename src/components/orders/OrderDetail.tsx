@@ -29,19 +29,22 @@ import { IOrder } from "../../interfaces/IOrder";
 import OrderService from "../../service/OrderService";
 
 interface IOrderDetailProps {
-  order: IOrder;
-  onOrderUpdate: (id: string, newStatus: string) => void;
+  order: IOrder,
+  onOrderUpdate: (id: string, newStatus: string) => void,
 }
-const steps = ["Pendiente", "Enviado", "Entregado"];
+
+const steps = ["Pendiente", "Procesado", "Enviado", "Entregado"];
 
 const validateStatus = (status: string) => {
   switch (status) {
     case "PENDING":
       return 0;
-    case "SHIPPED":
+    case "PROCESSED":
       return 1;
-    case "DELIVERED":
+    case "SHIPPED":
       return 2;
+    case "DELIVERED":
+      return 3;
     default:
       return 0;
   }
@@ -50,6 +53,8 @@ const validateStatus = (status: string) => {
 const statusOrder = (status: string) => {
   switch (status) {
     case "PENDING":
+      return "Cambiar a Procesado";
+    case "PROCESSED":
       return "Cambiar a Enviado";
     case "SHIPPED":
       return "Cambiar a Entregado";
@@ -62,7 +67,7 @@ const statusOrder = (status: string) => {
 
 import { useState } from "react";
 
-export default function OrderDetail({ order }: IOrderDetailProps) {
+export default function OrderDetail({ order, onOrderUpdate }: IOrderDetailProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [orderState, setOrderState] = useState(order.orderState);
@@ -70,6 +75,8 @@ export default function OrderDetail({ order }: IOrderDetailProps) {
   const nextStatus = (currentStatus: string) => {
     switch (currentStatus) {
       case "PENDING":
+        return "PROCESSED";
+      case "PROCESSED":
         return "SHIPPED";
       case "SHIPPED":
         return "DELIVERED";
@@ -84,6 +91,7 @@ export default function OrderDetail({ order }: IOrderDetailProps) {
     try {
       await OrderService.updateOrder(id);
       setOrderState(newStatus);
+      onOrderUpdate(id, newStatus);
     } catch (error) {
       console.error("Error al actualizar el pedido:", error);
     }
@@ -285,6 +293,8 @@ const traduceStatus = (status: string) => {
   switch (status) {
     case "PENDING":
       return "Pendiente";
+    case "PROCESSED":
+      return "Procesado";
     case "SHIPPED":
       return "Enviado";
     case "DELIVERED":
@@ -298,6 +308,8 @@ const renderColor = (status: string) => {
   switch (status) {
     case "PENDING":
       return "warning";
+    case "PROCESSED":
+      return "primary";
     case "SHIPPED":
       return "secondary";
     case "DELIVERED":

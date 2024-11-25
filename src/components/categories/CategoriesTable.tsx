@@ -95,7 +95,7 @@ const CategoriesTable = () => {
   const onCloseCreateModal = () => setopenCreateModal(false);
 
   const toggleCategoryStatus = async () => {
-    if (!categoryToToggle) return; // Validación
+    if (!categoryToToggle) return;
     try {
       const newState = !categoryToToggle.state;
 
@@ -206,7 +206,7 @@ const CategoriesTable = () => {
             </div>
           }
           items={items}
-          emptyContent={"✨No hay categorías para mostra...✨"}
+          emptyContent={"✨No hay categorías para mostrar...✨"}
         >
           {(item) => (
             <TableRow key={item.id}>
@@ -262,7 +262,7 @@ const CategoriesTable = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
-        <DialogContent>
+        <DialogContent> 
           <DialogContentText id="alert-dialog-description">
             ¿Estás seguro de que deseas{" "}
             {categoryToToggle?.state ? "desactivar" : "activar"} la categoría{" "}
