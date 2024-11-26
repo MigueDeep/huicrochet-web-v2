@@ -37,7 +37,7 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await ProductServices.getAllActive();
+      const response = await ProductServices.getAll();
       setProducts(response.data);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -92,21 +92,21 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
       ) : filteredProducts.length > 0 ? (
         <div className="product-base-grid">
           {filteredProducts.map((product) => (
-          
-              <ProductCardBase
-                key={product.id}
-                title={product.productName}
-                onSelect={() =>
-                  handleSelectProduct({
-                    id: product.id,
-                    title: product.productName,
-                    category: product.categories[0].name,
-                    price: product.price,
-                    description: product.description,
-                  })
-                }
-                isSelected={selectedProduct?.title === product.productName}
-              />   
+            <ProductCardBase
+              key={product.id}
+              title={product.productName}
+              onSelect={() =>
+                handleSelectProduct({
+                  id: product.id,
+                  title: product.productName,
+                  category: product.categories[0].name,
+                  price: product.price,
+                  description: product.description,
+                })
+              }
+              isSelected={selectedProduct?.title === product.productName}
+              isDisabled={!product.state} // Considera el estado del producto
+            />
           ))}
         </div>
       ) : (

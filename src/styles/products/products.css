@@ -9,6 +9,21 @@
   box-sizing: border-box;
 }
 
+.product-card.disabled {
+  opacity: 0.6;
+  pointer-events: none; /* Evita la interacción */
+  background-color: #f8f8f8; /* Cambia el fondo si lo deseas */
+  border: 1px solid #ddd;
+}
+
+.product-card .text-disabled {
+  color: #ff6f61; /* Rojo tenue */
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+
 .file-upload-container {
   position: relative;
   border: 2px dashed var(--primary);
