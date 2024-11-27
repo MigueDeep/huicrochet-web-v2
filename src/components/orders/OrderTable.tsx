@@ -36,13 +36,14 @@ export default function OrdersTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const updateOrderState = (id: string, newStatus: string) => {
+  const updateOrderState = useCallback((id: string, newStatus: string) => {
     setOrdersData((prevOrders) =>
       prevOrders.map((order) =>
         order.id === id ? { ...order, orderState: newStatus } : order
       )
     );
-  };
+  }, []); 
+  
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -174,6 +175,8 @@ const traduceStatus = (status: string) => {
   switch (status) {
     case "PENDING":
       return "Pendiente";
+    case "PROCESSED":
+      return "Procesado";
     case "SHIPPED":
       return "Enviado";
     case "DELIVERED":
@@ -187,6 +190,8 @@ const renderColor = (status: string) => {
   switch (status) {
     case "PENDING":
       return "warning";
+    case "PROCESSED":
+      return "primary";
     case "SHIPPED":
       return "secondary";
     case "DELIVERED":

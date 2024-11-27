@@ -3,7 +3,7 @@ import { Icategory, ICreateCategory } from "../interfaces/CategoriesInterface.ts
 
 export const getAllCategories = async (): Promise<Icategory> => {
   try {
-    const response = await doGet("/category/getAllOrderByName", { showToast: false });
+    const response = await doGet("/category/getAllOrderByName", { showToast: true });
     return response.data;
   } catch (error) {
     throw error;
