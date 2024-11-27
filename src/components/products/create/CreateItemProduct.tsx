@@ -316,7 +316,7 @@ export const CreateItemProduct = ({
                   marginTop: "10px",
                 }}
               >
-                No hay colores disponibles, recueda que puedes crearlos en la
+                No hay colores disponibles, recuerda que puedes crearlos en la
                 sección de colores...✨
               </div>
             ) : (
@@ -331,16 +331,21 @@ export const CreateItemProduct = ({
                     borderRadius: "18px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     boxShadow:
-                      selectedColor === color.id
+                      selectedColor === color.id && color.status
                         ? "0 4px 15px rgba(255, 105, 180, 0.5)"
                         : "none",
                     transform:
-                      selectedColor === color.id ? "scale(1.1)" : "scale(1)",
+                      selectedColor === color.id && color.status
+                        ? "scale(1.1)"
+                        : "scale(1)",
                     backgroundColor:
-                      selectedColor === color.id ? "#fff" : "transparent",
-                    cursor: "pointer",
+                      selectedColor === color.id && color.status
+                        ? "#fff"
+                        : "transparent",
+                    cursor: color.status ? "pointer" : "not-allowed",
+                    opacity: color.status ? 1 : 0.5, // Visual para deshabilitado
                   }}
-                  onClick={() => handleColorSelect(color)}
+                  onClick={() => color.status && handleColorSelect(color)} // Desactiva clics si no está habilitado
                 >
                   <div
                     style={{
@@ -352,15 +357,21 @@ export const CreateItemProduct = ({
                   >
                     <ColorCircle
                       color={color.colorCod}
-                      isSelected={selectedColor === color.id}
-                      onSelect={() => handleColorSelect(color)}
+                      isSelected={selectedColor === color.id && color.status}
+                      onSelect={() => color.status && handleColorSelect(color)} // Maneja solo colores activos
                     />
                   </div>
                   <span
                     style={{
                       fontSize: "0.9rem",
-                      color: selectedColor === color.id ? "#333" : "#999",
-                      fontWeight: selectedColor === color.id ? "600" : "400",
+                      color:
+                        selectedColor === color.id && color.status
+                          ? "#333"
+                          : "#999",
+                      fontWeight:
+                        selectedColor === color.id && color.status
+                          ? "600"
+                          : "400",
                     }}
                   >
                     {color.colorName}

@@ -84,6 +84,7 @@ export const EditProductBase = () => {
     setLoading(true);
     try {
       const response = await ProductServices.getById(id);
+      console.log(response);
       const productData = response.data;
       setValues({
         productName: productData.productName,
