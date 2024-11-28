@@ -189,6 +189,7 @@ export const ProductsBase = () => {
       <div className="flex flex-col gap-3">
         <Table
           color={"secondary"}
+          layout="fixed"
           aria-label="Example static collection table"
           bottomContent={
             <div
@@ -225,7 +226,16 @@ export const ProductsBase = () => {
           >
             {items.map((product) => (
               <TableRow key={product.id}>
-                <TableCell>{product.productName}</TableCell>
+                <TableCell
+                  style={{
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {product.productName}
+                </TableCell>
                 <TableCell>{product.description}</TableCell>
                 <TableCell>{product.price}</TableCell>
                 <TableCell>

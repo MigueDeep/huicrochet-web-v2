@@ -177,6 +177,7 @@ const CategoriesTable = () => {
 
       <Table
         aria-label="Example table with dynamic content"
+        layout="fixed"
         bottomContent={
           <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
             <Pagination
@@ -262,7 +263,7 @@ const CategoriesTable = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
-        <DialogContent> 
+        <DialogContent>
           <DialogContentText id="alert-dialog-description">
             ¿Estás seguro de que deseas{" "}
             {categoryToToggle?.state ? "desactivar" : "activar"} la categoría{" "}

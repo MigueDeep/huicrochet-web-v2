@@ -106,6 +106,7 @@ export default function ColorsTable() {
       <div className="row">
         <Table
           aria-label="Example table with dynamic content"
+          layout="fixed"
           bottomContent={
             <div className="flex w-full justify-center pb-4 border-b border-gray-200">
               <Pagination

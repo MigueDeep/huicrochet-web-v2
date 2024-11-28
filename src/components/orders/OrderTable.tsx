@@ -99,6 +99,7 @@ export default function OrdersTable() {
       </div>
       <Table
         aria-label="Example table with dynamic content"
+        layout="fixed"
         bottomContent={
           <div
             className="

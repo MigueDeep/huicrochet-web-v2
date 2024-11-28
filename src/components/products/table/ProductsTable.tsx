@@ -150,6 +150,7 @@ export const ProductsTable = () => {
       </div>
       <Table
         aria-label="Tabla de productos con búsqueda"
+        layout="fixed"
         bottomContent={
           <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
             <Pagination

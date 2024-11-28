@@ -41,39 +41,40 @@ export const OrderDetailTable = ( { products }: Readonly<IOrderProducts>) => {
   
 
   return (
-      <Table
-        aria-label="Example table with dynamic content"
-        bottomContent={
-          <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
-            <Pagination
-              loop
-              showControls
-              color="success"
-              initialPage={1}
-              page={page}
-              total={pages}
-              onChange={(page) => setPage(page)}
-            />
-          </div>
-        }
-      >
-        <TableHeader columns={columns}>
-          {(column: { key: string; label: string }) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={items} emptyContent={"No hay productos para mostrar"}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {columns.map((column) => (
-                <TableCell key={column.key}>
-                  {renderCell(item, column.key)}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+    <Table
+      aria-label="Example table with dynamic content"
+      layout="fixed"
+      bottomContent={
+        <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
+          <Pagination
+            loop
+            showControls
+            color="success"
+            initialPage={1}
+            page={page}
+            total={pages}
+            onChange={(page) => setPage(page)}
+          />
+        </div>
+      }
+    >
+      <TableHeader columns={columns}>
+        {(column: { key: string; label: string }) => (
+          <TableColumn key={column.key}>{column.label}</TableColumn>
+        )}
+      </TableHeader>
+      <TableBody items={items} emptyContent={"No hay productos para mostrar"}>
+        {(item) => (
+          <TableRow key={item.id}>
+            {columns.map((column) => (
+              <TableCell key={column.key}>
+                {renderCell(item, column.key)}
+              </TableCell>
+            ))}
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 };
 
