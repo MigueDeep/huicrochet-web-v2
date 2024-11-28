@@ -20,8 +20,6 @@ import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { ArrowLeft } from "@mui/icons-material";
-import Lottie from "lottie-react";
-import animationData from "../../../utils/animation.json";
 import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 
@@ -37,18 +35,27 @@ const MenuProps = {
 };
 
 const validationSchema = Yup.object({
-  productName: Yup.string().required("El nombre del producto es obligatorio"),
+  productName: Yup.string()
+    .required("El nombre del producto es obligatorio")
+    .test(
+      "no-empty-spaces",
+      "El nombre no puede contener solo espacios",
+      (value) => value?.trim() !== ""
+    ),
   price: Yup.number()
-    .positive("El precio debe ser un número positivo")
+    .positive("El precio debe ser mayor a 0")
     .required("El precio es obligatorio"),
   categories: Yup.array()
     .min(1, "Selecciona al menos una categoría")
     .max(3, "No puedes seleccionar más de 3 categorías")
     .required("La categoría es obligatoria"),
-  description: Yup.string().max(
-    250,
-    "La descripción no puede exceder los 250 caracteres"
-  ),
+  description: Yup.string()
+    .max(250, "La descripción no puede exceder los 250 caracteres")
+    .test(
+      "no-empty-spaces",
+      "La descripción no puede contener solo espacios",
+      (value) => value?.trim() !== ""
+    ),
 });
 
 export const CreateProductBase = () => {
