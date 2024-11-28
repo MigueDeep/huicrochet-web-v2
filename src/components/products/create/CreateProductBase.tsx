@@ -41,7 +41,10 @@ const validationSchema = Yup.object({
       "no-empty-spaces",
       "El nombre no puede contener solo espacios",
       (value) => value?.trim() !== ""
-    ),
+    )
+    .max(50, "El nombre no puede exceder los 50 caracteres")
+    .min(3, "El nombre debe tener al menos 3 caracteres"),
+
   price: Yup.number()
     .positive("El precio debe ser mayor a 0")
     .required("El precio es obligatorio"),
@@ -55,7 +58,9 @@ const validationSchema = Yup.object({
       "no-empty-spaces",
       "La descripción no puede contener solo espacios",
       (value) => value?.trim() !== ""
-    ),
+    )
+    .min(3, "La descripción debe tener al menos 3 caracteres")
+    .required("La descripción es obligatoria"),
 });
 
 export const CreateProductBase = () => {
