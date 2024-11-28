@@ -13,6 +13,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import AuthService from "../../service/AuthService";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -64,10 +65,17 @@ const Loginform = () => {
     return role;
   }
 
+  const navigateToDashboard = () => {
+    window.location.href = "/";
+  }
+
   return (
     <div className="card" style={styles.card}>
       <div className="card-body d-flex flex-column">
         <h5 className="text-wine" style={{ fontWeight: "inherit" }}>
+          <IconButton onClick={() => navigateToDashboard()}>
+            <ArrowBackIcon color="secondary"/>
+          </IconButton>
           Bienvenido!
         </h5>
         <h2 className="text-wine mt-4">Iniciar sesión</h2>
