@@ -203,7 +203,9 @@ export const CreateItemProduct = ({
       setIsLoading(false);
     }
   };
-
+  const onCancel = () => {
+    navigate("/products");
+  };
   return (
     <>
       <h5 className="text-2xl">Detalles de producto base</h5>
@@ -305,7 +307,7 @@ export const CreateItemProduct = ({
             />
           </div>
           <p>Selecciona el color</p>
-          <div className="d-flex gap-3 flex-wrap ">
+          <div className="d-flex gap-3 flex-wrap">
             {colorsData.length === 0 ? (
               <div
                 style={{
@@ -332,20 +334,21 @@ export const CreateItemProduct = ({
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     boxShadow:
                       selectedColor === color.id && color.status
-                        ? "0 4px 15px rgba(255, 105, 180, 0.5)"
+                        ? "0 4px 15px rgba(255, 105, 180, 0.7)"
                         : "none",
                     transform:
                       selectedColor === color.id && color.status
                         ? "scale(1.1)"
                         : "scale(1)",
-                    backgroundColor:
-                      selectedColor === color.id && color.status
+                    backgroundColor: color.status
+                      ? selectedColor === color.id
                         ? "#fff"
-                        : "transparent",
+                        : "#fff"
+                      : "rgba(220, 220, 220, 0.5)",
                     cursor: color.status ? "pointer" : "not-allowed",
-                    opacity: color.status ? 1 : 0.5, // Visual para deshabilitado
+                    opacity: color.status ? 1 : 0.3,
                   }}
-                  onClick={() => color.status && handleColorSelect(color)} // Desactiva clics si no está habilitado
+                  onClick={() => color.status && handleColorSelect(color)}
                 >
                   <div
                     style={{
@@ -358,16 +361,17 @@ export const CreateItemProduct = ({
                     <ColorCircle
                       color={color.colorCod}
                       isSelected={selectedColor === color.id && color.status}
-                      onSelect={() => color.status && handleColorSelect(color)} // Maneja solo colores activos
+                      onSelect={() => color.status && handleColorSelect(color)}
                     />
                   </div>
                   <span
                     style={{
                       fontSize: "0.9rem",
-                      color:
-                        selectedColor === color.id && color.status
+                      color: color.status
+                        ? selectedColor === color.id
                           ? "#333"
-                          : "#999",
+                          : "#666"
+                        : "#999",
                       fontWeight:
                         selectedColor === color.id && color.status
                           ? "600"
@@ -451,7 +455,7 @@ export const CreateItemProduct = ({
         </div>
       </div>
       <div className="text-end mt-2">
-        <Button variant="outlined" className="me-2">
+        <Button variant="outlined" className="me-2" onClick={onCancel}>
           Cancelar
         </Button>
         <Button

@@ -28,7 +28,7 @@ export const ProductBaseEditGrid = () => {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await ProductServices.getAllActive();
+      const response = await ProductServices.getAll();
       setProducts(response.data);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -95,6 +95,7 @@ export const ProductBaseEditGrid = () => {
               key={product.id}
               title={product.productName}
               isSelected={item?.data.product?.id === product.id}
+              isDisabled={!product.state}
             />
           ))}
         </div>

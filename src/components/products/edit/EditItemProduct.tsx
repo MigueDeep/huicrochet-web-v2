@@ -41,7 +41,6 @@ export const EditItemProduct = () => {
       }
 
       if (data) {
-        // Establecer datos del producto base
         setProductDetails({
           name: data.product.productName,
           category: data.product.categories[0]?.name || "Sin categoría",
@@ -218,6 +217,10 @@ export const EditItemProduct = () => {
     }
   };
 
+  const onCancel = () => {
+    navigate("/products");
+  };
+
   return (
     <>
       <h5 className="text-2xl">Detalles de producto base</h5>
@@ -317,7 +320,7 @@ export const EditItemProduct = () => {
             />
           </div>
           <p>Selecciona el color</p>
-          <div className="d-flex gap-3 flex-wrap ">
+          <div className="d-flex gap-3 flex-wrap">
             {colorsData.length === 0 ? (
               <div
                 style={{
@@ -328,7 +331,7 @@ export const EditItemProduct = () => {
                   marginTop: "20px",
                 }}
               >
-                No hay colores disponibles, recueda que puedes crearlos en la
+                No hay colores disponibles, recuerda que puedes crearlos en la
                 sección de colores...✨
               </div>
             ) : (
@@ -343,16 +346,25 @@ export const EditItemProduct = () => {
                     borderRadius: "18px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     boxShadow:
-                      selectedColor === color.id
+                      selectedColor === color.id && color.status
                         ? "0 4px 15px rgba(255, 105, 180, 0.5)"
                         : "none",
                     transform:
-                      selectedColor === color.id ? "scale(1.1)" : "scale(1)",
-                    backgroundColor:
-                      selectedColor === color.id ? "#fff" : "transparent",
-                    cursor: "pointer",
+                      selectedColor === color.id && color.status
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                    backgroundColor: color.status
+                      ? selectedColor === color.id
+                        ? "#fff"
+                        : "#fff"
+                      : "rgba(220, 220, 220, 0.5)",
+                    border: color.status
+                      ? "2px solid transparent"
+                      : "2px dashed rgba(150, 150, 150, 0.7)",
+                    cursor: color.status ? "pointer" : "not-allowed",
+                    opacity: color.status ? 1 : 0.7,
                   }}
-                  onClick={() => handleColorSelect(color)}
+                  onClick={() => color.status && handleColorSelect(color)}
                 >
                   <div
                     style={{
@@ -360,19 +372,27 @@ export const EditItemProduct = () => {
                       justifyContent: "center",
                       alignItems: "center",
                       height: "50px",
+                      filter: color.status ? "none" : "grayscale(100%)",
                     }}
                   >
                     <ColorCircle
                       color={color.colorCod}
-                      isSelected={selectedColor === color.id}
-                      onSelect={() => handleColorSelect(color)}
+                      isSelected={selectedColor === color.id && color.status}
+                      onSelect={() => color.status && handleColorSelect(color)}
                     />
                   </div>
                   <span
                     style={{
                       fontSize: "0.9rem",
-                      color: selectedColor === color.id ? "#333" : "#999",
-                      fontWeight: selectedColor === color.id ? "600" : "400",
+                      color: color.status
+                        ? selectedColor === color.id
+                          ? "#333"
+                          : "#666"
+                        : "#aaa",
+                      fontWeight:
+                        selectedColor === color.id && color.status
+                          ? "600"
+                          : "400",
                     }}
                   >
                     {color.colorName}
@@ -452,7 +472,7 @@ export const EditItemProduct = () => {
         </div>
       </div>
       <div className="text-end mt-2">
-        <Button variant="outlined" className="me-2">
+        <Button variant="outlined" className="me-2" onClick={onCancel}>
           Cancelar
         </Button>
         <Button

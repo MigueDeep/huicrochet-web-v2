@@ -105,7 +105,7 @@ export const ProductBaseGrid = ({ onSelectProduct }: ProductBaseGridProps) => {
                 })
               }
               isSelected={selectedProduct?.title === product.productName}
-              isDisabled={!product.state} // Considera el estado del producto
+              isDisabled={!product.state} 
             />
           ))}
         </div>
