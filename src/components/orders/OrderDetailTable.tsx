@@ -12,7 +12,6 @@ import ColorCircle from "../common/ColorCircle";
 import Avatar from "@mui/material/Avatar";
 import { ProductElement } from "../../interfaces/IOrder";
 
-const rows: ProductElement[] = [];
 
 const columns = [
   { key: "image", label: "Imagen" },
@@ -22,7 +21,7 @@ const columns = [
   { key: "price", label: "Precio" },
 ];
 
-const rowsPerPage = 10;
+const rowsPerPage = 5;
 
 interface IOrderProducts{
   products: ProductElement[];
@@ -31,7 +30,7 @@ interface IOrderProducts{
 export const OrderDetailTable = ( { products }: Readonly<IOrderProducts>) => {
   const [page, setPage] = useState(1);
 
-  const pages = Math.ceil(rows.length / rowsPerPage);
+  const pages = Math.ceil(products.length / rowsPerPage);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -83,7 +82,7 @@ const renderCell = (item: ProductElement, key: string) => {
   case "image":
     {
       const imageUri = `http://localhost:8080/${item.item.images[0].imageUri.split("/").pop()}`;
-      return imageUri ? <Avatar alt="img" src={'http://localhost:8080/snoopyAzul.png'} /> : "Sin imagen";
+      return imageUri ? <Avatar alt="img" src={imageUri} /> : "Sin imagen";
     }
   case "color":
     return item.item?.color?.colorCod ? (
