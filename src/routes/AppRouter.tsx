@@ -15,6 +15,7 @@ import { ProductsBasePage } from "../pages/products/ProductsBasePage";
 import { EditProductPage } from "../pages/products/EditProductPage";
 import { CreateProductBasePage } from "../pages/products/CreateProductBasePage";
 import { EditProductBasePage } from "../pages/products/EditProductBasePage";
+import CustomerPage from "../pages/common/Customer";
 
 const AppRouter = () => {
   return (
@@ -24,6 +25,7 @@ const AppRouter = () => {
       {/* Rutas públicas */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/customer" element={<CustomerPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
