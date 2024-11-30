@@ -19,7 +19,6 @@ interface ProductCardGridProps {
   price: number;
   colors: string[];
   status: number;
-  onView: () => void;
   onEdit: () => void;
   onChangeStatus: () => void;
 }
@@ -35,7 +34,6 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
   status,
   onEdit,
   onChangeStatus,
-  onView,
 }) => {
   return (
     <Box sx={{ width: 400 }}>
@@ -66,9 +64,6 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
         </CardContent>
         <CardActions sx={{ justifyContent: "end", padding: 2 }}>
           <ButtonGroup>
-            <IconButton aria-label="Ver detalles" onClick={onView}>
-              <RemoveRedEyeOutlinedIcon />
-            </IconButton>
             <IconButton aria-label="Editar" onClick={onEdit}>
               <EditIcon />
             </IconButton>
