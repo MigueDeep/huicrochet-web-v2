@@ -9,36 +9,36 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { CardIncomes } from "./CardIncomes";
 import { DashboardService } from "../../service/DashboardService";
 
-const Incomes = () => {
+const Views = () => {
   const [cards, setCards] = useState<any[]>([
     { title: "Ingresos del dia", revenues: 0, data: [0, 0, 0, 0] },
     { title: "Ingresos de la semana", revenues: 0, data: [0, 0, 0, 0] },
     { title: "Ingresos del mes", revenues: 0, data: [0, 0, 0, 0] },
     { title: "Ingresos anuales", revenues: 0, data: [0, 0, 0, 0] },
   ]);
-  const [activeId, setActiveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const fetchIncomeStats = async () => {
+  const fetchViewsStats = async () => {
     setLoading(true);
     try {
-      const response = await DashboardService.getIncomesStas();
+      const response = await DashboardService.getAllViewsStats();
       if (response?.data) {
         setCards(response.data);
       } else {
         throw new Error("No se encontraron datos.");
       }
     } catch (err) {
-      setError("Error al obtener los datos de los ingresos.");
+      setError("Error al obtener los datos de las visitas.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchIncomeStats();
-    const interval = setInterval(fetchIncomeStats, 10000);
+    fetchViewsStats();
+    const interval = setInterval(fetchViewsStats, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -50,8 +50,8 @@ const Incomes = () => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = cards.findIndex((card) => card.id === active.id);
-    const newIndex = cards.findIndex((card) => card.id === over.id);
+    const oldIndex = cards.findIndex((card) => card.title === active.id);
+    const newIndex = cards.findIndex((card) => card.title === over.id);
 
     if (oldIndex !== newIndex) {
       setCards((prev) => arrayMove(prev, oldIndex, newIndex));
@@ -61,6 +61,7 @@ const Incomes = () => {
   const handleDragEnd = () => {
     setActiveId(null);
   };
+
   if (error) {
     return <div>{error}</div>;
   }
@@ -81,9 +82,9 @@ const Incomes = () => {
           position: "relative",
         }}
       >
-        {cards.map((card) => (
-          <Droppable key={card.id} id={card.id}>
-            <Draggable id={card.id}>
+        {cards.map((card: any) => (
+          <Droppable key={card.title} id={card.title}>
+            <Draggable id={card.title}>
               <CardIncomes
                 title={card.title}
                 money={card.revenues}
@@ -104,7 +105,9 @@ interface DraggableProps {
 
 const Draggable: React.FC<DraggableProps> = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id });
+    useDraggable({
+      id,
+    });
 
   const style = {
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
@@ -130,4 +133,4 @@ const Droppable: React.FC<DroppableProps> = ({ id, children }) => {
   return <div ref={setNodeRef}>{children}</div>;
 };
 
-export default Incomes;
+export default Views;
