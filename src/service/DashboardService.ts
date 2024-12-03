@@ -1,7 +1,6 @@
 import { doGet } from "../config/Axios";
 import { IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
 import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
-import { padding } from '@mui/system';
 
 
 export const DashboardService = {
