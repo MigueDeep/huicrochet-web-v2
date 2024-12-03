@@ -7,56 +7,40 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { CardIncomes } from "./CardIncomes";
+import { DashboardService } from "../../service/DashboardService";
 
-interface CardStatsProps {
-  id: string;
-  title: string;
-  money: number;
-  data: number[];
-}
-
-const LOCAL_STORAGE_KEY = "incomes_cards";
-
-const Incomes = () => {
-  const defaultCards: CardStatsProps[] = [
-    {
-      id: "daily",
-      title: "Ingresos diarios",
-      money: 33,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "weekly",
-      title: "Ingresos semanales",
-      money: 210,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "monthly",
-      title: "Ingresos mensuales",
-      money: 900,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "yearly",
-      title: "Ingresos anuales",
-      money: 12000,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-  ];
-
-  const [cards, setCards] = useState<CardStatsProps[]>(() => {
-    // Restaurar desde localStorage o usar valores predeterminados
-    const savedCards = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return savedCards ? JSON.parse(savedCards) : defaultCards;
-  });
-
+const Views = () => {
+  const [cards, setCards] = useState<any[]>([
+    { title: "Ingresos del dia", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos de la semana", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos del mes", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos anuales", revenues: 0, data: [0, 0, 0, 0] },
+  ]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // Guardar datos en localStorage cada vez que cambien las tarjetas
+  const fetchViewsStats = async () => {
+    setLoading(true);
+    try {
+      const response = await DashboardService.getAllViewsStats();
+      if (response?.data) {
+        setCards(response.data);
+      } else {
+        throw new Error("No se encontraron datos.");
+      }
+    } catch (err) {
+      setError("Error al obtener los datos de las visitas.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cards));
-  }, [cards]);
+    fetchViewsStats();
+    const interval = setInterval(fetchViewsStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
@@ -66,8 +50,8 @@ const Incomes = () => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = cards.findIndex((card) => card.id === active.id);
-    const newIndex = cards.findIndex((card) => card.id === over.id);
+    const oldIndex = cards.findIndex((card) => card.title === active.id);
+    const newIndex = cards.findIndex((card) => card.title === over.id);
 
     if (oldIndex !== newIndex) {
       setCards((prev) => arrayMove(prev, oldIndex, newIndex));
@@ -77,6 +61,10 @@ const Incomes = () => {
   const handleDragEnd = () => {
     setActiveId(null);
   };
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <DndContext
@@ -94,12 +82,12 @@ const Incomes = () => {
           position: "relative",
         }}
       >
-        {cards.map((card) => (
-          <Droppable key={card.id} id={card.id}>
-            <Draggable id={card.id}>
+        {cards.map((card: any) => (
+          <Droppable key={card.title} id={card.title}>
+            <Draggable id={card.title}>
               <CardIncomes
                 title={card.title}
-                money={card.money}
+                money={card.revenues}
                 data={card.data}
               />
             </Draggable>
@@ -117,7 +105,9 @@ interface DraggableProps {
 
 const Draggable: React.FC<DraggableProps> = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({ id });
+    useDraggable({
+      id,
+    });
 
   const style = {
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
@@ -143,4 +133,4 @@ const Droppable: React.FC<DroppableProps> = ({ id, children }) => {
   return <div ref={setNodeRef}>{children}</div>;
 };
 
-export default Incomes;
+export default Views;

@@ -248,11 +248,11 @@ export const ProductsTable = () => {
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip content="Ver">
+                        {/* <Tooltip content="Ver">
                           <IconButton>
                             <RemoveRedEyeOutlinedIcon />
                           </IconButton>
-                        </Tooltip>
+                        </Tooltip> */}
                         <Tooltip
                           content={item.state ? "Desactivar" : "Activar"}
                         >

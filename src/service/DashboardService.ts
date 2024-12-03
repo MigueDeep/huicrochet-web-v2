@@ -1,4 +1,5 @@
 import { doGet } from "../config/Axios";
+import { IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
 import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
 
 
@@ -50,6 +51,19 @@ getVisitStatsInRange: async (startDate: string, endDate: string): Promise<IViews
     throw error;
   }
 },
+
+getIncomesStas:  async(): Promise<IRevuenes> =>{
+  try{
+    const response = await doGet("/stats/revenues", {showToast: false});
+    console.log("Respuesta recibida:", response.data);
+    return response.data;
+  }catch(error){
+    throw error;
+  }
+
+}
+
+
 
 
 
