@@ -1,4 +1,6 @@
 import { getDatabase } from "../config/Pouchdb";
+import PouchDB from "pouchdb";
+
 
 export const saveDocument = async (dbName: string, doc: any) => {
   const db = getDatabase(dbName);
@@ -37,21 +39,11 @@ export const deleteDocument = async (dbName: string, docId: string, rev: string)
  * Sincroniza la base de datos local con el servidor remoto.
  */
 export const syncWithServer = (dbName: string, remoteUrl: string) => {
-  const db = getDatabase(dbName);
-  db.sync(remoteUrl, {
-    live: true, // Sincronización en tiempo real
-    retry: true, // Reintenta en caso de errores
-  })
-    .on("change", (info) => {
-      console.log(`Change detected in ${dbName}:`, info);
-    })
-    .on("paused", () => {
-      console.log(`Sync paused for ${dbName}`);
-    })
-    .on("active", () => {
-      console.log(`Sync resumed for ${dbName}`);
-    })
-    .on("error", (err) => {
-      console.error(`Sync error in ${dbName}:`, err);
-    });
+    const db = getDatabase(dbName);
+    const remoteDb = new PouchDB(remoteUrl);
+
+    db.sync(remoteDb, { live: true, retry: true })
+        .on("change", (info) => console.log(`[Sync] Changes for ${dbName}:`, info))
+        .on("error", (err) => console.error(`[Sync] Error for ${dbName}:`, err));
 };
+

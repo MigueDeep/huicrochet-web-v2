@@ -2,8 +2,11 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 import { Button, CircularProgress, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import toast from "react-hot-toast";
 import ColorService from "../../service/ColorService";
 import { IColor } from "../../interfaces/IColor";
+import { saveDocument } from "../../service/PouchdbService";
+
 
 export default function CreateColorModal({ onColorCreated: onColorCreated }: { onColorCreated: () => void }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -15,19 +18,33 @@ export default function CreateColorModal({ onColorCreated: onColorCreated }: { o
 
     const formik = useFormik({
         initialValues: {
-            id: '',
-            colorName: '',
-            colorCod: '#FFFFFF',
-            status: true
+            id: "",
+            colorName: "",
+            colorCod: "#FFFFFF",
+            status: true,
         },
         validationSchema: validationSchema,
-        onSubmit: async (values: IColor) => {
-            await ColorService.createColor(values);
-            formik.resetForm();
-            onClose();
-            onColorCreated(); 
-        }
+        onSubmit: async (values: IColor, { setSubmitting }) => {
+            try {
+                if (navigator.onLine) {
+                    await ColorService.createColor(values);
+                } else {
+                    await saveDocument("colors", values);
+                    toast.success("Color guardado localmente para sincronización.");
+                }
+                formik.resetForm();
+                onClose();
+                onColorCreated();
+            } catch (error: any) {
+                toast.error(
+                    error.message || "Error al procesar el color. Intente nuevamente."
+                );
+            } finally {
+                setSubmitting(false);
+            }
+        },
     });
+    
 
     return (
         <>
