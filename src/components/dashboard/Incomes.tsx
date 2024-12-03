@@ -86,7 +86,7 @@ const Incomes = () => {
             <Draggable id={card.id}>
               <CardIncomes
                 title={card.title}
-                money={card.money}
+                money={card.revenues}
                 data={card.data}
               />
             </Draggable>

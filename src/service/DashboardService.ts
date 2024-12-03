@@ -54,7 +54,8 @@ getVisitStatsInRange: async (startDate: string, endDate: string): Promise<IViews
 
 getIncomesStas:  async(): Promise<IRevuenes> =>{
   try{
-    const response = await doGet("/stats/revuenes", {showToast: false});
+    const response = await doGet("/stats/revenues", {showToast: false});
+    console.log("Respuesta recibida:", response.data);
     return response.data;
   }catch(error){
     throw error;
