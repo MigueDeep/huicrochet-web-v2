@@ -1,6 +1,5 @@
 import axios from "axios";
 import toast from "react-hot-toast";
-import DatabaseService from "../service/DatabaseService";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080/api-crochet",
@@ -15,23 +14,6 @@ declare module "axios" {
     showToast?: boolean;
   }
 }
-
-instance.interceptors.request.use(
-  async (config) => {
-    const isOnline = navigator.onLine;
-    if (!isOnline && config.method === "post" && config.data) {
-      // Guarda la solicitud en la base local
-      await DatabaseService.add({
-        _id: new Date().toISOString(),
-        endpoint: config.url,
-        data: config.data,
-      });
-      return Promise.reject(new Error("Sin conexión: solicitud almacenada localmente."));
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 instance.interceptors.request.use(
   (config) => {
