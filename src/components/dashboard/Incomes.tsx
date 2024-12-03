@@ -7,56 +7,40 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { CardIncomes } from "./CardIncomes";
-
-interface CardStatsProps {
-  id: string;
-  title: string;
-  money: number;
-  data: number[];
-}
-
-const LOCAL_STORAGE_KEY = "incomes_cards";
+import { DashboardService } from "../../service/DashboardService";
 
 const Incomes = () => {
-  const defaultCards: CardStatsProps[] = [
-    {
-      id: "daily",
-      title: "Ingresos diarios",
-      money: 33,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "weekly",
-      title: "Ingresos semanales",
-      money: 210,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "monthly",
-      title: "Ingresos mensuales",
-      money: 900,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-    {
-      id: "yearly",
-      title: "Ingresos anuales",
-      money: 12000,
-      data: [2, 5.5, 2, 8.5, 1.5, 5],
-    },
-  ];
-
-  const [cards, setCards] = useState<CardStatsProps[]>(() => {
-    // Restaurar desde localStorage o usar valores predeterminados
-    const savedCards = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return savedCards ? JSON.parse(savedCards) : defaultCards;
-  });
-
+  const [cards, setCards] = useState<any[]>([
+    { title: "Ingresos del dia", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos de la semana", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos del mes", revenues: 0, data: [0, 0, 0, 0] },
+    { title: "Ingresos anuales", revenues: 0, data: [0, 0, 0, 0] },
+  ]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // Guardar datos en localStorage cada vez que cambien las tarjetas
+  const fetchIncomeStats = async () => {
+    setLoading(true);
+    try {
+      const response = await DashboardService.getIncomesStas();
+      if (response?.data) {
+        setCards(response.data);
+      } else {
+        throw new Error("No se encontraron datos.");
+      }
+    } catch (err) {
+      setError("Error al obtener los datos de los ingresos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cards));
-  }, [cards]);
+    fetchIncomeStats();
+    const interval = setInterval(fetchIncomeStats, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
@@ -77,6 +61,9 @@ const Incomes = () => {
   const handleDragEnd = () => {
     setActiveId(null);
   };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <DndContext

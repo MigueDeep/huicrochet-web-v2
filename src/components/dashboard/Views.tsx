@@ -11,18 +11,17 @@ import { DashboardService } from "../../service/DashboardService";
 
 const Views = () => {
   const [cards, setCards] = useState<any[]>([
-    { title: "Card 1", visits: 0, data: [0, 0, 0, 0] },
-    { title: "Card 2", visits: 0, data: [0, 0, 0, 0] },
-    { title: "Card 3", visits: 0, data: [0, 0, 0, 0] },
-    { title: "Card 4", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Visitas del dia", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Visitas de la semana", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Visitas del mes", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Visitas anuales", visits: 0, data: [0, 0, 0, 0] },
   ]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // Función para obtener los datos del servicio
   const fetchViewsStats = async () => {
-    setLoading(true); // Marca el inicio de la carga
+    setLoading(true);
     try {
       const response = await DashboardService.getAllViewsStats();
       if (response?.data) {
@@ -33,7 +32,7 @@ const Views = () => {
     } catch (err) {
       setError("Error al obtener los datos de las visitas.");
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
   };
 

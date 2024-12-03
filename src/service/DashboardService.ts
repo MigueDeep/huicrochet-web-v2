@@ -1,5 +1,7 @@
 import { doGet } from "../config/Axios";
+import { IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
 import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
+import { padding } from '@mui/system';
 
 
 export const DashboardService = {
@@ -50,6 +52,18 @@ getVisitStatsInRange: async (startDate: string, endDate: string): Promise<IViews
     throw error;
   }
 },
+
+getIncomesStas:  async(): Promise<IRevuenes> =>{
+  try{
+    const response = await doGet("/stats/revuenes", {showToast: false});
+    return response.data;
+  }catch(error){
+    throw error;
+  }
+
+}
+
+
 
 
 
