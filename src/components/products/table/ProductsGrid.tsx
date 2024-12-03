@@ -1,6 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { ProductCardGrid } from "../ProductCardGrid";
-import { InputAdornment, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { ItemsService } from "../../../service/ItemsService";
 import { Datum } from "../../../interfaces/Items/ItemsInterface";
@@ -12,7 +21,18 @@ export const ProductsGrid = () => {
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [open, setOpen] = useState(false); // Estado del Dialog
+  const [productToToggle, setProductToToggle] = useState<Datum | null>(null); // Producto seleccionado para desactivar/activar
 
+  const handleClickOpen = (product: Datum) => {
+    setProductToToggle(product); // Guardar el producto
+    setOpen(true); // Abrir el Dialog
+  };
+
+  const handleClose = () => {
+    setOpen(false); // Cerrar el Dialog
+    setProductToToggle(null); // Limpiar el producto seleccionado
+  };
   const navigate = useNavigate();
 
   const filteredProducts = useMemo(() => {
@@ -26,6 +46,38 @@ export const ProductsGrid = () => {
   const onEdit = async (id: string) => {
     navigate(`/products/edit/${id}`);
   };
+const onDelete = async () => {
+  if (!productToToggle) return;
+
+  try {
+    const newState = !productToToggle.state;
+
+    // Actualizar el estado local
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productToToggle.id
+          ? { ...product, state: newState }
+          : product
+      )
+    );
+
+    // Llamar al servicio para persistir el cambio
+    await ItemsService.chngeStatus(productToToggle.id, newState);
+  } catch (error) {
+    console.error("Error al cambiar el estado del producto:", error);
+
+    // Si hay error, revertir el estado local
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productToToggle.id
+          ? { ...product, state: !productToToggle.state }
+          : product
+      )
+    );
+  } finally {
+    handleClose(); // Cerrar el diálogo
+  }
+};
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -62,7 +114,6 @@ export const ProductsGrid = () => {
         />
       </div>
 
-      {/* Productos o animación de carga */}
       <div className="row text-center">
         {isLoading ? (
           <div
@@ -118,15 +169,37 @@ export const ProductsGrid = () => {
                 quantity={product.stock}
                 price={product.product?.price || 0}
                 colors={[product.color.colorCod]}
-                status={product.product?.state ? 1 : 0}
+                status={product.state ? 1 : 0} // Usar el estado actualizado
                 onEdit={() => onEdit(product.id)}
-                onChangeStatus={() => console.log("Cambiar estado")}
-                onView={() => console.log("Ver detalles")}
+                onChangeStatus={() => handleClickOpen(product)}
               />
             </div>
           ))
         )}
       </div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas{" "}
+            {productToToggle?.state ? "desactivar" : "activar"} el item{" "}
+            <strong>{productToToggle?.product?.productName}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="warning" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={onDelete} autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

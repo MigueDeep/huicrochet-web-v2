@@ -74,7 +74,7 @@ const Sidebar = () => {
   const closeSession = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-    navigate("/login");
+    window.location.href = "/login";
   };
 
   return (

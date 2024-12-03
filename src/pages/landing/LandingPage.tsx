@@ -6,7 +6,10 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Rating from "@mui/material/Rating";
 import React from "react";
+import Link from '@mui/material/Link';
+
 const LandingPage = () => {
+
   const [value, setValue] = React.useState<number | null>(2);
   const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
@@ -15,18 +18,33 @@ const LandingPage = () => {
     }
   };
 
+  const navigateToLogin = () => {
+    window.location.href = "/login";
+  }
+
   return (
     <>
       <div className="navbar row">
-        <div className="logo text-white col-5">
+        <div className="logo text-white col-4">
           <img className="logo_image" src="/logo.png" alt="logo" />
           HUICROCHET
         </div>
-        <div className="menu col-7 text-white text-semibold click">
+        <div className="menu col-4 text-white text-semibold click">
           <a onClick={() => scrollToSection("inicio")}>Inicio</a>
           <a onClick={() => scrollToSection("categorias")}>Categorías</a>
           <a onClick={() => scrollToSection("productos")}>Productos</a>
           <a onClick={() => scrollToSection("contacto")}>Contacto</a>
+        </div>
+        <div className="menu col-2 text-white text-semibold click">
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => {
+              navigateToLogin();
+            }}
+          >
+            Iniciar sesión Administrador
+          </Link>
         </div>
       </div>
       <div id="inicio" className="container text-center">
