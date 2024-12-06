@@ -1,6 +1,8 @@
 // src/services/AuthService.ts
 import { doPost, doGet, doPut, doPutId } from "../config/Axios";
 import { IColor } from "../interfaces/IColor";
+import PouchDB from 'pouchdb';
+const db = new PouchDB('colorsDB');
 
 
 const ColorService = {
@@ -18,11 +20,31 @@ const ColorService = {
     getColors: async () => {
         try {
             const response = await doGet("/color",  { showToast: false });
-            return response.data;
+            const colors = response.data;
+            console.log(colors);
+            
+            await db.bulkDocs(
+              colors.forEach((color: any) => {
+                color._id = color.id;
+              })
+            );
+        
+            return colors;
+            
         } catch (error) {
             throw new Error("An error occurred while fetching colors. Please try again.");
         }
     },
+
+    fetchColorsFromPouchDB: async () => {
+        try {
+          const allDocs = await db.allDocs({ include_docs: true });
+          const colors = allDocs.rows.map((row) => row.doc);
+          return colors;
+        } catch (error) {
+          throw new Error('Error al obtener datos de PouchDB');
+        }
+      },
 
 
     updateColor: async (id: string, data: IColor) => {

@@ -5,8 +5,6 @@ import * as yup from "yup";
 import toast from "react-hot-toast";
 import ColorService from "../../service/ColorService";
 import { IColor } from "../../interfaces/IColor";
-import { saveDocument } from "../../service/PouchdbService";
-
 
 export default function CreateColorModal({ onColorCreated: onColorCreated }: { onColorCreated: () => void }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,10 +26,7 @@ export default function CreateColorModal({ onColorCreated: onColorCreated }: { o
             try {
                 if (navigator.onLine) {
                     await ColorService.createColor(values);
-                } else {
-                    await saveDocument("colors", values);
-                    toast.success("Color guardado localmente para sincronización.");
-                }
+                } 
                 formik.resetForm();
                 onClose();
                 onColorCreated();

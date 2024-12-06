@@ -38,14 +38,27 @@ export default function ColorsTable() {
   const fetchColors = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await ColorService.getColors();
-      setColorsData(response.data);
+      if (navigator.onLine) {
+        console.log("Modo online");
+        const colors = await ColorService.getColors();
+        setColorsData(colors);
+      } else {
+        // Modo offline: obtener datos de PouchDB
+        console.log("Modo offline");
+        const colors = await ColorService.fetchColorsFromPouchDB();
+        const colorsMap = colors.map((color: any) => ({
+          ...color,
+          id: color._id,
+        }));
+        setColorsData(colorsMap);
+      }
     } catch (error) {
-      console.error("Error al cargar colores:", error);
+      console.error('Error al cargar colores:', error);
     } finally {
       setIsLoading(false);
     }
   }, []);
+  
 
   useEffect(() => {
     fetchColors();

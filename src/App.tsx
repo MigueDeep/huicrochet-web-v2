@@ -7,7 +7,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Toaster } from "react-hot-toast";
 import { DndContext } from "@dnd-kit/core";
-import { syncWithServer } from "./service/PouchdbService";
 
 const theme = createTheme({
   palette: {
@@ -67,11 +66,15 @@ const theme = createTheme({
   },
 });
 
-const initializeSync = () => {
-  syncWithServer("colors", "http://localhost:8080/api-crochet/colors");
-};
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.register('/sw.js')
+     .then(() => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+     });
+}
 
-initializeSync();
 
 function App() {
   return (
