@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LineChart } from "@mui/x-charts";
@@ -7,8 +7,9 @@ import { DashboardService } from "../../service/DashboardService";
 import { IViewsRange } from "../../interfaces/Dashboard/ViewsIterface";
 
 export const ViewsDateStats = () => {
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const today = dayjs();
+  const [startDate, setStartDate] = useState<Dayjs | null>(today);
+  const [endDate, setEndDate] = useState<Dayjs | null>(today);
   const [viewStats, setViewStats] = useState<IViewsRange | null>({
     data: {
       title: "",
@@ -47,6 +48,12 @@ export const ViewsDateStats = () => {
     }
   };
 
+  useEffect(() => {
+    const formattedStartDate = today.format("YYYY-MM-DD");
+    const formattedEndDate = today.format("YYYY-MM-DD");
+    fetchStats(formattedStartDate, formattedEndDate);
+  }, []); // Ejecuta solo una vez al montar el componente
+
   const handleStartDateChange = (newDate: Dayjs | null) => {
     setStartDate(newDate);
     setEndDate(null);
@@ -64,8 +71,6 @@ export const ViewsDateStats = () => {
   };
 
   const handleEndDateChange = (newDate: Dayjs | null) => {
-    const today = dayjs();
-
     setEndDate(newDate);
 
     if (startDate && newDate) {
@@ -76,8 +81,6 @@ export const ViewsDateStats = () => {
     }
     setError(null);
   };
-
-  const today = dayjs();
 
   return (
     <div className="card" style={styles.card}>

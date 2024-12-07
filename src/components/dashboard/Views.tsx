@@ -11,7 +11,7 @@ import { DashboardService } from "../../service/DashboardService";
 
 const Views = () => {
   const [cards, setCards] = useState<any[]>([
-    { title: "Visitas del dia", visits: 0, data: [0, 0, 0, 0] },
+    { title: "Visitas del día", visits: 0, data: [0, 0, 0, 0] },
     { title: "Visitas de la semana", visits: 0, data: [0, 0, 0, 0] },
     { title: "Visitas del mes", visits: 0, data: [0, 0, 0, 0] },
     { title: "Visitas anuales", visits: 0, data: [0, 0, 0, 0] },
@@ -37,8 +37,13 @@ const Views = () => {
   };
 
   useEffect(() => {
+    // Ejecuta la función inmediatamente
     fetchViewsStats();
-    const interval = setInterval(fetchViewsStats, 10000);
+
+    // Configura el intervalo para las siguientes ejecuciones
+    const interval = setInterval(fetchViewsStats, 5000);
+
+    // Limpia el intervalo al desmontar el componente
     return () => clearInterval(interval);
   }, []);
 

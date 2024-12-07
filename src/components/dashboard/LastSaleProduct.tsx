@@ -29,26 +29,34 @@ const LastSaleProduct: React.FC<LastSaleProductProps> = ({
 }) => {
   return (
     <div style={styles.card}>
-      <div
-        className="body d-flex justify-content-center align-items-center mb-4"
-        style={styles.container}
-      >
-        <img src={imageUrl} alt="imagen" style={styles.img} />
-        <div className="ml-2 d-flex flex-column m-4">
-          <div className="text-semibold">{productName}</div>
-          <div className="text-pink">{date}</div>
+      <div className="d-flex" style={styles.container}>
+        {/* Imagen */}
+        <div style={styles.imageContainer}>
+          <img src={imageUrl} alt="imagen" style={styles.img} />
         </div>
-        <div className="d-flex justify-content-center align-items-start gap-4 m-4">
-          <p className="text-pink mr-3">{customerName}</p>
-          <p className="text-pink mr-3">{location}</p>
-          <p className="text-pink mr-3">{email}</p>
-          <ColorCircle color={color} />
-
-          <p className="text-pink mr-3">{quantity}</p>
-          <Chip className="mr-3" variant="flat" color="success">
-            {status}
-          </Chip>
-          <p className="text-success mr-3">+ ${amount}</p>
+        {/* Información principal */}
+        <div style={styles.details}>
+          <div style={styles.productInfo}>
+            <div className="text-semibold">{productName}</div>
+            <div className="text-pink">{date}</div>
+          </div>
+          {/* Información adicional */}
+          <div
+            className="d-flex justify-content-between align-items-center"
+            style={styles.additionalInfo}
+          >
+            <p className="text-wine">{customerName}</p>
+            <p className="text-pink">{location}</p>
+            <p className="text-pink">{email}</p>
+            <div className="d-flex align-items-center">
+              <ColorCircle color={color} />
+            </div>
+            <p className="text-pink">{quantity}</p>
+            <Chip variant="flat" color="success">
+              {status}
+            </Chip>
+            <p className="text-success">+ ${amount}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -61,20 +69,39 @@ const styles = {
   card: {
     width: "100%",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: "column" as const,
     padding: "16px",
     boxSizing: "border-box" as const,
+    borderRadius: "8px",
+    marginBottom: "16px",
   },
   container: {
     width: "100%",
     display: "flex",
-    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  imageContainer: {
+    flex: "0 0 100px",
+    display: "flex",
+    justifyContent: "center",
     alignItems: "center",
   },
   img: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
+    width: "100px",
+    height: "100px",
+    borderRadius: "10px",
+    objectFit: "cover" as const,
+  },
+  details: {
+    flex: "1",
+    paddingLeft: "16px",
+  },
+  productInfo: {
+    marginBottom: "12px",
+  },
+  additionalInfo: {
+    display: "flex",
+    flexWrap: "wrap" as const,
+    gap: "16px",
   },
 };
