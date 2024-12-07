@@ -23,9 +23,10 @@ const Views = () => {
   const fetchViewsStats = async () => {
     setLoading(true);
     try {
-      const response = await DashboardService.getAllViewsStats();
+      const response = await DashboardService.getIncomesStas();
       if (response?.data) {
         setCards(response.data);
+        console.log(response.data);
       } else {
         throw new Error("No se encontraron datos.");
       }
