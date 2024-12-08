@@ -30,17 +30,14 @@ const LastSaleProduct: React.FC<LastSaleProductProps> = ({
   return (
     <div style={styles.card}>
       <div className="d-flex" style={styles.container}>
-        {/* Imagen */}
         <div style={styles.imageContainer}>
           <img src={imageUrl} alt="imagen" style={styles.img} />
         </div>
-        {/* Información principal */}
         <div style={styles.details}>
           <div style={styles.productInfo}>
             <div className="text-semibold">{productName}</div>
             <div className="text-pink">{date}</div>
           </div>
-          {/* Información adicional */}
           <div
             className="d-flex justify-content-between align-items-center"
             style={styles.additionalInfo}

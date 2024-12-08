@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import LastSaleProduct from "./LastSaleProduct";
 import { DashboardService } from "../../service/DashboardService";
-import { Datum } from "../../interfaces/OrderInterfaceStats/ILastOrders";
+import { IOrder } from "../../interfaces/IOrder"; // Ajusta el path si es necesario
 
 export const LastSales = () => {
-  const [lastSales, setLastSales] = useState<Datum[]>([]);
+  const [lastSales, setLastSales] = useState<IOrder[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -40,26 +40,26 @@ export const LastSales = () => {
     <div className="card" style={styles.card}>
       <h4 className="text-center title">Últimas ventas</h4>
       <div className="d-flex justify-content-center align-items-center flex-wrap">
-        {lastSales.map((sale) => {
-          const cartItem = sale.shoppingCart.cartItems[0];
-          const product = cartItem.item.product;
-          const color = cartItem.item.color;
+        {lastSales.map((order) => {
+          const firstProduct = order.orderDetails.products[0]; // Primer producto en la orden
+          const product = firstProduct.item.product;
+          const color = firstProduct.item.color;
 
           return (
             <LastSaleProduct
-              key={sale.id}
-              imageUrl={`http://localhost:8080/${cartItem.item.images[0].imageUri
+              key={order.id}
+              imageUrl={`http://localhost:8080/${firstProduct.item.images[0].imageUri
                 .split("/")
                 .pop()}`}
               productName={product.productName}
-              date={new Date(sale.orderDate).toLocaleDateString()}
-              customerName="Nombre del cliente" // Actualiza según los datos si están disponibles
-              location="Ubicación" // Actualiza según los datos si están disponibles
-              email="Correo" // Actualiza según los datos si están disponibles
-              quantity={cartItem.quantity}
+              date={new Date(order.orderDate).toLocaleDateString()}
+              customerName={order.orderDetails.user.fullName}
+              location={`${order.orderDetails.shippingAddress.city}, ${order.orderDetails.shippingAddress.state}`}
+              email={order.orderDetails.user.email}
+              quantity={firstProduct.quantity}
               color={color.colorCod}
-              status={sale.orderState}
-              amount={sale.totalPrice}
+              status={order.orderState}
+              amount={order.totalPrice}
             />
           );
         })}

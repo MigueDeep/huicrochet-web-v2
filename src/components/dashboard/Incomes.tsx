@@ -63,10 +63,6 @@ const Views = () => {
     setActiveId(null);
   };
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <DndContext
       collisionDetection={closestCenter}
