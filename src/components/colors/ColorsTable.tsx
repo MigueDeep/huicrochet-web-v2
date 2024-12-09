@@ -37,36 +37,57 @@ export default function ColorsTable() {
   const [isOffline, setIsOffline] = useState<boolean>(false);
 
   useEffect(() => {
-    const handleOnline = () => {
-      console.log('Modo online');
-      // Puedes cambiar el estado si necesitas que se actualice cuando vuelva la red
+    const updateNetworkStatus = () => {
+      setIsOffline(!navigator.onLine);
+      console.log(`Modo ${navigator.onLine ? "online" : "offline"}`);
     };
   
-    const handleOffline = () => {
-      console.log('Modo offline');
-      // Puedes cambiar el estado para indicar que estás offline
+    const preventPageRefresh = (event: Event) => {
+      if (isOffline) {
+        event.preventDefault(); // Previene el evento por defecto
+        event.stopPropagation(); // Detiene la propagación
+      }
     };
   
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+
+    updateNetworkStatus();
   
+    // Agrega listeners para los cambios de conexión
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+  
+    // Bloquea todos los intentos de recargar la página
+    if (isOffline) {
+      window.addEventListener("beforeunload", preventPageRefresh); // Bloquea F5, Ctrl+R, etc.
+      document.addEventListener("keydown", preventPageRefresh); // Bloquea teclas específicas
+    } else {
+      window.removeEventListener("beforeunload", preventPageRefresh);
+      document.removeEventListener("keydown", preventPageRefresh);
+    }
+  
+    // Limpia los listeners al desmontar el componente
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", updateNetworkStatus);
+      window.removeEventListener("offline", updateNetworkStatus);
+      window.removeEventListener("beforeunload", preventPageRefresh);
+      document.removeEventListener("keydown", preventPageRefresh);
     };
-  }, []);
+  }, [isOffline]);
+  
+  
   
 
   const fetchColors = useCallback(async () => {
     setIsLoading(true);
     try {
       if (!isOffline) {
-        console.log("Modo online");
+        console.log("Modo online axios");
         const colors = await ColorService.getColors(); // Obtener colores de la API cuando está en línea
         setColorsData(colors);
       } else {
-        console.log("Modo offline");
+        console.log("Modo offline pouch");
         const colors = await ColorService.fetchColorsFromPouchDB(); // Obtener colores desde PouchDB cuando está offline
+        console.log("Colores desde PouchDB:", colors);
         const colorsMap = colors.map((color: any) => ({
           ...color,
           id: color._id,

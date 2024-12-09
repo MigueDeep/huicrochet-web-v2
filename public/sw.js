@@ -9,16 +9,7 @@ const urlsToCache = [
   '/main.tsx', // Punto de entrada de React
 
   // Archivos estáticos desde la carpeta 'public'
-  '/index.html',
-
-  // Archivos estáticos desde la carpeta 'src'
-  '/src/pages/colors/ColorsPage.tsx',
-  '/src/components/colors/ColorsTable.tsx', // Incluye este si usas un componente de tabla
-  '/src/components/colors/CreateColor.tsx', 
-  '/src/components/colors/EditColor.tsx', 
-  '/src/config/Pouchdb.ts',
-  '/src/styles',
-  '/src/index.css', // Estilos base
+  '/colors.html',
 
   // Librerías externas (si son necesarias para offline)
   'https://cdnjs.cloudflare.com/ajax/libs/pouchdb/7.0.0/pouchdb.min.js',

@@ -3,6 +3,7 @@ import { doPost, doGet, doPut, doPutId } from "../config/Axios";
 import { IColor } from "../interfaces/IColor";
 import PouchDB from 'pouchdb';
 const db = new PouchDB('colorsDB');
+import toast from "react-hot-toast";
 
 
 const ColorService = {
@@ -13,6 +14,18 @@ const ColorService = {
             return response.data;
         } catch (ex) {
             throw new Error("An error occurred while creating color. Please try again.");  
+        }
+    },
+
+    saveColorOffline: async (data: IColor) => {
+        try {
+            await db.put({
+                ...data,
+                _id: data.id,
+            });
+            toast.success('Color guardado, se sincronizará cuando vuelva a tener conexión a internet');
+        } catch (error) {
+            throw new Error('Error al guardar color en PouchDB');
         }
     },
     
