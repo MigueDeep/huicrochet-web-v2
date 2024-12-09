@@ -49,8 +49,8 @@ export const IncomeDateStats = () => {
   };
 
   useEffect(() => {
-    const formattedStartDate = today.format("YYYY-MM-DD");
-    const formattedEndDate = today.format("YYYY-MM-DD");
+    const formattedStartDate = today.subtract(1, "days").format("YYYY-MM-DD");
+    const formattedEndDate = today.subtract(1, "days").format("YYYY-MM-DD");
     fetchStats(formattedStartDate, formattedEndDate);
   }, []); // Ejecuta solo una vez al montar el componente
 
