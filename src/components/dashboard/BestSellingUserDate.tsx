@@ -50,8 +50,8 @@ export const BestSellingUserDate = () => {
     >
       <div
         style={{
-          display: "flex", // Usar flex para un layout horizontal
-          gap: "16px", // Espaciado entre los elementos arrastrables
+          display: "flex",
+          gap: "16px",
           width: "100%",
           position: "relative",
         }}
@@ -79,31 +79,33 @@ const DraggableDroppable: React.FC<DraggableDroppableProps> = ({
   id,
   children,
 }) => {
+  const isDraggable = id !== "bestSelling"; // Define si el componente es arrastrable
+
   const {
     setNodeRef: setDraggableRef,
     listeners,
     attributes,
     transform,
     isDragging,
-  } = useDraggable({ id });
+  } = useDraggable({ id, disabled: !isDraggable }); // Desactiva el comportamiento draggable para "bestSelling"
 
   const { setNodeRef: setDroppableRef } = useDroppable({ id });
 
   const style = {
     transform: `translate(${transform?.x ?? 0}px, ${transform?.y ?? 0}px)`,
     opacity: isDragging ? 0.5 : 1,
-    cursor: "grab",
+    cursor: isDraggable ? "grab" : "default", // Cambia el cursor según si es arrastrable
   };
 
   return (
     <div
       ref={(node) => {
         setDraggableRef(node);
-        setDroppableRef(node); // Esto no es necesario aquí, pero lo puedes dejar si lo prefieres
+        setDroppableRef(node); // Se sigue registrando como área droppable
       }}
       style={style}
-      {...listeners}
-      {...attributes}
+      {...(isDraggable ? listeners : {})} // Aplica listeners solo si es arrastrable
+      {...(isDraggable ? attributes : {})} // Aplica atributos solo si es arrastrable
     >
       {children}
     </div>

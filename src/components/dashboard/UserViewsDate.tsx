@@ -8,11 +8,13 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { UsersStats } from "./UsersStats";
 import { ViewsDateStats } from "./ViewsDateStats";
+import { IncomeDateStats } from "./IncomesDateStats";
 
 export const UserViewsDate = () => {
   const [components, setComponents] = useState([
     { id: "usersStats", component: <UsersStats /> },
     { id: "viewsDateStats", component: <ViewsDateStats /> },
+    { id: "icomesDateStats", component: <IncomeDateStats /> },
   ]);
 
   const handleDragEnd = (event: any) => {
@@ -30,7 +32,7 @@ export const UserViewsDate = () => {
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
         {components.map(({ id, component }) => (
           <DraggableDroppable key={id} id={id}>
             {component}

@@ -1,7 +1,7 @@
 import { doGet } from "../config/Axios";
 import { IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
 import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
-import { ILastOrders } from "../interfaces/OrderInterfaceStats/ILastOrders";
+import { IOrder } from "../interfaces/IOrder";
 
 export const DashboardService = {
   getAllViewsStats: async (): Promise<IViews> => {
@@ -59,6 +59,23 @@ export const DashboardService = {
     }
   },
 
+  getIncomesStatsInRange: async (
+    startDate: string,
+    endDate: string
+  ): Promise<IViewsRange> => {
+    console.log("Servicio llamado con fechas:", startDate, endDate);
+    try {
+      const response = await doGet(
+        `/stats/revenues/range?startDate=${startDate}&endDate=${endDate}  `
+      );
+      console.log("Respuesta recibida ingresos:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error en el servicio:", error);
+      throw error;
+    }
+  },
+
   getIncomesStas: async (): Promise<IRevuenes> => {
     try {
       const response = await doGet("/stats/revenues", { showToast: false });
@@ -69,7 +86,7 @@ export const DashboardService = {
     }
   },
 
-  getLastOrders: async (): Promise<ILastOrders> => {
+  getLastOrders: async (): Promise<IOrder> => {
     try {
       const response = await doGet("/order/last-5", { showToast: false });
       console.log("Respuesta recibida:", response.data);
