@@ -19,22 +19,28 @@ const ColorService = {
 
     getColors: async () => {
         try {
-            const response = await doGet("/color",  { showToast: false });
-            const colors = response.data;
-            console.log(colors);
-            
-            await db.bulkDocs(
-              colors.forEach((color: any) => {
-                color._id = color.id;
-              })
-            );
-        
-            return colors;
-            
+          const response = await doGet("/color", { showToast: false });
+          const colors = response.data.data; // Accede al arreglo de colores
+          
+          console.log(typeof colors); // Debería imprimir "object" (arreglo en JS es un objeto)
+          console.log(colors); // Verifica que sea el arreglo de colores esperado
+          
+          // Modificar los datos y guardarlos en PouchDB
+          await db.bulkDocs(
+            colors.map((color: any) => ({
+              ...color,
+              _id: color.id, // Usar el ID como clave en PouchDB
+            }))
+          );
+      
+          return colors; // Devuelve los colores originales
         } catch (error) {
-            throw new Error("An error occurred while fetching colors. Please try again.");
+          console.error("Error al obtener colores:", error);
+          throw new Error("An error occurred while fetching colors. Please try again.");
         }
     },
+      
+      
 
     fetchColorsFromPouchDB: async () => {
         try {

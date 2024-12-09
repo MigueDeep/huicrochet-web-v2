@@ -34,18 +34,39 @@ export default function ColorsTable() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isOffline, setIsOffline] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('Modo online');
+      // Puedes cambiar el estado si necesitas que se actualice cuando vuelva la red
+    };
+  
+    const handleOffline = () => {
+      console.log('Modo offline');
+      // Puedes cambiar el estado para indicar que estás offline
+    };
+  
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+  
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
 
   const fetchColors = useCallback(async () => {
     setIsLoading(true);
     try {
-      if (navigator.onLine) {
+      if (!isOffline) {
         console.log("Modo online");
-        const colors = await ColorService.getColors();
+        const colors = await ColorService.getColors(); // Obtener colores de la API cuando está en línea
         setColorsData(colors);
       } else {
-        // Modo offline: obtener datos de PouchDB
         console.log("Modo offline");
-        const colors = await ColorService.fetchColorsFromPouchDB();
+        const colors = await ColorService.fetchColorsFromPouchDB(); // Obtener colores desde PouchDB cuando está offline
         const colorsMap = colors.map((color: any) => ({
           ...color,
           id: color._id,
@@ -57,7 +78,7 @@ export default function ColorsTable() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isOffline]);
   
 
   useEffect(() => {
