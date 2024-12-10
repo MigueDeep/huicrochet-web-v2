@@ -29,33 +29,51 @@ const LastSaleProduct: React.FC<LastSaleProductProps> = ({
 }) => {
   return (
     <div style={styles.card}>
-      <div className="d-flex" style={styles.container}>
-        <div style={styles.imageContainer}>
-          <img src={imageUrl} alt="imagen" style={styles.img} />
-        </div>
-        <div style={styles.details}>
-          <div style={styles.productInfo}>
-            <div className="text-semibold">{productName}</div>
-            <div className="text-pink">{date}</div>
-          </div>
-          <div
-            className="d-flex justify-content-between align-items-center"
-            style={styles.additionalInfo}
-          >
-            <p className="text-wine">{customerName}</p>
-            <p className="text-pink">{location}</p>
-            <p className="text-pink">{email}</p>
-            <div className="d-flex align-items-center">
-              <ColorCircle color={color} />
-            </div>
-            <p className="text-pink">{quantity}</p>
-            <Chip variant="flat" color="success">
-              {status}
-            </Chip>
-            <p className="text-success">+ ${amount}</p>
-          </div>
-        </div>
-      </div>
+      <table style={styles.table}>
+        <tbody>
+          <tr>
+            <td style={styles.imageCell}>
+              <img src={imageUrl} alt="imagen" style={styles.img} />
+            </td>
+            <td style={styles.detailsCell}>
+              <div style={styles.productInfo}>
+                <div className="text-semibold">{productName}</div>
+                <div className="text-pink">{date}</div>
+              </div>
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={styles.additionalInfo}
+              >
+                <td style={styles.td}>
+                  <p className="text-wine">{customerName}</p>
+                </td>
+                <td style={styles.td}>
+                  <p className="text-pink">{location}</p>
+                </td>
+                <td style={styles.td}>
+                  <p className="text-pink">{email}</p>
+                </td>
+                <td style={styles.td}>
+                  <div className="d-flex align-items-center">
+                    <ColorCircle color={color} />
+                  </div>
+                </td>
+                <td style={styles.td}>
+                  <p className="text-pink">{quantity}</p>
+                </td>
+                <td style={styles.td}>
+                  <Chip variant="flat" color="success">
+                    {status}
+                  </Chip>
+                </td>
+                <td style={styles.td}>
+                  <p className="text-success">+ ${amount}</p>
+                </td>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -72,33 +90,41 @@ const styles = {
     borderRadius: "8px",
     marginBottom: "16px",
   },
-  container: {
+  table: {
     width: "100%",
-    display: "flex",
-    alignItems: "center",
+    borderCollapse: "collapse" as const,
+    tableLayout: "fixed" as "fixed", // Fuerza tamaños consistentes
   },
-  imageContainer: {
-    flex: "0 0 100px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  imageCell: {
+    width: "100px",
+    padding: "8px",
+    verticalAlign: "top",
   },
+
   img: {
     width: "100px",
     height: "100px",
     borderRadius: "10px",
     objectFit: "cover" as const,
   },
-  details: {
-    flex: "1",
-    paddingLeft: "16px",
+  detailsCell: {
+    padding: "8px 16px",
+    verticalAlign: "top",
+    textAlign: "left" as const,
+    wordWrap: "break-word" as const, // Permite dividir palabras largas
+    overflowWrap: "anywhere" as const, // Opcional para mayor compatibilidad
   },
   productInfo: {
     marginBottom: "12px",
   },
   additionalInfo: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: "16px",
+    display: "grid", // Cambiar a grid para control consistente
+    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+    gap: "8px", // Reduce espacio para mayor uniformidad
+    alignItems: "center",
+  },
+  td: {
+    width: "520px",
+    textAlign: "center" as const,
   },
 };

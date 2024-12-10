@@ -1,32 +1,44 @@
 import { useEffect, useState } from "react";
 import {
   Button,
-  Checkbox,
   InputAdornment,
-  ListItemText,
   MenuItem,
   TextField,
-  SelectChangeEvent,
+  Select,
+  Checkbox,
+  ListItemText,
+  FormControl,
+  InputLabel,
   CircularProgress,
+  SelectChangeEvent,
+  OutlinedInput,
 } from "@mui/material";
-import animationData from "../../../utils/animation.json";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "@mui/icons-material";
-import Lottie from "lottie-react";
+import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import { Datum } from "../../../interfaces/CategoriesInterface.ts/Category";
 import { ProductServices } from "../../../service/ProductService";
 import { getAllActiveCategories } from "../../../service/CategoryService";
-import { CategoriasIconBlack, HiloIConGary } from "../../../utils/icons";
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 export const EditProductBase = () => {
   const [categories, setCategories] = useState<Datum[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingsave, setLoadingSave] = useState(false);
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  const id = useParams().id;
   const [values, setValues] = useState<{
     productName: string;
     description: string;
@@ -43,7 +55,43 @@ export const EditProductBase = () => {
     createdAt: "",
   });
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!values.productName.trim()) {
+      newErrors.productName = "El nombre del producto es obligatorio.";
+    } else if (values.productName.trim().length < 3) {
+      newErrors.productName = "El nombre debe tener al menos 3 caracteres.";
+    } else if (values.productName.length > 50) {
+      newErrors.productName = "El nombre no puede exceder los 50 caracteres.";
+    }
+
+    if (values.price <= 0) {
+      newErrors.price = "El precio debe ser mayor a 0.";
+    }
+
+    if (!values.description.trim()) {
+      newErrors.description = "La descripción es obligatoria.";
+    } else if (values.description.trim().length < 3) {
+      newErrors.description =
+        "La descripción debe tener al menos 3 caracteres.";
+    } else if (values.description.length > 250) {
+      newErrors.description =
+        "La descripción no puede exceder los 250 caracteres.";
+    }
+
+    if (values.categories.length < 1) {
+      newErrors.categories = "Selecciona al menos una categoría.";
+    } else if (values.categories.length > 3) {
+      newErrors.categories = "No puedes seleccionar más de 3 categorías.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) return;
+
     setLoadingSave(true);
     try {
       if (id) {
@@ -51,10 +99,8 @@ export const EditProductBase = () => {
           ...values,
           createdAt: new Date(values.createdAt),
         });
-      } else {
-        throw new Error("ID is undefined");
+        navigate("/products/base");
       }
-      navigate("/products/base");
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
     } finally {
@@ -72,7 +118,7 @@ export const EditProductBase = () => {
     }));
   };
 
-  const handleCategoriesChange = (event: SelectChangeEvent<unknown>) => {
+  const handleCategoriesChange = (event: SelectChangeEvent<string[]>) => {
     const selectedCategories = event.target.value as string[];
     setValues((prev) => ({
       ...prev,
@@ -80,11 +126,10 @@ export const EditProductBase = () => {
     }));
   };
 
-  const loadProduct = async (id: string) => {
+  const loadProduct = async (productId: string) => {
     setLoading(true);
     try {
-      const response = await ProductServices.getById(id);
-      console.log(response);
+      const response = await ProductServices.getById(productId);
       const productData = response.data;
       setValues({
         productName: productData.productName,
@@ -104,12 +149,8 @@ export const EditProductBase = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      loadProduct(id);
-    }
-  }, [id]);
+    if (id) loadProduct(id);
 
-  useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await getAllActiveCategories();
@@ -118,9 +159,8 @@ export const EditProductBase = () => {
         console.error("Error al obtener categorías activas:", error);
       }
     };
-
     fetchCategories();
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -135,33 +175,20 @@ export const EditProductBase = () => {
       </div>
       <div className="container mt-4 mb-4">
         {loading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "2rem 0",
-            }}
-          >
-            <Lottie
-              animationData={animationData}
-              style={{ width: 150, height: 150 }}
-              loop={true}
-            />
-          </div>
+          <CircularProgress />
         ) : (
           <div className="row">
             <div className="col-12 mb-3">
               <TextField
                 name="productName"
                 label="Producto"
-                placeholder="Nombre del producto"
                 fullWidth
                 variant="outlined"
-                disabled={loadingsave}
-                required
                 value={values.productName}
                 onChange={handleInputChange}
+                disabled={loadingsave}
+                error={!!errors.productName}
+                helperText={errors.productName}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -171,55 +198,73 @@ export const EditProductBase = () => {
                 }}
               />
             </div>
+
             <div className="col-12 mb-3">
-              <TextField
-                select
-                name="categories"
-                label="Selecciona la categoría"
-                fullWidth
-                disabled={loadingsave}
-                variant="outlined"
-                SelectProps={{
-                  multiple: true,
-                  value: values.categories,
-                  onChange: handleCategoriesChange,
-                  renderValue: (selected) =>
-                    (selected as string[])
+              <FormControl fullWidth>
+                <InputLabel id="edit-multiple-checkbox-label">
+                  Categorías*
+                </InputLabel>
+                <Select
+                  id="edit-multiple-checkbox"
+                  multiple
+                  value={values.categories} // Inicializado con las categorías seleccionadas del producto
+                  onChange={handleCategoriesChange}
+                  input={
+                    <OutlinedInput
+                      label="Categorías"
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <CategoriasIconBlack />
+                        </InputAdornment>
+                      }
+                    />
+                  }
+                  renderValue={(selected) =>
+                    selected
                       .map(
                         (id) =>
                           categories.find((cat) => cat.id === id)?.name || id
                       )
-                      .join(", "),
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CategoriasIconBlack />
-                    </InputAdornment>
-                  ),
-                }}
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
-                    <Checkbox
-                      checked={values.categories.includes(category.id)}
-                    />
-                    <ListItemText primary={category.name} />
-                  </MenuItem>
-                ))}
-              </TextField>
+                      .join(", ")
+                  }
+                  MenuProps={MenuProps}
+                >
+                  {categories
+                    .filter((category) => category.state) // Solo mostrar categorías activas
+                    .map((category) => (
+                      <MenuItem
+                        key={category.id}
+                        value={category.id}
+                        disabled={
+                          values.categories.length >= 3 &&
+                          !values.categories.includes(category.id)
+                        }
+                      >
+                        <Checkbox
+                          checked={values.categories.includes(category.id)}
+                        />
+                        <ListItemText primary={category.name} />
+                      </MenuItem>
+                    ))}
+                </Select>
+                {!!errors.categories && (
+                  <div className="text-danger">{errors.categories}</div>
+                )}
+              </FormControl>
             </div>
+
             <div className="col-12 mb-3">
               <TextField
                 name="price"
                 label="Precio"
                 fullWidth
                 variant="outlined"
-                disabled={loadingsave}
-                type="number"
-                required
                 value={values.price}
                 onChange={handleInputChange}
+                disabled={loadingsave}
+                type="number"
+                error={!!errors.price}
+                helperText={errors.price}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -229,19 +274,23 @@ export const EditProductBase = () => {
                 }}
               />
             </div>
+
             <div className="col-12 mb-3">
               <TextField
                 name="description"
                 label="Descripción"
                 fullWidth
                 variant="outlined"
+                value={values.description}
+                onChange={handleInputChange}
                 disabled={loadingsave}
                 multiline
                 rows={4}
-                value={values.description}
-                onChange={handleInputChange}
+                error={!!errors.description}
+                helperText={errors.description}
               />
             </div>
+
             <div className="col-12 d-flex justify-content-between gap-2">
               <Button
                 variant="contained"
@@ -253,7 +302,6 @@ export const EditProductBase = () => {
               <Button
                 disabled={loadingsave}
                 variant="contained"
-                type="submit"
                 onClick={handleSave}
               >
                 {loadingsave ? <CircularProgress size={24} /> : "Guardar"}
