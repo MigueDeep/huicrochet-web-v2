@@ -47,7 +47,7 @@ export const ProductCommentsModal = ({
                 <Avatar
                   src={
                     comment.user.image
-                      ? `http://localhost:8080/${comment.user.image.imageUri
+                      ? `http://34.203.104.87:8080/${comment.user.image.imageUri
                           .split("/")
                           .pop()}`
                       : "/default.webp"

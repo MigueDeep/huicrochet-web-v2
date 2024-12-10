@@ -180,7 +180,7 @@ export default function OrderDetail({ order, onOrderUpdate }: IOrderDetailProps)
                       {order.shippingAddress.user.image?.imageUri ? (
                         <Avatar
                           alt={order.shippingAddress.user.fullName}
-                          src={`http://localhost:8080/${order.shippingAddress.user.image.imageUri
+                          src={`http://34.203.104.87:8080/${order.shippingAddress.user.image.imageUri
                             .split("/")
                             .pop()}`}
                         />

@@ -68,7 +68,7 @@ const theme = createTheme({
 });
 
 const initializeSync = () => {
-  syncWithServer("colors", "http://localhost:8080/api-crochet/colors");
+  syncWithServer("colors", "http://34.203.104.87:8080/api-crochet/colors");
 };
 
 initializeSync();

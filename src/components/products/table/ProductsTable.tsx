@@ -192,7 +192,7 @@ export const ProductsTable = () => {
                         alt={item.product?.productName || "Producto sin nombre"}
                         src={
                           item.images && item.images.length > 0
-                            ? `http://localhost:8080/${item.images[0].imageUri
+                            ? `http://34.203.104.87:8080/${item.images[0].imageUri
                                 .split("/")
                                 .pop()}`
                             : "/default.webp"

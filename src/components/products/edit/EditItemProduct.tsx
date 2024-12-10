@@ -52,7 +52,7 @@ export const EditItemProduct = () => {
         setSelectedColor(data.color.id);
 
         const filePromises = data.images.map(async (image: any) => {
-          const imageUrl = `http://localhost:8080/${image.imageUri
+          const imageUrl = `http://34.203.104.87:8080/${image.imageUri
             .split("/")
             .pop()}`;
           const response = await fetch(imageUrl);

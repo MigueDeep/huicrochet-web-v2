@@ -48,7 +48,7 @@ export const LastSales = () => {
           return (
             <LastSaleProduct
               key={order.id}
-              imageUrl={`http://localhost:8080/${firstProduct.item.images[0].imageUri
+              imageUrl={`http://34.203.104.87:8080/${firstProduct.item.images[0].imageUri
                 .split("/")
                 .pop()}`}
               productName={product.productName}
