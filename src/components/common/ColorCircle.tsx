@@ -38,6 +38,8 @@ const styles = {
     maxWidth: "100%", // Responsividad
     maxHeight: "100%", // Responsividad
     transition: "width 0.2s ease, height 0.2s ease", // Animación para que el cambio de tamaño sea suave
+    //coloe de borde negro
+    border: "1px solid black", // Color de borde negro
   },
 };
 
