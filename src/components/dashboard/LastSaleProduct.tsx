@@ -27,6 +27,36 @@ const LastSaleProduct: React.FC<LastSaleProductProps> = ({
   status,
   amount,
 }) => {
+  const traduceStatus = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "Pendiente";
+      case "PROCESSED":
+        return "Procesado";
+      case "SHIPPED":
+        return "Enviado";
+      case "DELIVERED":
+        return "Entregado";
+      default:
+        return status;
+    }
+  };
+
+  const renderColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "warning";
+      case "PROCESSED":
+        return "primary";
+      case "SHIPPED":
+        return "secondary";
+      case "DELIVERED":
+        return "success";
+      default:
+        return "danger";
+    }
+  };
+
   return (
     <div style={styles.card}>
       <table style={styles.table}>
@@ -62,8 +92,8 @@ const LastSaleProduct: React.FC<LastSaleProductProps> = ({
                   <p className="text-pink">{quantity}</p>
                 </td>
                 <td style={styles.td}>
-                  <Chip variant="flat" color="success">
-                    {status}
+                  <Chip variant="flat" color={renderColor(status)}>
+                    {traduceStatus(status)}
                   </Chip>
                 </td>
                 <td style={styles.td}>
