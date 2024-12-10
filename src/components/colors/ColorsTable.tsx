@@ -41,13 +41,7 @@ export default function ColorsTable() {
       setIsOffline(!navigator.onLine);
       console.log(`Modo ${navigator.onLine ? "online" : "offline"}`);
     };
-  
-    const preventPageRefresh = (event: Event) => {
-      if (isOffline) {
-        event.preventDefault(); // Previene el evento por defecto
-        event.stopPropagation(); // Detiene la propagación
-      }
-    };
+
   
 
     updateNetworkStatus();
@@ -56,21 +50,10 @@ export default function ColorsTable() {
     window.addEventListener("online", updateNetworkStatus);
     window.addEventListener("offline", updateNetworkStatus);
   
-    // Bloquea todos los intentos de recargar la página
-    if (isOffline) {
-      window.addEventListener("beforeunload", preventPageRefresh); // Bloquea F5, Ctrl+R, etc.
-      document.addEventListener("keydown", preventPageRefresh); // Bloquea teclas específicas
-    } else {
-      window.removeEventListener("beforeunload", preventPageRefresh);
-      document.removeEventListener("keydown", preventPageRefresh);
-    }
-  
     // Limpia los listeners al desmontar el componente
     return () => {
       window.removeEventListener("online", updateNetworkStatus);
       window.removeEventListener("offline", updateNetworkStatus);
-      window.removeEventListener("beforeunload", preventPageRefresh);
-      document.removeEventListener("keydown", preventPageRefresh);
     };
   }, [isOffline]);
   
@@ -94,8 +77,8 @@ export default function ColorsTable() {
         }));
         setColorsData(colorsMap);
       }
-    } catch (error) {
-      console.error('Error al cargar colores:', error);
+    } catch (err) {
+      console.error('Error al cargar colores:', err);
     } finally {
       setIsLoading(false);
     }
@@ -237,11 +220,12 @@ function renderCellContent(
       return (
         <ButtonGroup className="gap-2">
           <EditColorModal
-            id={item.id}
-            colorName={item.colorName}
-            colorCod={item.colorCod}
-            onColorUpdated={fetchColors}
+              id={item.id}
+              colorName={item.colorName}
+              colorCod={item.colorCod}
+              onColorUpdated={fetchColors}
           />
+
           <ChangeStatus
             id={item.id}
             initialStatus={item.status}

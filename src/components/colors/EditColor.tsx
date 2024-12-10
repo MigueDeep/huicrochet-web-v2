@@ -1,15 +1,15 @@
-// EditColorModal
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Tooltip } from "@nextui-org/react";
 import { Button, CircularProgress, TextField, IconButton } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import ColorService from "../../service/ColorService";
 import { IColor } from "../../interfaces/IColor";
 import { useState } from "react";
 
+
 export default function EditColorModal({ id, colorName, colorCod, onColorUpdated }: Readonly<{ id: string, colorName: string, colorCod: string, onColorUpdated: () => void }>) {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure(); 
     const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object({
@@ -20,25 +20,26 @@ export default function EditColorModal({ id, colorName, colorCod, onColorUpdated
     const formik = useFormik({
         initialValues: {
             id: id,
-            colorName: colorName || '',
-            colorCod: colorCod || '#FFFFFF',
-            status: true
+            colorName: colorName || "",
+            colorCod: colorCod || "#FFFFFF",
+            status: true,
         },
-        enableReinitialize: true, 
+        enableReinitialize: true,
         validationSchema: validationSchema,
-        onSubmit: async(values: IColor) => {
+        onSubmit: async (values: IColor) => {
             setLoading(true);
             try {
+                // Intentar actualizar el color
                 await ColorService.updateColor(id, values);
                 onColorUpdated();
             } catch (error) {
-                console.error("Error updating color:", error);
+                console.error("Error al actualizar el color:", error);
             } finally {
                 setLoading(false);
                 formik.resetForm();
                 onClose();
             }
-        }
+        },        
     });
 
     return (
@@ -48,7 +49,7 @@ export default function EditColorModal({ id, colorName, colorCod, onColorUpdated
                     <EditIcon />
                 </IconButton>
             </Tooltip>
-            <Modal isOpen={isOpen} onOpenChange={(open) => open ? onOpen() : onClose()}>
+            <Modal isOpen={isOpen} onOpenChange={(open) => (open ? onOpen() : onClose())}>
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Editar color</ModalHeader>
                     <ModalBody>
