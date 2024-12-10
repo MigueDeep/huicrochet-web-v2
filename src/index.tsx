@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App'
-import * as serviceWorkerRegistration from './sw'
 import reportWebVitals from './reportWebVitals'
 
 const root = ReactDOM.createRoot(
@@ -14,8 +13,19 @@ root.render(
   </React.StrictMode>
 )
 
-// Aquí registramos el Service Worker para habilitar las funcionalidades de PWA
-serviceWorkerRegistration.register()
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('../public/sw.ts') // Ruta al archivo de Service Worker
+      .then(registration => {
+        console.log('Service Worker registrado con éxito:', registration);
+      })
+      .catch(error => {
+        console.error('Error al registrar el Service Worker:', error);
+      });
+  });
+}
+
 
 // Si quieres medir el rendimiento de tu aplicación
 reportWebVitals()

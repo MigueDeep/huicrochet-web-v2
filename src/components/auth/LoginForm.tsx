@@ -13,13 +13,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import AuthService from "../../service/AuthService";
-import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const validationSchema = Yup.object({
   email: Yup.string()
     .email("Correo inválido")
     .required("El correo es requerido"),
-  password: Yup.string().required("La contraseña es requerida"),
+  password: Yup.string().required("La contraseña es requerida").min(8, "La contraseña debe tener al menos 8 caracteres"),
 });
 
 const Loginform = () => {
@@ -33,8 +33,6 @@ const Loginform = () => {
     event.preventDefault();
   };
 
-  const navigate = useNavigate();
-
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -45,8 +43,13 @@ const Loginform = () => {
       setIsLoading(true);
       try {
         const response = await AuthService.login(values);
+        let role = getRole(response.data.token);
+        if(role === "ROLE_Client") {
+          window.location.href = "/customer";
+          return;
+        }
         localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+        window.location.replace("/products");
       } catch (error) {
         throw error;
       } finally {
@@ -55,10 +58,24 @@ const Loginform = () => {
     },
   });
 
+  const getRole = (token: string) => {
+    const payload = token.split(".")[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    const role = decodedPayload.roles[0].authority;
+    return role;
+  }
+
+  const navigateToDashboard = () => {
+    window.location.href = "/";
+  }
+
   return (
     <div className="card" style={styles.card}>
       <div className="card-body d-flex flex-column">
         <h5 className="text-wine" style={{ fontWeight: "inherit" }}>
+          <IconButton onClick={() => navigateToDashboard()}>
+            <ArrowBackIcon color="secondary"/>
+          </IconButton>
           Bienvenido!
         </h5>
         <h2 className="text-wine mt-4">Iniciar sesión</h2>

@@ -9,33 +9,41 @@ import {
   Chip,
   Pagination,
   ButtonGroup,
-  Spinner,
 } from "@nextui-org/react";
-import Avatar from "@mui/material/Avatar";
 import { useEffect, useMemo, useState } from "react";
-import ColorCircle from "../common/ColorCircle";
-import { IconButton, InputAdornment, Switch, TextField } from "@mui/material";
+import ColorCircle from "../../common/ColorCircle";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  InputAdornment,
+  Switch,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import { Datum } from "../../interfaces/Items/ItemsInterface";
-import { ItemsService } from "../../service/ItemsService";
+import { Datum } from "../../../interfaces/Items/ItemsInterface";
+import { ItemsService } from "../../../service/ItemsService";
 import Lottie from "lottie-react";
-import animationData from "../../utils/animation.json";
-
-const label = { inputProps: { "aria-label": "Switch demo" } };
+import animationData from "../../../utils/animation.json";
+import { HoverableAvatar } from "../../common/HoverableAvatar";
 
 const columns = [
-  { key: "image", label: "Imagen" },
-  { key: "name", label: "Nombre" },
-  { key: "category", label: "Categoría" },
-  { key: "description", label: "Cartegoria" },
-  { key: "price", label: "Precio" },
-  { key: "stock", label: "Stock " },
-  { key: "colors", label: "Color" },
-  { key: "status", label: "Estado" },
-  { key: "actions", label: "Acciones" },
+  { key: "image", label: "IMAGEN" },
+  { key: "name", label: "NOMBRE" },
+  { key: "category", label: "CATEGORÍA" },
+  { key: "description", label: "DESCRIPCIÓN" },
+  { key: "price", label: "PRECIO" },
+  { key: "stock", label: "STOCK" },
+  { key: "colors", label: "COLOR" },
+  { key: "status", label: "ESTADO" },
+  { key: "actions", label: "ACCIONES" },
 ];
 
 const rowsPerPage = 10;
@@ -44,30 +52,68 @@ export const ProductsTable = () => {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<Datum[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [open, setOpen] = useState(false); // Estado del Dialog
+  const [productToToggle, setProductToToggle] = useState<Datum | null>(null); // Producto seleccionado para desactivar/activar
+
+  const handleClickOpen = (product: Datum) => {
+    setProductToToggle(product); // Guardar el producto
+    setOpen(true); // Abrir el Dialog
+  };
+
+  const handleClose = () => {
+    setOpen(false); // Cerrar el Dialog
+    setProductToToggle(null); // Limpiar el producto seleccionado
+  };
 
   const pages = Math.ceil(products.length / rowsPerPage);
   const navigate = useNavigate();
+
   const onEdit = async (id: string) => {
     navigate(`/products/edit/${id}`);
   };
-  const onDelete = async (item: Datum) => {
-    setIsLoading(true);
+
+  const onDelete = async () => {
+    if (!productToToggle) return;
     try {
-      const newState = !item.state;
-      await ItemsService.chngeStatus(item.id, newState);
-      fetchProducts();
+      const newState = !productToToggle.state;
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === productToToggle.id
+            ? { ...product, state: newState }
+            : product
+        )
+      );
+      handleClose();
+      await ItemsService.chngeStatus(productToToggle.id, newState);
     } catch (error) {
-      console.error("Error al cambiar el estado del ítem");
-    } finally {
-      setIsLoading(false);
+      console.error("Error al cambiar el estado del producto:", error);
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === productToToggle.id
+            ? { ...product, state: !productToToggle.state }
+            : product
+        )
+      );
     }
   };
 
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    return products.filter((product) =>
+      product.product?.productName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, products]);
+
   const items = useMemo(() => {
+    if (isLoading) return [];
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return products.slice(start, end);
-  }, [page, products]);
+    return filteredProducts.slice(start, end);
+  }, [page, filteredProducts, isLoading]);
+
   const fetchProducts = async () => {
     try {
       const response = await ItemsService.getAll();
@@ -78,6 +124,7 @@ export const ProductsTable = () => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -86,23 +133,24 @@ export const ProductsTable = () => {
     <>
       <div className="col-6 mb-2">
         <TextField
-          label="Busqueda"
+          label="Búsqueda"
           placeholder="Ingresa el nombre del producto"
           variant="outlined"
           fullWidth
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
         />
       </div>
       <Table
-        aria-label="Example table with dynamic content"
+        aria-label="Tabla de productos con búsqueda"
+        layout="fixed"
         bottomContent={
           <div className="flex w-full justify-center mt-4 pb-4 border-b border-gray-200">
             <Pagination
@@ -130,6 +178,7 @@ export const ProductsTable = () => {
               <Lottie animationData={animationData} width={50} height={50} />
             </div>
           }
+          emptyContent={"✨ No hay productos para mostrar...✨"}
         >
           {(item) => (
             <TableRow key={item.id}>
@@ -139,11 +188,11 @@ export const ProductsTable = () => {
                 switch (column.key) {
                   case "image":
                     cellContent = (
-                      <Avatar
+                      <HoverableAvatar
                         alt={item.product?.productName || "Producto sin nombre"}
                         src={
                           item.images && item.images.length > 0
-                            ? `http://localhost:8080/${item.images[0].imageUri
+                            ? `http://34.203.104.87:8080/${item.images[0].imageUri
                                 .split("/")
                                 .pop()}`
                             : "/default.webp"
@@ -157,13 +206,15 @@ export const ProductsTable = () => {
                       : "Producto sin nombre";
                     break;
                   case "category":
-                    const activeCategory = item.product?.categories.find(
-                      (category) => category.state
-                    );
-                    cellContent = activeCategory
-                      ? activeCategory.name
-                      : "Sin categoría activa";
+                    cellContent =
+                      item.product?.categories &&
+                      item.product.categories.length > 0
+                        ? item.product.categories
+                            .map((category) => category.name)
+                            .join(", ")
+                        : "Sin categorías";
                     break;
+
                   case "description":
                     cellContent =
                       item.product?.description ?? "Descripción no disponible";
@@ -197,18 +248,17 @@ export const ProductsTable = () => {
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip content="Ver">
+                        {/* <Tooltip content="Ver">
                           <IconButton>
                             <RemoveRedEyeOutlinedIcon />
                           </IconButton>
-                        </Tooltip>
+                        </Tooltip> */}
                         <Tooltip
                           content={item.state ? "Desactivar" : "Activar"}
                         >
                           <Switch
-                            {...label}
                             checked={item.state}
-                            onChange={() => onDelete(item)}
+                            onClick={() => handleClickOpen(item)}
                           />
                         </Tooltip>
                       </ButtonGroup>
@@ -224,6 +274,29 @@ export const ProductsTable = () => {
           )}
         </TableBody>
       </Table>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar acción"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas{" "}
+            {productToToggle?.state ? "desactivar" : "activar"} el item{" "}
+            <strong>{productToToggle?.product?.productName}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="warning" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={onDelete} autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

@@ -16,6 +16,13 @@ export interface Product {
     items:       Datum[];
 }
 
+export interface ProductI {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  description: string;
+}
 export interface Datum {
     id:       string;
     product?: Product;
@@ -45,3 +52,10 @@ export interface ICreateItem {
     state:     boolean;
 }
 
+
+export interface IUpdateItem {
+   productId: string;
+    colorId:   string;
+    stock:     number;
+    state:     boolean;
+}

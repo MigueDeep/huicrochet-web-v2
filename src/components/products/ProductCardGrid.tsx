@@ -6,7 +6,10 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import ColorCircle from "../common/ColorCircle";
 import { Chip } from "@nextui-org/react";
-
+import { ButtonGroup, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 interface ProductCardGridProps {
   image: string;
   title: string;
@@ -17,6 +20,7 @@ interface ProductCardGridProps {
   colors: string[];
   status: number;
   onEdit: () => void;
+  onChangeStatus: () => void;
 }
 
 export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
@@ -29,6 +33,7 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
   colors,
   status,
   onEdit,
+  onChangeStatus,
 }) => {
   return (
     <Box sx={{ width: 400 }}>
@@ -40,7 +45,7 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
         />
         <CardContent className="text-start">
           <p className="card-title">{title}</p>
-          <p className="text-secondary">{description}</p>
+          <p className="text-secondary mt-1">{description}</p>
           <p className="text-secondary">{category}</p>
           <p className="text-secondary">{quantity}</p>
           <p className="fw-bold text-pink">${price.toFixed(2)}</p>
@@ -57,10 +62,18 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
             {status === 1 ? "Disponible" : "No disponible"}
           </Chip>
         </CardContent>
-        <CardActions>
-          <Button variant="contained" onClick={onEdit}>
-            Ver detalles
-          </Button>
+        <CardActions sx={{ justifyContent: "end", padding: 2 }}>
+          <ButtonGroup>
+            <IconButton aria-label="Editar" onClick={onEdit}>
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              aria-label={status === 1 ? "Desactivar" : "Activar"}
+              onClick={onChangeStatus}
+            >
+              <DeleteOutlineIcon />
+            </IconButton>
+          </ButtonGroup>
         </CardActions>
       </Card>
     </Box>

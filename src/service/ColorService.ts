@@ -17,7 +17,7 @@ const ColorService = {
 
     getColors: async () => {
         try {
-            const response = await doGet("/color");
+            const response = await doGet("/color",  { showToast: false });
             return response.data;
         } catch (error) {
             throw new Error("An error occurred while fetching colors. Please try again.");
@@ -34,14 +34,16 @@ const ColorService = {
         }
     },
 
-    diableColorById: async (id: string) => {
+    changeColorStatus: async (id: string) => {
         try {
-            const response = await doPutId(`/color/disable/${id}`);
+            const response = await doPutId(`/color/changeStatus/${id}`);
             return response.data;
         } catch (error) {
             throw new Error("An error occurred while disabling color. Please try again.");
         }
     },
+
+    
 
 };
 

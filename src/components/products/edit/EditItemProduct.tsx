@@ -1,10 +1,9 @@
 import TextField from "@mui/material/TextField";
 import { Divider, Progress } from "@nextui-org/react";
-import ColorCircle from "../common/ColorCircle";
 import { useCallback, useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
-import "../../styles/products/products.css";
+import "../../../styles/products/products.css";
 import {
   IconButton,
   Button,
@@ -16,26 +15,81 @@ import {
   HiloIConGary,
   StockIcon,
   XCircleIcon,
-} from "../../utils/icons";
-import { Product } from "./ProductBaseGrid";
-import { createItem } from "../../service/ItemsService";
-import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
-import { IColor } from "../../interfaces/IColor";
-import ColorService from "../../service/ColorService";
+} from "../../../utils/icons";
+
+import { ItemsService, UpdateItem } from "../../../service/ItemsService";
+import { IColor } from "../../../interfaces/IColor";
+import ColorService from "../../../service/ColorService";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ColorCircle from "../../common/ColorCircle";
+import { IUpdateItem } from "../../../interfaces/Items/ItemsInterface";
 
-interface CreateItemProductProps {
-  selectedProduct: Product | null;
-}
+import { IItem } from "../../../interfaces/Items/ItemById";
 
-export const CreateItemProduct = ({
-  selectedProduct,
-}: CreateItemProductProps) => {
+export const EditItemProduct = () => {
+  const { id } = useParams<{ id: string }>();
+  const [item, setItem] = useState<IItem | null>(null);
+
+  const fetchProductById = async (id: string) => {
+    try {
+      const response = await ItemsService.getById(id);
+      const { data } = response;
+
+      if (response) {
+        setItem(response);
+      }
+
+      if (data) {
+        setProductDetails({
+          name: data.product.productName,
+          category: data.product.categories[0]?.name || "Sin categoría",
+          description: data.product.description,
+          price: data.product.price.toString(),
+        });
+
+        setStock(data.stock || 0);
+        setSelectedColor(data.color.id);
+
+        const filePromises = data.images.map(async (image: any) => {
+          const imageUrl = `http://34.203.104.87:8080/${image.imageUri
+            .split("/")
+            .pop()}`;
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          return new File([blob], image.name, { type: blob.type });
+        });
+
+        // Esperar la conversión de todas las imágenes
+        const files = await Promise.all(filePromises);
+        setFiles(files);
+
+        // Configurar vistas previas de las imágenes
+        const previews = files.map((file) => ({
+          url: URL.createObjectURL(file),
+          name: file.name,
+          size:
+            file.size / 1024 < 1024
+              ? (file.size / 1024).toFixed(2) + " KB"
+              : (file.size / (1024 * 1024)).toFixed(2) + " MB",
+          isNew: false,
+        }));
+        setImagePreviews(previews);
+      }
+    } catch (error) {
+      console.error("Error al obtener el producto:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchProductById(id);
+    }
+  }, [id]);
+
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
   >([]);
@@ -47,6 +101,7 @@ export const CreateItemProduct = ({
     price: "",
   });
   const navigate = useNavigate();
+
   const fetchColors = useCallback(async () => {
     try {
       const response = await ColorService.getColors();
@@ -59,6 +114,7 @@ export const CreateItemProduct = ({
   useEffect(() => {
     fetchColors();
   }, [fetchColors]);
+
   const [value, setValue] = useState(0);
   const [stock, setStock] = useState<number>(0);
   const [selectedColor, setSelectedColor] = useState("");
@@ -74,10 +130,9 @@ export const CreateItemProduct = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
     if (selectedFiles) {
-      const newFiles = Array.from(selectedFiles);
-      const validFiles = newFiles.filter((file) => file.type.includes("image"));
-
-      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+      const validFiles = Array.from(selectedFiles).filter((file) =>
+        file.type.includes("image")
+      );
 
       const newPreviews = validFiles.map((file) => ({
         url: URL.createObjectURL(file),
@@ -89,60 +144,51 @@ export const CreateItemProduct = ({
         isNew: true,
       }));
 
+      setFiles((prevFiles) => [
+        ...prevFiles.filter(
+          (file) => !newPreviews.some((np) => np.name === file.name)
+        ),
+        ...validFiles,
+      ]);
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setRemovingIndex(index);
-    setTimeout(() => {
-      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-      setImagePreviews((prevPreviews) =>
-        prevPreviews.filter((_, i) => i !== index)
+    const imageToRemove = imagePreviews[index];
+
+    if (!imageToRemove.isNew) {
+      setFiles((prevFiles) =>
+        prevFiles.filter(
+          (file) =>
+            file.name !== imageToRemove.name &&
+            !file.name.includes(imageToRemove.url)
+        )
       );
-      setRemovingIndex(null);
-    }, 300);
+    }
+
+    setImagePreviews((prevPreviews) =>
+      prevPreviews.filter((_, i) => i !== index)
+    );
   };
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setImagePreviews((prevPreviews) =>
-        prevPreviews.map((preview) => ({ ...preview, isNew: false }))
-      );
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [imagePreviews]);
 
   const handleColorSelect = (color: IColor) => {
     setSelectedColor(color.id);
   };
 
-  useEffect(() => {
-    if (selectedProduct) {
-      setProductDetails({
-        name: selectedProduct.title,
-        category: selectedProduct.category,
-        description: selectedProduct.description,
-        price: selectedProduct.price.toString(),
-      });
-    } else {
-      setProductDetails({
-        name: "",
-        category: "",
-        description: "",
-        price: "",
-      });
-    }
-  }, [selectedProduct]);
   const handleSave = async () => {
-    if (!selectedProduct) {
-      alert("No product selected");
+    if (!selectedColor) {
+      toast.error("Selecciona un color.");
       return;
     }
 
-    const data: ICreateItem = {
-      productId: selectedProduct.id,
+    if (stock <= 0) {
+      toast.error("El stock debe ser mayor a 0.");
+      return;
+    }
+
+    const data: IUpdateItem = {
+      productId: item?.data.product.id || "",
       colorId: selectedColor,
       stock: stock,
       state: true,
@@ -152,25 +198,27 @@ export const CreateItemProduct = ({
     formData.append("itemDto", JSON.stringify(data));
 
     files.forEach((file) => {
+      console.log(file);
       formData.append("images", file);
     });
 
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-
     try {
       setIsLoading(true);
-      const response = await createItem(formData);
+      const response = await UpdateItem(id!, formData);
+      console.log(response);
 
-      toast.success(response.message);
+      toast.success("Producto actualizado correctamente");
       navigate("/products");
     } catch (error) {
-      console.error("Error al crear el producto:", error);
-      toast.error("Error al crear el producto");
+      console.error("Error al actualizar el producto:", error);
+      toast.error("Error al actualizar el producto");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onCancel = () => {
+    navigate("/products");
   };
 
   return (
@@ -182,6 +230,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Nombre del producto"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.name}
               fullWidth
@@ -201,6 +250,7 @@ export const CreateItemProduct = ({
             <TextField
               label="Categoria"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.category}
               fullWidth
@@ -218,6 +268,7 @@ export const CreateItemProduct = ({
           <div className="mb-3">
             <TextField
               label="Descripcion"
+              disabled={isLoading}
               variant="outlined"
               InputProps={{ readOnly: true }}
               value={productDetails.description}
@@ -232,6 +283,7 @@ export const CreateItemProduct = ({
               variant="outlined"
               InputProps={{ readOnly: true }}
               value={productDetails.price}
+              disabled={isLoading}
               fullWidth
               slotProps={{
                 input: {
@@ -254,6 +306,7 @@ export const CreateItemProduct = ({
               type="number"
               fullWidth
               value={stock}
+              disabled={isLoading}
               onChange={(e) => setStock(Number(e.target.value))}
               slotProps={{
                 input: {
@@ -267,15 +320,86 @@ export const CreateItemProduct = ({
             />
           </div>
           <p>Selecciona el color</p>
-          <div className="d-flex gap-2">
-            {colorsData.map((color) => (
-              <ColorCircle
-                key={color.id}
-                color={color.colorCod}
-                isSelected={selectedColor === color.id}
-                onSelect={() => handleColorSelect(color)}
-              />
-            ))}
+          <div className="d-flex gap-3 flex-wrap">
+            {colorsData.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  fontSize: "1.2rem",
+                  color: "#666",
+                  padding: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                No hay colores disponibles, recuerda que puedes crearlos en la
+                sección de colores...✨
+              </div>
+            ) : (
+              colorsData.map((color) => (
+                <div
+                  key={color.id}
+                  className="d-flex flex-column align-items-center gap-2"
+                  style={{
+                    width: "100px",
+                    textAlign: "center",
+                    padding: "10px",
+                    borderRadius: "18px",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow:
+                      selectedColor === color.id && color.status
+                        ? "0 4px 15px rgba(255, 105, 180, 0.5)"
+                        : "none",
+                    transform:
+                      selectedColor === color.id && color.status
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                    backgroundColor: color.status
+                      ? selectedColor === color.id
+                        ? "#fff"
+                        : "#fff"
+                      : "rgba(220, 220, 220, 0.5)",
+                    border: color.status
+                      ? "2px solid transparent"
+                      : "2px dashed rgba(150, 150, 150, 0.7)",
+                    cursor: color.status ? "pointer" : "not-allowed",
+                    opacity: color.status ? 1 : 0.7,
+                  }}
+                  onClick={() => color.status && handleColorSelect(color)}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50px",
+                      filter: color.status ? "none" : "grayscale(100%)",
+                    }}
+                  >
+                    <ColorCircle
+                      color={color.colorCod}
+                      isSelected={selectedColor === color.id && color.status}
+                      onSelect={() => color.status && handleColorSelect(color)}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      color: color.status
+                        ? selectedColor === color.id
+                          ? "#333"
+                          : "#666"
+                        : "#aaa",
+                      fontWeight:
+                        selectedColor === color.id && color.status
+                          ? "600"
+                          : "400",
+                    }}
+                  >
+                    {color.colorName}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -348,7 +472,7 @@ export const CreateItemProduct = ({
         </div>
       </div>
       <div className="text-end mt-2">
-        <Button variant="outlined" className="me-2">
+        <Button variant="outlined" className="me-2" onClick={onCancel}>
           Cancelar
         </Button>
         <Button

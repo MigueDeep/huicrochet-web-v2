@@ -2,13 +2,18 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080/api-crochet",
+  baseURL: "http://34.203.104.87:8080/api-crochet",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
-  },    
+  },
 });
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    showToast?: boolean;
+  }
+}
 
 instance.interceptors.request.use(
   (config) => {
@@ -19,24 +24,34 @@ instance.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    const backendMessage = error.response?.data?.message || error.message || "Error al realizar la operación";
+    toast.error(backendMessage);
+    return Promise.reject(new Error(error.message || "Error al realizar la operación"));
   }
 );
 
 instance.interceptors.response.use(
   (response) => {
-    console.log(response.data.message);
-    toast.success(response.data.message);
+    if (response.config.showToast !== false) {
+      if(!response.config.url?.includes("/item/getById/") && !response.config.url?.includes("/stats/visits/") && !response.config.url?.includes("/product/getById/") && !response.config.url?.includes("/review/")
+    ){
+      toast.success(response.data.message);
+    }
+    }
     return response;
   },
   (error) => {
-    return Promise.reject(error);
+    const backendMessage =
+      error.response?.data?.message || error.message || "Error al realizar la operación";
+    toast.error(backendMessage);
+    return Promise.reject(new Error(backendMessage));
   }
 );
 
-export const doGet = (url: string) => {
-  return instance.get(url);
+export const doGet = (url: string, config?: object) => {
+  return instance.get(url, config);
 };
+
 
 export const doGetId = (url: string, id: string) => {
   return instance.get(`${url}${id}`);
@@ -45,7 +60,6 @@ export const doGetId = (url: string, id: string) => {
 export const doPost = (url: string, data: any) => {
   return instance.post(url, data);
 };
-
 
 export const doPut = (url: string, data: any) => {
   return instance.put(url, data);

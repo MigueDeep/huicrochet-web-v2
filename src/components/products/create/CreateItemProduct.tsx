@@ -1,9 +1,10 @@
 import TextField from "@mui/material/TextField";
 import { Divider, Progress } from "@nextui-org/react";
+import ColorCircle from "../../common/ColorCircle";
 import { useCallback, useEffect, useState } from "react";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
-import "../../styles/products/products.css";
+import "../../../styles/products/products.css";
 import {
   IconButton,
   Button,
@@ -15,25 +16,27 @@ import {
   HiloIConGary,
   StockIcon,
   XCircleIcon,
-} from "../../utils/icons";
-
-import { createItem } from "../../service/ItemsService";
-import { ICreateItem } from "../../interfaces/Items/ItemsInterface";
-import { IColor } from "../../interfaces/IColor";
-import ColorService from "../../service/ColorService";
+} from "../../../utils/icons";
+import { createItem } from "../../../service/ItemsService";
+import { ICreateItem } from "../../../interfaces/Items/ItemsInterface";
+import { IColor } from "../../../interfaces/IColor";
+import ColorService from "../../../service/ColorService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Product } from "../../components/products/ProductBaseGrid";
-import ColorCircle from "../../components/common/ColorCircle";
+import { Product } from "./ProductBaseGrid";
 
 interface CreateItemProductProps {
   selectedProduct: Product | null;
 }
 
-export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => {
+export const CreateItemProduct = ({
+  selectedProduct,
+}: CreateItemProductProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [stockError, setStockError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const [imagePreviews, setImagePreviews] = useState<
     { url: string; name: string; size: string; isNew: boolean }[]
@@ -87,7 +90,12 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             : (file.size / (1024 * 1024)).toFixed(2) + " MB",
         isNew: true,
       }));
-
+      if (validFiles.some((file) => file.size > 5 * 1024 * 1024)) {
+        setImageError(true);
+        toast.error("Las imagenes no deben ser mayores a 5MB.");
+      } else {
+        setImageError(false);
+      }
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     }
   };
@@ -134,14 +142,43 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
       });
     }
   }, [selectedProduct]);
-  const handleSave = async () => {
+  const validateForm = () => {
+    let isValid = true;
+
     if (!selectedProduct) {
-      alert("No product selected");
-      return;
+      toast.error("Debe seleccionar un producto base.");
+      isValid = false;
     }
 
+    if (!stock || stock <= 0) {
+      setStockError(true);
+      isValid = false;
+      toast.error("El stock debe ser mayor a 0.");
+    } else {
+      setStockError(false);
+    }
+
+    if (!selectedColor) {
+      toast.error("Debe seleccionar un color.");
+      isValid = false;
+    }
+
+    if (files.length === 0) {
+      toast.error("Debe subir al menos una imagen.");
+      isValid = false;
+    }
+
+    if (imageError) {
+      isValid = false;
+    }
+
+    return isValid;
+  };
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
     const data: ICreateItem = {
-      productId: selectedProduct.id,
+      productId: selectedProduct ? selectedProduct.id : "",
       colorId: selectedColor,
       stock: stock,
       state: true,
@@ -153,11 +190,6 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
     files.forEach((file) => {
       formData.append("images", file);
     });
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
-
     try {
       setIsLoading(true);
       const response = await createItem(formData);
@@ -171,7 +203,9 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
       setIsLoading(false);
     }
   };
-
+  const onCancel = () => {
+    navigate("/products");
+  };
   return (
     <>
       <h5 className="text-2xl">Detalles de producto base</h5>
@@ -181,6 +215,7 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             <TextField
               label="Nombre del producto"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.name}
               fullWidth
@@ -200,6 +235,7 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             <TextField
               label="Categoria"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.category}
               fullWidth
@@ -218,6 +254,7 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             <TextField
               label="Descripcion"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.description}
               rows={8}
@@ -229,6 +266,7 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             <TextField
               label="Precio"
               variant="outlined"
+              disabled={isLoading}
               InputProps={{ readOnly: true }}
               value={productDetails.price}
               fullWidth
@@ -252,8 +290,11 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
               variant="outlined"
               type="number"
               fullWidth
+              disabled={isLoading}
               value={stock}
               onChange={(e) => setStock(Number(e.target.value))}
+              error={stockError}
+              helperText={stockError ? "El stock debe ser mayor a 0." : ""}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -266,15 +307,82 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
             />
           </div>
           <p>Selecciona el color</p>
-          <div className="d-flex gap-2">
-            {colorsData.map((color) => (
-              <ColorCircle
-                key={color.id}
-                color={color.colorCod}
-                isSelected={selectedColor === color.id}
-                onSelect={() => handleColorSelect(color)}
-              />
-            ))}
+          <div className="d-flex gap-3 flex-wrap">
+            {colorsData.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  fontSize: "1.2rem",
+                  color: "#666",
+                  padding: "20px",
+                  marginTop: "10px",
+                }}
+              >
+                No hay colores disponibles, recuerda que puedes crearlos en la
+                sección de colores...✨
+              </div>
+            ) : (
+              colorsData.map((color) => (
+                <div
+                  key={color.id}
+                  className="d-flex flex-column align-items-center gap-2"
+                  style={{
+                    width: "100px",
+                    textAlign: "center",
+                    padding: "10px",
+                    borderRadius: "18px",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow:
+                      selectedColor === color.id && color.status
+                        ? "0 4px 15px rgba(255, 105, 180, 0.7)"
+                        : "none",
+                    transform:
+                      selectedColor === color.id && color.status
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                    backgroundColor: color.status
+                      ? selectedColor === color.id
+                        ? "#fff"
+                        : "#fff"
+                      : "rgba(220, 220, 220, 0.5)",
+                    cursor: color.status ? "pointer" : "not-allowed",
+                    opacity: color.status ? 1 : 0.3,
+                  }}
+                  onClick={() => color.status && handleColorSelect(color)}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50px",
+                    }}
+                  >
+                    <ColorCircle
+                      color={color.colorCod}
+                      isSelected={selectedColor === color.id && color.status}
+                      onSelect={() => color.status && handleColorSelect(color)}
+                    />
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      color: color.status
+                        ? selectedColor === color.id
+                          ? "#333"
+                          : "#666"
+                        : "#999",
+                      fontWeight:
+                        selectedColor === color.id && color.status
+                          ? "600"
+                          : "400",
+                    }}
+                  >
+                    {color.colorName}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -347,7 +455,7 @@ export const EditItemProduct = ({ selectedProduct }: CreateItemProductProps) => 
         </div>
       </div>
       <div className="text-end mt-2">
-        <Button variant="outlined" className="me-2">
+        <Button variant="outlined" className="me-2" onClick={onCancel}>
           Cancelar
         </Button>
         <Button

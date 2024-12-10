@@ -5,7 +5,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Toaster } from "react-hot-toast"
+import { Toaster } from "react-hot-toast";
+import { DndContext } from "@dnd-kit/core";
+import { syncWithServer } from "./service/PouchdbService";
 
 const theme = createTheme({
   palette: {
@@ -65,15 +67,23 @@ const theme = createTheme({
   },
 });
 
+const initializeSync = () => {
+  syncWithServer("colors", "http://34.203.104.87:8080/api-crochet/colors");
+};
+
+initializeSync();
+
 function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <NextUIProvider>
           <Toaster />
-          <BrowserRouter>
-            <AppRouter />
-          </BrowserRouter>
+          <DndContext>
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
+          </DndContext>
         </NextUIProvider>
       </ThemeProvider>
     </LocalizationProvider>

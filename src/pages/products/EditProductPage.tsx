@@ -1,18 +1,18 @@
 import { Divider } from "@nextui-org/react";
 import Layout from "../../components/common/Layout";
-import { useState } from "react";
-import { Product } from "../../components/products/ProductBaseGrid";
-import { EditSelectProductBase } from "../../components/products/EditSelectProductBase";
-import { EditItemProduct } from "./EditItemProduct";
+
+import { EditItemProduct } from "../../components/products/edit/EditItemProduct";
+import { EditSelectProductBase } from "../../components/products/edit/EditSelectProductBase";
 
 export const EditProductPage = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
+ 
   return (
     <Layout title="Editar">
-      <EditSelectProductBase onSelectProduct={setSelectedProduct} />
+      <EditSelectProductBase
+        
+      />
       <Divider />
-      <EditItemProduct selectedProduct={selectedProduct} />
+      <EditItemProduct />
     </Layout>
   );
 };

@@ -9,38 +9,100 @@ import {
   Divider,
   Chip,
 } from "@nextui-org/react";
-import Select from "@mui/material/Select";
 import {
   Avatar,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Button,
   Typography,
   Grid,
+  IconButton,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import { format } from "@formkit/tempo";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import PaymentIcon from "@mui/icons-material/Payment";
 import { PedidosIconBlack } from "../../utils/icons";
 import { OrderDetailTable } from "./OrderDetailTable";
+import { IOrder } from "../../interfaces/IOrder";
+import OrderService from "../../service/OrderService";
+
+interface IOrderDetailProps {
+  order: IOrder,
+  onOrderUpdate: (id: string, newStatus: string) => void,
+}
+
+const steps = ["Pendiente", "Procesado", "Enviado", "Entregado"];
+
+const validateStatus = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return 0;
+    case "PROCESSED":
+      return 1;
+    case "SHIPPED":
+      return 2;
+    case "DELIVERED":
+      return 3;
+    default:
+      return 0;
+  }
+};
+
+const statusOrder = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "Cambiar a Procesado";
+    case "PROCESSED":
+      return "Cambiar a Enviado";
+    case "SHIPPED":
+      return "Cambiar a Entregado";
+    case "DELIVERED":
+      return "El pedido ya fue entregado";
+    default:
+      return "Enviado";
+  }
+};
+
 import { useState } from "react";
 
-export default function OrderDetail() {
+export default function OrderDetail({ order, onOrderUpdate }: IOrderDetailProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const status = [
-    { value: "1", label: "En proceso", color: "warning" },
-    { value: "2", label: "Enviado", color: "primary" },
-    { value: "3", label: "Entregado", color: "success" },
-  ];
-  const [selectedStatus, setSelectedStatus] = useState("1");
+
+  const [orderState, setOrderState] = useState(order.orderState);
+
+  const nextStatus = (currentStatus: string) => {
+    switch (currentStatus) {
+      case "PENDING":
+        return "PROCESSED";
+      case "PROCESSED":
+        return "SHIPPED";
+      case "SHIPPED":
+        return "DELIVERED";
+      default:
+        return currentStatus;
+    }
+  };
+
+  const updateOrder = async (id: string, currentStatus: string) => {
+    const newStatus = nextStatus(currentStatus);
+
+    try {
+      await OrderService.updateOrder(id);
+      setOrderState(newStatus);
+      onOrderUpdate(id, newStatus);
+    } catch (error) {
+      console.error("Error al actualizar el pedido:", error);
+    }
+  };
 
   return (
     <>
       <Tooltip content="Detalle de la orden">
-        <Button onClick={onOpen} variant="contained">
-          Ver detalles
-        </Button>
+        <IconButton onClick={onOpen}>
+          <RemoveRedEyeIcon />
+        </IconButton>
       </Tooltip>
       <Modal
         size="5xl"
@@ -56,51 +118,57 @@ export default function OrderDetail() {
               <ModalHeader className="flex flex-col items-center gap-2">
                 <Typography variant="h6">Detalle de la Orden</Typography>
                 <Chip
-                  color={
-                    (status.find((s) => s.value === selectedStatus)?.color as
-                      | "success"
-                      | "default"
-                      | "primary"
-                      | "secondary"
-                      | "warning"
-                      | "danger") || "default"
-                  }
+                  color={renderColor(orderState)}
                   size="md"
                   variant="flat"
+                  className="capitalize"
                 >
-                  {status.find((s) => s.value === selectedStatus)?.label || ""}
+                  {traduceStatus(orderState)}
                 </Chip>
+                <Box sx={{ width: "100%" }} mt={2}>
+                  <Stepper
+                    activeStep={validateStatus(orderState)}
+                    alternativeLabel
+                  >
+                    {steps.map((label, index) => (
+                      <Step key={`${label}-${index}`}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Box>
               </ModalHeader>
               <ModalBody className="max-h-[60vh] overflow-y-auto">
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1">
-                      Orden ID: #168012
+                      Orden ID:{" "}
+                      <span className="text-semibold">
+                        #{formatId(order.id)}
+                      </span>
                     </Typography>
-                    <Typography color="text.secondary">
-                      Lunes 20 de Octubre, 2024
+                    <Typography variant="subtitle1">
+                      Fecha de compra:{" "}
+                      <span>{formatDate(order.orderDate)}</span>
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      Fecha estimada de entrega:{" "}
+                      <span>
+                        {formatDate(order.orderDetails.estimatedDeliveryDate)}
+                      </span>
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6} container spacing={2}>
-                    <Grid item xs={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Estado</InputLabel>
-                        <Select
-                          value={selectedStatus}
-                          onChange={(e) => setSelectedStatus(e.target.value)}
-                          label="Estado"
-                        >
-                          {status.map((item) => (
-                            <MenuItem key={item.value} value={item.value}>
-                              {item.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <DatePicker label="Fecha de entrega" />
-                    </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Box textAlign="right">
+                      <Button
+                        onClick={() => updateOrder(order.id, orderState)}
+                        variant="contained"
+                        color="primary"
+                        disabled={orderState === "DELIVERED"}
+                      >
+                        {statusOrder(orderState)}
+                      </Button>
+                    </Box>
                   </Grid>
                 </Grid>
 
@@ -109,26 +177,30 @@ export default function OrderDetail() {
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
                     <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar
-                        src="/pajaro.jpg"
-                        sx={{ width: 40, height: 40 }}
-                      />
+                      {order.shippingAddress.user.image?.imageUri ? (
+                        <Avatar
+                          alt={order.shippingAddress.user.fullName}
+                          src={`http://34.203.104.87:8080/${order.shippingAddress.user.image.imageUri
+                            .split("/")
+                            .pop()}`}
+                        />
+                      ) : (
+                        <Avatar>
+                          {order.shippingAddress.user.fullName
+                            .charAt(0)
+                            .toUpperCase()}
+                        </Avatar>
+                      )}
                       <Typography variant="h6">Cliente</Typography>
                     </Box>
-                    <Box ml={5}>
+                    <Box ml={7}>
                       <Typography>
                         <span className="text-semibold text-pink">Nombre:</span>{" "}
-                        Miguel Delgado
+                        {order.shippingAddress.user.fullName}
                       </Typography>
                       <Typography>
                         <span className="text-semibold text-pink">Correo:</span>{" "}
-                        miguel@gmail.com
-                      </Typography>
-                      <Typography>
-                        <span className="text-semibold text-pink">
-                          Teléfono:
-                        </span>{" "}
-                        777 152 7761
+                        {order.shippingAddress.user.email}
                       </Typography>
                     </Box>
                   </Grid>
@@ -137,22 +209,22 @@ export default function OrderDetail() {
                       <PedidosIconBlack />
                       <Typography variant="h6">Dirección de entrega</Typography>
                     </Box>
-                    <Box ml={5}>
+                    <Box ml={6}>
                       <Typography>
                         <span className="text-semibold text-pink">
                           Dirección:
                         </span>{" "}
-                        Calle Falsa 123, Ciudad, País
+                        {order.shippingAddress.street},{" "}
+                        {order.shippingAddress.city},{" "}
+                        {order.shippingAddress.state}
                       </Typography>
                       <Typography>
                         <span className="text-semibold text-pink">CP:</span>{" "}
-                        12345
+                        {order.shippingAddress.zipCode}
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
-
-                <Divider className="my-4" />
 
                 <Box display="flex" alignItems="center" gap={2} mt={2}>
                   <PaymentIcon />
@@ -161,37 +233,43 @@ export default function OrderDetail() {
                 <Box ml={5}>
                   <Typography>
                     <span className="text-semibold text-pink">Método:</span>{" "}
-                    Tarjeta de crédito
+                    {order.paymentMethod.cardType === "credit"
+                      ? "Tarjeta de crédito"
+                      : "Tarjeta de débito"}
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Número:</span>{" "}
-                    **** **** **** 1234
+                    **** **** **** ****{" "}
+                    {order.paymentMethod.cardNumber.slice(-4)}
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Titular:</span>{" "}
-                    Miguel Delgado
+                    {order.shippingAddress.user.fullName}
                   </Typography>
                   <Typography>
                     <span className="text-semibold text-pink">Fecha:</span>{" "}
-                    10/24
+                    {order.paymentMethod.expirationDate}
                   </Typography>
                 </Box>
 
                 <Divider className="my-4" />
                 <p className="text-wine text-semibold"> Productos ordenados</p>
-                <OrderDetailTable />
+                <OrderDetailTable products={order.orderDetails.products} />
+                <Grid item xs={12} sm={6}>
+                  <Box textAlign="right">
+                    <Typography variant="subtitle1">
+                      Total:{" "}
+                      <span className="text-semibold">
+                        ${order.orderDetails.totalPrice.toFixed(2)}
+                      </span>
+                    </Typography>
+                  </Box>
+                </Grid>
               </ModalBody>
 
               <ModalFooter>
                 <Button onClick={onClose} variant="outlined" color="secondary">
                   Cerrar
-                </Button>
-                <Button
-                  onClick={() => alert("Cambios guardados")}
-                  variant="contained"
-                  color="primary"
-                >
-                  Guardar
                 </Button>
               </ModalFooter>
             </>
@@ -201,3 +279,42 @@ export default function OrderDetail() {
     </>
   );
 }
+
+const formatId = (id: string) => {
+  return id.slice(0, 8);
+};
+
+const formatDate = (date: Date) => {
+  const readable = format(date, "long");
+  return readable;
+};
+
+const traduceStatus = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "Pendiente";
+    case "PROCESSED":
+      return "Procesado";
+    case "SHIPPED":
+      return "Enviado";
+    case "DELIVERED":
+      return "Entregado";
+    default:
+      return status;
+  }
+};
+
+const renderColor = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "warning";
+    case "PROCESSED":
+      return "primary";
+    case "SHIPPED":
+      return "secondary";
+    case "DELIVERED":
+      return "success";
+    default:
+      return "danger";
+  }
+};
