@@ -1,5 +1,5 @@
 import { doGet } from "../config/Axios";
-import { IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
+import { IRevenuesRange, IRevuenes } from "../interfaces/Dashboard/RevuenesInterface";
 import { IViews, IViewsRange } from "../interfaces/Dashboard/ViewsIterface";
 import { IOrder } from "../interfaces/IOrder";
 
@@ -62,13 +62,13 @@ export const DashboardService = {
   getIncomesStatsInRange: async (
     startDate: string,
     endDate: string
-  ): Promise<IViewsRange> => {
+  ): Promise<IRevenuesRange> => {
     console.log("Servicio llamado con fechas:", startDate, endDate);
     try {
       const response = await doGet(
         `/stats/revenues/range?startDate=${startDate}&endDate=${endDate}  `
       );
-      console.log("Respuesta recibida ingresos:", response.data);
+      console.log("Respuesta recibida ingresossssss:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error en el servicio:", error);

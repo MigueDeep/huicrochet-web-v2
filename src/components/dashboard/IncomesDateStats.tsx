@@ -4,16 +4,16 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LineChart } from "@mui/x-charts";
 import { Dayjs } from "dayjs";
 import { DashboardService } from "../../service/DashboardService";
-import { IViewsRange } from "../../interfaces/Dashboard/ViewsIterface";
+import { IRevenuesRange } from "../../interfaces/Dashboard/RevuenesInterface";
 
 export const IncomeDateStats = () => {
   const today = dayjs();
   const [startDate, setStartDate] = useState<Dayjs | null>(today);
   const [endDate, setEndDate] = useState<Dayjs | null>(today);
-  const [viewStats, setViewStats] = useState<IViewsRange | null>({
+  const [viewStats, setViewStats] = useState<IRevenuesRange | null>({
     data: {
       title: "",
-      visits: 0,
+      revenues: 0,
       data: [],
     },
     error: false,
@@ -38,7 +38,7 @@ export const IncomeDateStats = () => {
       setViewStats({
         data: {
           title: "",
-          visits: 0,
+          revenues: 0,
           data: [],
         },
         error: false,
@@ -60,7 +60,7 @@ export const IncomeDateStats = () => {
     setViewStats({
       data: {
         title: "",
-        visits: 0,
+        revenues: 0,
         data: [],
       },
       error: false,
@@ -114,14 +114,14 @@ export const IncomeDateStats = () => {
       {viewStats && (
         <>
           <p className="text-semibold text-center">
-            {viewStats.data.visits} vistas
+            {viewStats.data.revenues} Pesos
           </p>
           <div className="d-flex justify-content-center">
             <LineChart
               series={[
                 {
                   data: viewStats.data.data,
-                  color: "#823038",
+                  color: "#00B69B",
                 },
               ]}
               width={500}
