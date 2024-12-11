@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // Specify the development server port
-    port: 3001,
+    port: 5001,
   },
   // Base name of your app
   base: "./index.html", // Replace this with the subdirectory path if needed
