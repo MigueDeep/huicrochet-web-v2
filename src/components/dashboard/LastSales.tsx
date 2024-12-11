@@ -71,7 +71,7 @@ export const LastSales = () => {
       <h4 className="text-center title">Últimas ventas</h4>
       <div className="d-flex justify-content-center align-items-center flex-wrap">
         {lastSales.map((order) => {
-          const firstProduct = order.orderDetails.products[0]; // Primer producto en la orden
+          const firstProduct = order.orderDetails.products[0]; 
           const product = firstProduct.item.product;
           const color = firstProduct.item.color;
 
