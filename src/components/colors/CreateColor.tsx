@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 
 export default function CreateColorModal({ onColorCreated }: { onColorCreated: () => void }) {
     
-    const { isOpen, onOpen, onClose } = useDisclosure(); // Correctly placed inside the function
+    const { isOpen, onOpen, onClose } = useDisclosure();
+     // Correctly placed inside the function
     const [isOffline, setIsOffline] = useState<boolean>(false);
 
     useEffect(() => {

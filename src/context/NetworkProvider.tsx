@@ -23,8 +23,9 @@ const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         // Llama a la función de sincronización cuando vuelvas a estar en línea
         await ColorService.syncColors();
         console.log("Sincronización completada.");
-        //llama el servicio de get colors despuesde sincronizar
-        await ColorService.getColors();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
       } catch (error) {
         console.error("Error durante la sincronización automática:", error);
       }

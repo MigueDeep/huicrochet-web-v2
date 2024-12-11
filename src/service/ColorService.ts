@@ -37,7 +37,7 @@ const ColorService = {
 
     syncColors: async () => {
         try {
-            // Obtiene todos los documentos de PouchDB
+            // Obtén todos los documentos de PouchDB
             const allDocs = await db.allDocs({ include_docs: true });
             const unsyncedColors = allDocs.rows
                 .map((row) => row.doc)
@@ -47,44 +47,64 @@ const ColorService = {
                 console.log("No hay datos para sincronizar.");
                 return;
             }
-    
+     
             console.log(`Sincronizando ${unsyncedColors.length} colores...`);
+    
+            // Obtén los colores existentes en el servidor
+            const existingColors = await ColorService.getColors();
     
             for (const color of unsyncedColors) {
                 try {
                     if (color) {
                         const colorData = color as unknown as IColor;
     
-                        // Verifica si el color ya existe en el servidor
-                        const existingColors = await ColorService.getColors();
-                        const colorExists = existingColors.some(
+                        // Encuentra el color correspondiente en el servidor
+                        const existingColor = existingColors.find(
                             (serverColor: IColor) => serverColor.id === colorData.id
                         );
     
-                        if (!colorExists) {
-                            // Si el color no existe, lo crea en el servidor
+                        if (existingColor) {
+                            // Actualiza el estado si es diferente
+                            if (existingColor.status !== colorData.status) {
+                                await ColorService.changeColorStatus(colorData.id);
+                                console.log(`Estado del color con id ${colorData.id} actualizado.`);
+                            }
+    
+                            // Verifica otros cambios
+                            const hasChanges =
+                                existingColor.colorName !== colorData.colorName ||
+                                existingColor.colorCod !== colorData.colorCod;
+    
+                            if (hasChanges) {
+                                await ColorService.updateColor(colorData.id, {
+                                    id: colorData.id,
+                                    colorName: colorData.colorName,
+                                    colorCod: colorData.colorCod,
+                                    status: colorData.status,
+                                });
+                                console.log(`Color con id ${colorData.id} actualizado.`);
+                            }
+                        } else {
+                            // Si el color no existe en el servidor, lo crea
                             await ColorService.createColor({
                                 id: colorData.id,
                                 colorName: colorData.colorName,
                                 colorCod: colorData.colorCod,
                                 status: colorData.status,
                             });
-    
-                            // Actualiza el campo isSynced en PouchDB
-                            await db.put({
-                                ...color,
-                                isSynced: true, // Actualiza el estado de sincronización
-                                _id: color._id,
-                                _rev: color._rev, // Mantiene la revisión actual
-                            });
-    
-                            console.log(`Color con id ${color._id} sincronizado.`);
-                        } else {
-                            console.log(`Color con id ${color._id} ya existe en el servidor.`);
+                            console.log(`Color con id ${colorData.id} creado.`);
                         }
+    
+                        // Marca el color como sincronizado en PouchDB
+                        await db.put({
+                            ...color,
+                            isSynced: true, // Actualiza el estado de sincronización
+                            _id: color._id,
+                            _rev: color._rev, // Mantiene la revisión actual
+                        });
                     }
                 } catch (error) {
-                    console.error("Error al sincronizar color:", error);
+                    console.error(`Error al sincronizar color con id`, error);
                 }
             }
     
@@ -167,15 +187,43 @@ const ColorService = {
     },
     
 
-    changeColorStatus: async (id: string) => {
+    changeColorStatus: async (id: string, data?: IColor) => {
         try {
+            console.log("Cambiando estado del color con id", data);
+
+            // Intentar actualizar en el servidor primero
             const response = await doPutId(`/color/changeStatus/${id}`);
+            
+            // Si la actualización en el servidor es exitosa, reflejar el cambio en PouchDB
+            const existingDoc = await db.get(id) as IColor;
+            console.log("existingDoc", existingDoc);
+            await db.put({
+                ...existingDoc,
+                status: !existingDoc.status, // Cambia el estado localmente
+                isSynced: true, // Marca como sincronizado
+                _rev: existingDoc._rev, // Mantén la revisión de PouchDB
+            });
+    
             return response.data;
         } catch (error) {
-            throw new Error("An error occurred while disabling color. Please try again.");
+            console.warn("No se pudo actualizar en el servidor, guardando cambio en PouchDB");
+            try {
+                // Actualizar localmente en PouchDB si el servidor no está disponible
+                const existingDoc = await db.get(id) as IColor;
+                await db.put({
+                    ...existingDoc,
+                    status: !existingDoc.status, // Cambia el estado localmente
+                    isSynced: false, // Asegurar que no está sincronizado
+                    _rev: existingDoc._rev, // Mantén la revisión de PouchDB
+                });
+    
+                toast.success("Estado actualizado localmente. Se sincronizará más tarde.");
+            } catch (pouchError) {
+                console.error("Error al actualizar localmente en PouchDB:", pouchError);
+                throw new Error("No se pudo actualizar el estado del color localmente.");
+            }
         }
     },
-
     
 
 };

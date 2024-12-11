@@ -7,16 +7,19 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button"; // Asegúrate de importar el componente Button
+import { IColor } from "../../interfaces/IColor";
 
 interface ChangeStatusProps {
   id: string;
+  data: IColor;
   initialStatus: boolean;
   type: string;
-  onStatusChange: (id: string) => void;
+  onStatusChange: (id: string, data: IColor) => void;
 }
 
 export default function ChangeStatus({
   id,
+  data,
   initialStatus,
   type,
   onStatusChange,
@@ -34,7 +37,7 @@ export default function ChangeStatus({
 
   const confirmChangeStatus = () => {
     setIsActive((prev) => !prev);
-    onStatusChange(id);
+    onStatusChange(id, data);
     handleCloseDialog();
   };
 

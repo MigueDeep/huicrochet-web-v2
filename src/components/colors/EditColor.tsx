@@ -10,6 +10,7 @@ import { useState } from "react";
 
 export default function EditColorModal({ id, colorName, colorCod, onColorUpdated }: Readonly<{ id: string, colorName: string, colorCod: string, onColorUpdated: () => void }>) {
     const { isOpen, onOpen, onClose } = useDisclosure(); 
+   
     const [loading, setLoading] = useState(false);
 
     const validationSchema = yup.object({
