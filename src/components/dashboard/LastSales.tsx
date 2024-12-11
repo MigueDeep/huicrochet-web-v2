@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import LastSaleProduct from "./LastSaleProduct";
 import { DashboardService } from "../../service/DashboardService";
 import { IOrder } from "../../interfaces/IOrder"; // Ajusta el path si es necesario
+import Box from "@mui/material/Box";
+import { Skeleton } from "@mui/material";
 
 export const LastSales = () => {
   const [lastSales, setLastSales] = useState<IOrder[]>([]);
@@ -29,11 +31,39 @@ export const LastSales = () => {
   }, []);
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return (
+      <Box sx={{ width: "100%", height: 1000 }}>
+        <Skeleton />
+        <Skeleton animation="wave" />
+        <Skeleton animation={false} />
+      </Box>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "300px",
+          backgroundColor: "#fef8f8",
+          borderRadius: "16px",
+          padding: "20px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <h4 style={{ color: "#ff6b6b", marginBottom: "10px" }}>
+          {error || "No hay órdenes disponibles"}
+        </h4>
+        <p style={{ color: "#6b6b6b", textAlign: "center" }}>
+          Parece que no hay ordenes recientes aún. ¡Intenta nuevamente más
+          tarde!
+        </p>
+      </Box>
+    );
   }
 
   return (
@@ -41,7 +71,7 @@ export const LastSales = () => {
       <h4 className="text-center title">Últimas ventas</h4>
       <div className="d-flex justify-content-center align-items-center flex-wrap">
         {lastSales.map((order) => {
-          const firstProduct = order.orderDetails.products[0]; // Primer producto en la orden
+          const firstProduct = order.orderDetails.products[0]; 
           const product = firstProduct.item.product;
           const color = firstProduct.item.color;
 
