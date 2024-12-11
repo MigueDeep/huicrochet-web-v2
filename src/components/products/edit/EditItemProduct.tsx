@@ -191,7 +191,7 @@ export const EditItemProduct = () => {
       productId: item?.data.product.id || "",
       colorId: selectedColor,
       stock: stock,
-      state: true,
+      state: item?.data.state ?? false,
     };
 
     const formData = new FormData();
