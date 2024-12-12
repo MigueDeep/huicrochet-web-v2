@@ -11,6 +11,7 @@ import {
   closestCenter,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { UserViewsDate } from "../../components/dashboard/UserViewsDate";
 
 const DashboardPage = () => {
   const initialComponents = [
@@ -49,7 +50,7 @@ const DashboardPage = () => {
       case "views":
         return <Views />;
       case "bestSellingUserDate":
-        return <BestSellingUserDate />;
+        return <UserViewsDate />;
       case "lastSales":
         return <LastSales />;
       case "incomes":

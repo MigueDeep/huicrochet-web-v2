@@ -46,10 +46,12 @@ export const UsersStats = () => {
     }
   };
 
+  const coutUsersnotLogged = totalUsers - activeUsers;
+
   useEffect(() => {
     fetchUsersStats();
     fetchUsersLogged();
-    fetchUsersLoggedOut();
+    coutUsersnotLogged;
   }, []);
 
   return (
@@ -79,7 +81,7 @@ export const UsersStats = () => {
           <UserNoOnlineIcon />
           <div className="ml-2 d-flex flex-column">
             <div className="text-semibold text-red">Usuarios inactivos</div>
-            <div className="text-pink">{inactiveUsers}</div>
+            <div className="text-pink">{coutUsersnotLogged}</div>
           </div>
         </div>
       </div>

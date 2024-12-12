@@ -8,11 +8,13 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { UsersStats } from "./UsersStats";
 import { ViewsDateStats } from "./ViewsDateStats";
+import { IncomeDateStats } from "./IncomesDateStats";
 
 export const UserViewsDate = () => {
   const [components, setComponents] = useState([
     { id: "usersStats", component: <UsersStats /> },
     { id: "viewsDateStats", component: <ViewsDateStats /> },
+    { id: "icomesDateStats", component: <IncomeDateStats /> },
   ]);
 
   const handleDragEnd = (event: any) => {
@@ -30,7 +32,14 @@ export const UserViewsDate = () => {
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "10px",
+          justifyContent: "space-between",
+        }}
+      >
         {components.map(({ id, component }) => (
           <DraggableDroppable key={id} id={id}>
             {component}
@@ -60,7 +69,7 @@ const DraggableDroppable: React.FC<DraggableDroppableProps> = ({
   const { setNodeRef: setDroppableRef } = useDroppable({ id });
 
   const style: React.CSSProperties = {
-    transform: `translate(0px, ${transform?.y ?? 0}px)`, // Limitar movimiento al eje Y
+    transform: `translate(0px, ${transform?.y ?? 0}px)`,
     opacity: isDragging ? 0.5 : 1,
     cursor: "grab",
     zIndex: isDragging ? 999 : "auto",
@@ -69,14 +78,13 @@ const DraggableDroppable: React.FC<DraggableDroppableProps> = ({
   return (
     <div
       ref={(node) => {
-        setDraggableRef(node); // Nodo arrastrable
-        setDroppableRef(node); // Nodo dropeable
+        setDraggableRef(node);
+        setDroppableRef(node);
       }}
       style={style}
       {...listeners}
       {...attributes}
       onPointerDown={(e) => {
-        // Permitir clics e interacción en elementos internos
         const target = e.target as HTMLElement;
         if (target.tagName !== "DIV" && target.tagName !== "SECTION") {
           e.stopPropagation();

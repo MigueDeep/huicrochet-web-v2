@@ -22,7 +22,11 @@ const ColorCircle: React.FC<ColorCircleProps> = ({
       style={{
         ...styles.circle,
         backgroundColor: color,
-        border: isSelected ? "2px solid pink" : "",
+        border: isSelected
+          ? "2px solid pink"
+          : color === "#FFFFFF"
+          ? "1px solid black"
+          : "none",
         width: size,
         height: size,
       }}

@@ -1,4 +1,18 @@
 {
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "strict": false,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "target": "es6",
+    "lib": ["dom", "webworker", "es2017"],
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

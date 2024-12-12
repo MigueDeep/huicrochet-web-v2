@@ -81,7 +81,9 @@ const renderCell = (item: ProductElement, key: string) => {
   switch (key) {
   case "image":
     {
-      const imageUri = `http://34.203.104.87:8080/${item.item.images[0].imageUri.split("/").pop()}`;
+      const imageUri = `http://34.203.104.87:8080/${item.item.images[0].imageUri
+        .split("/")
+        .pop()}`;
       return imageUri ? <Avatar alt="img" src={imageUri} /> : "Sin imagen";
     }
   case "color":
