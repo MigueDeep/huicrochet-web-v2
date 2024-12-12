@@ -30,6 +30,7 @@ const columns = [
 const rowsPerPage = 10;
 
 export default function ColorsTable() {
+  
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +48,6 @@ export default function ColorsTable() {
 
     updateNetworkStatus();
   
-    // Agrega listeners para los cambios de conexión
     window.addEventListener("online", updateNetworkStatus);
     window.addEventListener("offline", updateNetworkStatus);
   
@@ -66,7 +66,7 @@ export default function ColorsTable() {
     try {
       if (!isOffline) {
         console.log("Modo online axios");
-        const colors = await ColorService.getColors(); // Obtener colores de la API cuando está en línea
+        const colors = await ColorService.getColors(); 
         setColorsData(colors);
       } else {
         console.log("Modo offline pouch");

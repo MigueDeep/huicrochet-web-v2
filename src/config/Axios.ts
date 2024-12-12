@@ -2,7 +2,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080/api-crochet",
+  baseURL: "http://34.203.104.87:8080/api-crochet",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

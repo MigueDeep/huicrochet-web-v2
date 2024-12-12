@@ -154,7 +154,7 @@ const onDelete = async () => {
               <ProductCardGrid
                 image={
                   product.images && product.images.length > 0
-                    ? `http://localhost:8080/${product.images[0].imageUri
+                    ? `http://34.203.104.87:8080/${product.images[0].imageUri
                         .split("/")
                         .pop()}`
                     : `../../../public/logo.png`

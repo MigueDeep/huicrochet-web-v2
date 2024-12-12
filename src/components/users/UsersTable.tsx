@@ -93,7 +93,7 @@ export default function UsersTable() {
             alt={user.fullName}
             src={
               user.image
-                ? `http://localhost:8080/${user.image.imageUri
+                ? `http://34.203.104.87:8080/${user.image.imageUri
                     .split("/")
                     .pop()}`
                 : "/default.webp"

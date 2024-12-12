@@ -1,6 +1,6 @@
 // src/services/AuthService.ts
 import { doPost, doGet, doPut, doPutId } from "../config/Axios";
-import { IColor } from "../interfaces/IColor";
+import { IColor, IColorPouchDB } from "../interfaces/IColor";
 import PouchDB from 'pouchdb';
 const db = new PouchDB('colorsDB');
 import toast from "react-hot-toast";
@@ -119,24 +119,33 @@ const ColorService = {
 
     getColors: async () => {
         try {
-          const response = await doGet("/color", { showToast: false });
-          const colors = response.data.data; // Accede al arreglo de colores
-          
-          console.log(typeof colors); // Debería imprimir "object" (arreglo en JS es un objeto)
-          console.log(colors); // Verifica que sea el arreglo de colores esperado
-          
-          // Modificar los datos y guardarlos en PouchDB
-          await db.bulkDocs(
-            colors.map((color: any) => ({
-              ...color,
-              _id: color.id, // Usar el ID como clave en PouchDB
-            }))
-          );
-      
-          return colors; // Devuelve los colores originales
+            const response = await doGet("/color", { showToast: false });
+            const colors = response.data.data;
+    
+            // Modificar los datos y guardarlos en PouchDB
+            for (const color of colors) {
+                try {
+                    const existingDoc = await db.get(color.id);
+                     // Si existe, actualiza
+                        await db.put({
+                            ...existingDoc,
+                            ...color,
+                            _id: color.id,
+                          });
+                } catch (error) {
+                  if ((error as any).status === 404) {
+                       await db.put({
+                            ...color,
+                           _id: color.id,
+                          });
+                  }
+                }
+            }
+    
+            return colors;
         } catch (error) {
-          console.error("Error al obtener colores:", error);
-          throw new Error("An error occurred while fetching colors. Please try again.");
+            console.error("Error al obtener colores:", error);
+            throw new Error("An error occurred while fetching colors. Please try again.");
         }
     },
       
@@ -144,13 +153,22 @@ const ColorService = {
 
     fetchColorsFromPouchDB: async () => {
         try {
-          const allDocs = await db.allDocs({ include_docs: true });
-          const colors = allDocs.rows.map((row) => row.doc);
-          return colors;
+            const allDocs = await db.allDocs({ include_docs: true });
+            let colors = allDocs.rows.map((row) => row.doc as IColorPouchDB);
+    
+            // Filtra los colores para eliminar duplicados basándonos en el nombre
+            const uniqueColors = colors.filter((color, index, self) =>
+                index === self.findIndex((c) => (
+                    c.colorName === color.colorName
+                ))
+            );
+    
+            return uniqueColors;
         } catch (error) {
-          throw new Error('Error al obtener datos de PouchDB');
+            console.error('Error al obtener datos de PouchDB', error);
+            throw new Error('Error al obtener datos de PouchDB');
         }
-      },
+    },
 
 
       updateColor: async (id: string, data: IColor) => {
