@@ -30,35 +30,74 @@ const columns = [
 const rowsPerPage = 10;
 
 export default function ColorsTable() {
+  
   const [colorsData, setColorsData] = useState<IColor[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  
+  const [isOffline, setIsOffline] = useState<boolean>(false);
+
+  useEffect(() => {
+    const updateNetworkStatus = () => {
+      setIsOffline(!navigator.onLine);
+      console.log(`Modo ${navigator.onLine ? "online" : "offline"}`);
+    };
+
+  
+
+    updateNetworkStatus();
+  
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+  
+    // Limpia los listeners al desmontar el componente
+    return () => {
+      window.removeEventListener("online", updateNetworkStatus);
+      window.removeEventListener("offline", updateNetworkStatus);
+    };
+  }, [isOffline]);
+  
+  
+  
 
   const fetchColors = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await ColorService.getColors();
-      setColorsData(response.data);
-    } catch (error) {
-      console.error("Error al cargar colores:", error);
+      if (!isOffline) {
+        console.log("Modo online axios");
+        const colors = await ColorService.getColors(); 
+        setColorsData(colors);
+      } else {
+        console.log("Modo offline pouch");
+        const colors = await ColorService.fetchColorsFromPouchDB(); // Obtener colores desde PouchDB cuando está offline
+        console.log("Colores desde PouchDB:", colors);
+        const colorsMap = colors.map((color: any) => ({
+          ...color,
+          id: color._id,
+        }));
+        setColorsData(colorsMap);
+      }
+    } catch (err) {
+      console.error('Error al cargar colores:', err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isOffline]);
+  
 
   useEffect(() => {
     fetchColors();
   }, [fetchColors]);
 
-  const handleStatusChange = async (id: string) => {
+  const handleStatusChange = async (id: string, data: IColor) => {
     try {
       setColorsData((prevColors) =>
         prevColors.map((color) =>
           color.id === id ? { ...color, status: !color.status } : color
         )
       );
-      await ColorService.changeColorStatus(id);
+      await ColorService.changeColorStatus(id, data);
     } catch (error) {
       console.error("Error al actualizar el estado del color:", error);
     }
@@ -160,7 +199,7 @@ export default function ColorsTable() {
 function renderCellContent(
   key: string,
   item: IColor,
-  handleStatusChange: (id: string) => void,
+  handleStatusChange: (id: string, data: IColor) => void,
   fetchColors: () => void
 ) {
   switch (key) {
@@ -182,13 +221,15 @@ function renderCellContent(
       return (
         <ButtonGroup className="gap-2">
           <EditColorModal
-            id={item.id}
-            colorName={item.colorName}
-            colorCod={item.colorCod}
-            onColorUpdated={fetchColors}
+              id={item.id}
+              colorName={item.colorName}
+              colorCod={item.colorCod}
+              onColorUpdated={fetchColors}
           />
+
           <ChangeStatus
             id={item.id}
+            data={item}
             initialStatus={item.status}
             type="color"
             onStatusChange={handleStatusChange}

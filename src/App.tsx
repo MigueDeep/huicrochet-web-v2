@@ -7,83 +7,42 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Toaster } from "react-hot-toast";
 import { DndContext } from "@dnd-kit/core";
-import { syncWithServer } from "./service/PouchdbService";
+import NetworkProvider from "./context/NetworkProvider";
+import OfflineAlert from "./components/common/OfflineAlert"; // Importa el componente OfflineAlert
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#F294A5",
-      contrastText: "#fff",
-    },
-    secondary: {
-      main: "#823038",
-      contrastText: "#fff",
-    },
-    info: {
-      main: "#D989B5",
-      contrastText: "#fff",
-    },
-    warning: {
-      main: "#402F2F",
-      contrastText: "#fff",
-    },
-    error: {
-      main: "#EF3826",
-      contrastText: "#fff",
-    },
-    success: {
-      main: "#00B69B",
-      contrastText: "#fff",
-    },
-    background: {
-      default: "#F2F2F2",
-      paper: "#fff",
-    },
+    primary: { main: "#F294A5", contrastText: "#fff" },
+    secondary: { main: "#823038", contrastText: "#fff" },
+    info: { main: "#D989B5", contrastText: "#fff" },
+    warning: { main: "#402F2F", contrastText: "#fff" },
+    error: { main: "#EF3826", contrastText: "#fff" },
+    success: { main: "#00B69B", contrastText: "#fff" },
+    background: { default: "#F2F2F2", paper: "#fff" },
   },
-  typography: {
-    fontFamily: ["Poppins"].join(","),
-  },
-  shape: {
-    borderRadius: 4,
-  },
+  typography: { fontFamily: ["Poppins"].join(",") },
+  shape: { borderRadius: 4 },
   components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-        },
-      },
-    },
+    MuiButton: { styleOverrides: { root: { textTransform: "none" } } },
   },
   spacing: 8,
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 960,
-      lg: 1280,
-      xl: 1920,
-    },
-  },
+  breakpoints: { values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 } },
 });
-
-const initializeSync = () => {
-  syncWithServer("colors", "http://34.203.104.87:8080/api-crochet/colors");
-};
-
-initializeSync();
 
 function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <NextUIProvider>
-          <Toaster />
-          <DndContext>
-            <BrowserRouter>
-              <AppRouter />
-            </BrowserRouter>
-          </DndContext>
+          <NetworkProvider>
+            <Toaster />
+            <OfflineAlert /> {/* Agrega el componente aquí */}
+            <DndContext>
+              <BrowserRouter>
+                <AppRouter />
+              </BrowserRouter>
+            </DndContext>
+          </NetworkProvider>
         </NextUIProvider>
       </ThemeProvider>
     </LocalizationProvider>
